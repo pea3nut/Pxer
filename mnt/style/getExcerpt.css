@@ -1,0 +1,152 @@
+@CHARSET "UTF-8";
+article{
+	margin:60px 0 0 0;
+}
+article > h1{
+	background: #fff;
+	padding:10px 0;
+	text-align: center;
+	margin:0 0 30px 0;
+}
+article div.excerpt{
+	background: #fff;
+	padding:15px 20px;
+}
+article div.excerpt > *{
+	margin:0 0 15px 0;
+	line-height: 1.4em;
+}
+article div.excerpt > p{
+	text-indent:1em;
+}
+article div.excerpt p img{
+	height:auto;
+	max-width:96%;
+	margin-top:-10px;
+}
+article div.excerpt blockquote,article div.excerpt ul,article div.excerpt ol{
+	box-shadow:0 0 5px #333;
+	margin-top:-10px;
+}
+article div.excerpt blockquote{
+	padding:5px 10px;
+	margin-left:2em;
+	width:80%;
+}
+article div.excerpt blockquote p{
+	margin:5px 0;
+	font-family: "仿宋";
+	font-size:1.2em;
+}
+article div.excerpt ul,article div.excerpt ol{
+	margin-left:2em;
+	width:80%;
+	padding:5px 1.5em;
+}
+article div.excerpt ul li{
+	border-bottom:1px dashed #333;
+	margin:3px 0 0 0;
+	list-style-type: disc;
+}
+article div.excerpt ol li{
+	list-style-type:decimal;
+
+}
+article div.excerpt pre.code{
+	word-break: break-all;
+	font-size: 13px;
+	background-color: #f5f5f5;
+	border: 1px solid #ccc;
+	padding:5px 10px;
+	margin-top:-10px;
+}
+div.discuss div.send_discuss{
+	margin:30px 0 0 0;
+	padding:5px 10px;
+	background: #fff;
+}
+div.discuss div.send_discuss h2{
+	border-bottom: 1px dashed #666;
+	padding:5px 0;
+}
+div.discuss div.send_discuss div.userInf{
+	margin:10px 0;
+	width:100%;
+}
+div.discuss div.send_discuss div.userInf label{
+	display: block;
+	float: left;
+	margin:0 15px 0 0;
+}
+div.discuss div.send_discuss div.userInf label input{
+	width:8em;
+	padding:0 0.5em;
+	font-size: 1em;
+	border:none;
+	border-bottom: 2px solid #333;
+}
+div.discuss div.send_discuss div.userInf label input[name="nick"]{
+	width:7em;
+}
+div.discuss div.send_discuss div.userInf label input[name="email"]{
+	width:11em;
+}
+div.discuss div.send_discuss div.userInf label input[name="site"]{
+	width:14em;
+}
+div.discuss div.send_discuss textarea {
+	padding: 1%;
+	width: 97%;
+}
+div.discuss div.send_discuss input[type="submit"]{
+	margin:10px 0 0 0;
+	border-radius:5px;
+	display: block;
+	padding: 5px;
+	width: 230px;
+	background: rgba(0, 0, 0, 0) -moz-linear-gradient(center top , #444, #333) repeat scroll 0 0;
+	border: 1px solid #333;
+	box-shadow: 1px 1px 3px #d3d3d3;
+	color: #fff;
+	cursor: pointer;
+	font-size: 14px;
+	padding: 5px 10px;
+	text-shadow: 1px 1px #111;
+}
+div.discuss div.send_discuss button:hover{
+	background: rgba(0, 0, 0, 0) -moz-linear-gradient(center top , #333, #222) repeat scroll 0 0;
+}
+
+div.discuss div.allDiscuss{
+	margin:30px 0 0 0;
+	background: #fff;
+	padding:5px 10px;
+}
+div.discuss div.allDiscuss div.theDiscuss{
+	margin:0 0 20px 0;
+}
+div.discuss div.allDiscuss div.theDiscuss div.disUser{
+	font-weight: bold;
+	font-size: 1.5em;
+	text-indent: 0.5em;
+}
+div.discuss div.allDiscuss div.theDiscuss div.disDate{
+	font-size: 12px;
+	margin:-15px 0 0 0;
+	padding:0 10px 0 0;
+	text-align: right;
+}
+div.discuss div.allDiscuss div.theDiscuss div.disMsg{
+	border: 2px solid #ccc;
+	padding:5px 10px;
+	min-height:4em;
+}
+
+
+
+
+
+
+
+
+
