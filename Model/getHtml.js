@@ -1,13 +1,19 @@
 // +----------------------------------------------------------------------
 // | 载入Pxer所需的HTML，初始化环境
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2015 http://nutjs.co All rights reserved.
+// | Copyright (c) 2006-2015 http://nutjs.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Author: 花生PeA <626954412@qq.com>
 // +----------------------------------------------------------------------
 void((function(){
-	//pxer主程序HTML所在位置
-	var load_html =window.pxer_url + 'run.php?html=1';
+	//获取模板位置
+	var pxer_tpl=window.pxerConfig.Pxer_Tpl;
+	var load_html=null;
+	if(/^http/.test(pxer_tpl)){
+		load_html = pxer_tpl;
+	}else{
+		load_html = window.pxerConfig.Pxer_Url + "run.php?tpl=" + pxer_tpl;
+	}
 	//寻找插入到页面的位置
 	var fz=document.getElementById('page-mypage')
 		||document.getElementById('wrapper')

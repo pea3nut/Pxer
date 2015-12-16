@@ -3,44 +3,27 @@ Pxer项目采用MVP架构，分为3层，即使开发者不了解全部的Pxer�
 	1.Model层(核心)，负责Pxer的核心爬取功能。
 	2.Presenter层，负责Pxer的加密。
 
+部署开发
+	开发前请配置好/Conf/config.json中的Pxer_Url指向项目根目录
 
 View层
 	开发此部分需要有HTML+CSS技术即可
-	入口文件为run.html，打开后会自动的加载/View/default.tpl作为body中的HTML，结合/View/basic.css可以完整显示Pxer主程序
-	开发人员仅需修改default.tpl与basic.css，即可完成对于Pxer界面的修改
+	入口文件为run.html，打开后会自动的加载/View/default.tpl作为body中的HTML，结合/View/default.css可以完整显示Pxer主程序
+	开发人员仅需修改default.tpl与default.css，即可完成对于Pxer界面的修改
+	如果想要改变run.html加载渲染的模板，可以修改/Conf/config.json中的Pxer_Tpl，样式是Pxer_Css
 
 Model层(核心)
 	开发此部分需要有JavaScript技术
 	入口文件为run.js，将文件中JS代码直接复制到浏览器书签执行即可。
-	注意，在复制前请配置好路径信息，修改run.js中的pxerUrl变量指向Model/loadIn.js文件
+	注意，部分JS文件在真正运行时（部署到远程）需要进行渲染和路径的替换，在Model层调试过程中可以直接新建书签JS代码载入run.js来完成Pxer的加载（实际部署是要引用run.php）
+	引用代码参考：
+		javascript:  void(( function() {
+			var script=document.createElement("script");
+			var date=new Date;
+			script.src="http://127.0.0.1/works/pxer/run.php?"+date.getTime();
+			document.head.appendChild(script);
+		})());
 
 Presenter层
 	开发此功能需要有PHP技术
 	入口文件为run.php，采用MVP架构，开发此项目时要尽量遵守MVP分层，保证项目的层次感
-
-部署流程
-	本流程仅供参考，开发者可以根据自己的理解来自由的配置，*为必选，不带*的步骤看不懂可略过
-	远程部署：
-		修改Token常量为任意值
-		在服务器中设置/Model/文件夹禁止访问，修改run.js中的pxerUrl变量指向run.php文件
-		在入口文件run.php中将常量Local定义为false
-		*修改Conf/remote.ini.php文件中的Pxer_Url指向项目根目录
-		修改run.js中的
-			*window.pxer_url		指向远程项目根目录
-			window.nutjs_url		指向http://w.nutjs.com/
-			*pxerUrl				window.pxer_url+"run.php"
-			部署远程run.js参考配置
-				window.pxer_url='http://pxer.nutjs.com/';
-				window.nutjs_url='http://w.nutjs.com/';
-				var pxerUrl=window.pxer_url+"run.php";
-	本地部署
-		在入口文件run.php中将常量Local定义为true
-		*修改Conf/local.ini.php文件中的Pxer_Url指向项目根目录
-		修改run.js中的
-			*window.pxer_url		指向本地项目根目录
-			window.nutjs_url		指向http://w.nutjs.com/或者本地的warehouse仓库（如果本地没有warehouse仓库直接指向http://w.nutjs.com/即可）
-			*pxerUrl				window.pxer_url+"Model/loadIn.js"
-			本地测试参考配置
-				window.pxer_url='http://127.0.0.1/works/pxer/';
-				window.nutjs_url='http://w.nutjs.com/';
-				var pxerUrl=window.pxer_url+"Model/loadIn.js";

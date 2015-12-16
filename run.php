@@ -7,10 +7,9 @@
 // | Author: 花生PeA <626954412@qq.com>
 // +----------------------------------------------------------------------
 header("Content-type: text/html; charset=utf-8");
+//再次定义的配置常量将不会作用于JS部分
 //允许跨域访问本文件
 header('Access-Control-Allow-Origin:*');
-//表示本地调试，默认为false
-define('Config', 'Local' , true);
 //同意所有用户请求
 define('Allow_All', 1 , true);
 //定义令牌

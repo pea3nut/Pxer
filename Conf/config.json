@@ -3,6 +3,8 @@
 	"Token"			:	"pxer",
 	"Config"		:	"Local",
 	"Allow_All"		:	"0",
+	"Pxer_Tpl"		:	"default.tpl",
+	"Pxer_Css"		:	"default.css",
 	"Local"	:	{
 		"Pxer_Url"	:	"http://127.0.0.1/works/pxer/",
 		"Nutjs_Url"	:	"http://w.nutjs.com/"

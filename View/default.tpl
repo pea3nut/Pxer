@@ -7,12 +7,11 @@
 			<span>Pxer<em>β</em><strong>{pxer_version}</strong></span>
 		</div>
 		<ul id="pxer_main_nav">
-			<li class="pxerBtn" id="bn_run">加载</li>
-			<li class="pxerBtn" id="bn_expert">高级玩家</li>
-			<li class="pxerBtn" id="bn_lange">选择语言</li>
-			<li class="pxerBtn" id="bn_about">关于</li>
+			<li class="pxerBtn" id="bn_run"		>加载</li>
+			<li class="pxerBtn" id="bn_expert"	>高级玩家</li>
+			<li class="pxerBtn" id="bn_lange"	>选择语言</li>
+			<li class="pxerBtn" id="bn_about"	>关于</li>
 		</ul>
-
 	</div>
 
 	<div id="pxer_about">
@@ -50,7 +49,7 @@
 	<div id="pxer_showState">
 		<fieldset>
 			<legend>程序状态</legend>
-			<p>版本：<em id="pxer_version">beta 4.1.1</em></p>
+			<p>版本：<em id="pxer_version">{pxer_version}</em></p>
 			<p>状态：<em id="pxer_state" class="pxer_no">等待中</em></p>
 			<p>时间：<em id="show_running_time" class="act">0:00</em></p>
 		</fieldset>
