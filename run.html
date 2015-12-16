@@ -1,0 +1,25 @@
+<!Doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link type="text/css" rel="stylesheet" href="View/basic.css" />
+<link rel="shortcut icon" href="View/image/favicon.ico" type="image/x-icon" />
+<script charset="utf-8" src="Model/pxer.js"></script>
+<script charset="utf-8" src="Model/nut2.0.js"></script>
+<title>花生PeA</title>
+</head>
+<body>
+	<!-- 这里会自动加载 /View/defalut.tpl -->
+</body>
+</html>
+<script charset="utf-8">
+	var xhr=new XMLHttpRequest();
+	xhr.open('get','run.php?html=1',false);
+	xhr.onreadystatechange = function(){
+		if (this.readyState == 4 && this.status == 200){
+			document.body.innerHTML = this.responseText;
+			pxer_start(true);
+		};
+	};
+	xhr.send();
+</script>

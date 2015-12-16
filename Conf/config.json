@@ -1,0 +1,14 @@
+{
+	"Pxer_Version"	:	"Beta 5.0.0",
+	"Token"			:	"pxer",
+	"Config"		:	"Local",
+	"Allow_All"		:	"0",
+	"Local"	:	{
+		"Pxer_Url"	:	"http://127.0.0.1/works/pxer/",
+		"Nutjs_Url"	:	"http://w.nutjs.com/"
+	},
+	"Remote":	{
+		"Pxer_Url"	:	"http://pea.nutjs.com/",
+		"Nutjs_Url"	:	"http://w.nutjs.com/"
+	}
+}
