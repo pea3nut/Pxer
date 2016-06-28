@@ -1,0 +1,40 @@
+#pxer{
+    max-width: 970px;
+    width: 100%;
+    margin: 0 auto;
+}
+#pxer .pxer-nav{
+    margin-bottom: 0 !important;
+    background-color: #fff !important;
+}
+#pxer .pxer-inf ,#pxer .pxer-print{
+    padding-top:12px;
+    display: none;
+}
+#pxer > *{
+    background-color: #fff;
+    border:1px solid #d6dee5;
+    border-radius: 5px;
+    margin-top:10px;
+}
+.list-group-item .form-group{
+    margin-bottom: 0 !important;
+}
+#pxer input[type="number"]{
+    width: 6em !important;
+}
+
+#pxer .pxer-cinfig-inputgroup input[pxer]{
+    width: 5em !important;
+    height: auto !important;
+    padding:0 6px !important;
+    margin-top: -5px !important;
+    position: relative;
+    top:2px;
+}
+#pxer label strong{
+    color:#761C19;
+    margin:0 3px;
+    font-size: 1.2em;
+}
+

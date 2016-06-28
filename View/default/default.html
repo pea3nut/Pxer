@@ -1,0 +1,239 @@
+
+<div id="pxer">
+    <style type="text/css" scoped="scoped">
+        @import url("http://127.0.0.233/Library/bootstrap.min.css");
+    </style>
+    <script src="http://127.0.0.233/Library/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+
+
+    <nav class="pxer-nav navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a href="#" class="navbar-brand">Pxer <em>β </em>5</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="http://pxer.nutjs.com/">主页</a></li>
+                <li><a href="#">管理</a></li>
+                <li><a href="#">关于</a></li>
+            </ul>
+            <button class="btn btn-success navbar-btn navbar-right" pxer="run">启动</button>
+        </div>
+    </nav>
+
+
+    <div class="pxer-inf container-fluid" pxer="inf">
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">程序状态</div>
+                    <table class="table">
+                        <tr>
+                            <td>主程序版本：</td>
+                            <td pxer="version">5.0.0</td>
+                        </tr>
+                        <tr>
+                            <td>当前状态：</td>
+                            <td pxer="state">待命中</td>
+                        </tr>
+                        <tr>
+                            <td>已运行时间：</td>
+                            <td pxer="record">0:00</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="col-xs-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">配置信息<button pxer="change" class="btn btn-xs btn-info pull-right">更改</button></div>
+                    <table class="table pxer-cinfig-inputgroup">
+                        <tr>
+                            <td>线程数：</td>
+                            <td>
+                                <input pxer="thread" value="8" disabled="disabled" class="form-control" type="text" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>最大等待时间：</td>
+                            <td><input pxer="timeout" value="5" disabled="disabled" class="form-control" type="text" /></td>
+                        </tr>
+                        <tr>
+                            <td>最大重试次数：</td>
+                            <td><input pxer="maxRetry" value="10" disabled="disabled" class="form-control" type="text" /></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="col-xs-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">当前页面信息</div>
+                    <table class="table">
+                        <tr>
+                            <td>页面类型：</td>
+                            <td pxer="pageType">画师作品页</td>
+                        </tr>
+                        <tr>
+                            <td>作品数量：</td>
+                            <td pxer="worksNum">233</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="col-xs-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">执行进度</div>
+                    <table class="table">
+                        <tr>
+                            <td>预处理：</td>
+                            <td pxer="pret">9</td>
+                        </tr>
+                        <tr>
+                            <td>已完成：</td>
+                            <td pxer="finish">3</td>
+                        </tr>
+                        <tr>
+                            <td>剩余时间：</td>
+                            <td pxer="forecast">0:45</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="pxer-print container-fluid" pxer="print">
+        <div class="row">
+            <div class="col-xs-7">
+                <div class="panel panel-default">
+                    <form pxer="print_filter">
+                        <div class="panel-heading">过滤选项</div>
+                        <ul class="list-group">
+                            <li class="list-group-item form-inline">
+                                <div class="form-group">
+                                    <label class="control-label">总分必须大于</label>
+                                    <input type="number" class="form-control" name="score" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">收藏数必须大于</label>
+                                    <input type="number" class="form-control" name="bookmark" />
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="form-group">
+                                    <label class="control-label">作品中<strong>不能</strong>含有以下<strong>任意一个</strong>标签</label>
+                                    <input type="text" class="form-control" placeholder="可以有多个，空格分割" />
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="form-group">
+                                    <label class="control-label">作品中<strong>不能同时</strong>含有以下<strong>所有</strong>标签</label>
+                                    <input type="text" class="form-control" placeholder="可以有多个，空格分割" />
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="form-group">
+                                    <label class="control-label">作品中<strong>必须</strong>含有以下<strong>任意一个</strong>标签</label>
+                                    <input type="text" class="form-control" placeholder="可以有多个，空格分割" />
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="form-group">
+                                    <label class="control-label">作品中<strong>必须同时</strong>含有以下<strong>所有</strong>标签</label>
+                                    <input type="text" class="form-control" placeholder="可以有多个，空格分割" />
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="form-group">
+                                    <label class="control-label">需匹配的正则</label>
+                                    <input type="text" class="form-control" placeholder="JavaScript正则表达式语法，不带收尾的“/”" />
+                                </div>
+                            </li>
+                        </ul>
+                    </form>
+                </div>
+            </div>
+            <div class="col-xs-5">
+                <div class="panel panel-default">
+                    <form pxer="print_config">
+                        <div class="panel-heading">输出选项</div>
+                        <ul class="list-group form-horizontal">
+                            <li class="list-group-item">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">单张插画</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control" name="illust_single">
+                                            <option selected="selected" value="max">最大</option>
+                                            <option value="600p">600p</option>
+                                            <option value="no">不输出</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">多张插画</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control" name="illust_medium">
+                                            <option selected="selected" value="max">最大</option>
+                                            <option value="1200p">1200p</option>
+                                            <option value="cover_600p">仅封面（600p）</option>
+                                            <option value="no">不输出</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">单张漫画</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control" name="manga_single">
+                                            <option value="max" disabled="disabled">最大</option>
+                                            <option value="600p" selected="selected">600p</option>
+                                            <option value="no">不输出</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">多张漫画</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control" name="manga_medium">
+                                            <option selected="selected" value="max">最大</option>
+                                            <option value="1200p">1200p</option>
+                                            <option value="cover_600p">仅封面（600p）</option>
+                                            <option value="no">不输出</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">动图</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control" name="ugoira">
+                                            <option value="max-no">最大压缩包</option>
+                                            <option value="600p-no">600p压缩包</option>
+                                            <option value="max-yes">最大压缩包 + 参数</option>
+                                            <option value="600p-yes">600p压缩包 + 参数</option>
+                                            <option selected="selected" value="no-no">不输出</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item text-right form-inline">
+                                <div class="checkbox">
+                                    <label>
+                                        <input name="task_inf" value="yes" type="checkbox" checked="checked"> 任务信息
+                                    </label>
+                                </div>
+                                <button class="btn btn-success" pxer="echo">输出</button>
+                            </li>
+                        </ul>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
