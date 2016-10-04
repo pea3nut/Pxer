@@ -9,6 +9,7 @@ javascript:void((function() {
         "URL_ROOT":"http://127.0.0.1/github/pxer-beta-6/",
         "TEMPLATE_URL":'src/view/template.php',
         "DEBUG":true,
+        "CACHE":false,
     };
     document.head.appendChild(
         document.createElement("script")

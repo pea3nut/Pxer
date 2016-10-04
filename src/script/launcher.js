@@ -16,10 +16,10 @@
                 pxerDefinePxerConfig['URL_ROOT']+'src/view/ui.js',
             ],
             asyn:[
-                pxerDefinePxerConfig['URL_ROOT']+'src/view/bootstrap.min.css',
+                pxerDefinePxerConfig['URL_ROOT']+'src/view/bs.pxer.css',
                 pxerDefinePxerConfig['URL_ROOT']+'src/view/style.css',
             ],
-            cache:false,
+            cache:pxerDefinePxerConfig['CACHE'],
         });
         pl.load();
     });
