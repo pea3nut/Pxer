@@ -1,8 +1,10 @@
 // ==UserScript==
-// @name          Pxer-beta-6 test3
+// @name          Pxer-beta-6
 // @namespace     https://github.com/pea3nut/Pxer
 // @description   pixiv.net Tools
-// @include       http://www.pixiv.net/member_illust.php?id=10009740
+// @include       http://www.pixiv.net/member_illust.php*
+// @include       http://www.pixiv.net/bookmark.php*
+// @include       http://www.pixiv.net/search.php*
 // ==/UserScript==
 javascript:void((function() {
     window.pxerDefinePxerConfig ={
