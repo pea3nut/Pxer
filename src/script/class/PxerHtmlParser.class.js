@@ -128,7 +128,7 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
 
     return rePw;
 
-}
+};
 
 PxerHtmlParser.getMangaPath =function(pwr){
 

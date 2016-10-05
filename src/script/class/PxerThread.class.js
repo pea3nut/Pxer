@@ -4,7 +4,7 @@ class PxerThread extends PxerEvent{
         /*!当前线程的ID*/
         this.id =id;
         /*!当前线程十分空闲*/
-        this.isFree=true
+        this.isFree=true;
         /*!线程执行的任务*/
         this.task =task;
 

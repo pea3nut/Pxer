@@ -164,7 +164,7 @@ PxerApp.prototype["analyzePage"]=function(){
 
     return true;
 
-}
+};
 
 PxerApp.prototype["getPageType"]=function(){
     var typeAnalyzer={

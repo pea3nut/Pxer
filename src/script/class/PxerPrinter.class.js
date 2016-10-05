@@ -217,21 +217,21 @@ PxerPrint.prototype.template={
 PxerPrint.prototype.getTaskInfo =function(){
     this.runtime.textHead ||(this.runtime.textHead='');
 
-    var [manga,ugoira,illust,unknow,multiple,single,works,address] =Array(20).fill(0);
+    var [manga,ugoira,illust,unknow,multiple,single,works,address] =new Array(20).fill(0);
 
     for(let works of this.runtime.passWorks){
         switch(works.type){
             case 'manga':
-                manga++
+                manga++;
                 break;
             case 'ugoira':
-                ugoira++
+                ugoira++;
                 break;
             case 'illust':
-                illust++
+                illust++;
                 break;
             default:
-                unknow++
+                unknow++;
                 break;
         };
 
@@ -258,7 +258,7 @@ PxerPrint.prototype.getTaskInfo =function(){
 
 PxerPrint.prototype.queryPrint =function(){
     this.filterWorks().countAddress().getTaskInfo().print();
-}
+};
 
 
 

@@ -220,19 +220,19 @@ PxerUI.prototype.bindMap =function(key){
                 switch(value){
                     case 'member':
                         pt ='个人资料页';
-                        break
+                        break;
                     case 'member_illust':
                         pt ='个人作品页';
-                        break
+                        break;
                     case 'search':
                         pt ='搜索页';
-                        break
+                        break;
                     case 'bookmark':
                         pt ='收藏页';
-                        break
+                        break;
                     case 'medium':
                         pt ='作品详情查看';
-                        break
+                        break;
                     default:
                         pt ='未知';
                 };
