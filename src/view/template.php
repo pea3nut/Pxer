@@ -1,15 +1,10 @@
 <?php header('Access-Control-Allow-Origin: *')?>
 <div id="pxer">
-    <style type="text/css" scoped="scoped">
-        @import url("http://127.0.0.233/Library/bootstrap.min.css");
-    </style>
-    <script src="http://127.0.0.233/Library/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
-
 
     <nav class="pxer-nav navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a href="#" class="navbar-brand">Pxer <em>β </em>5</a>
+                <a href="#" class="navbar-brand">Pxer <em>β </em>6</a>
             </div>
             <ul class="nav navbar-nav navbar-right"></ul>
             <button class="btn btn-success navbar-btn navbar-right" pxer-button="run">　</button>
