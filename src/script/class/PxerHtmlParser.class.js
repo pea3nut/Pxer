@@ -150,6 +150,7 @@ PxerHtmlParser.REGEXP ={
 
 PxerHtmlParser.prototype.parsePage =function(){
 
+
     var dom =(new DOMParser()).parseFromString(this.task.html ,'text/html');
     var elts =dom.querySelectorAll('a.work._work');
 
@@ -163,7 +164,7 @@ PxerHtmlParser.prototype.parsePage =function(){
                             :"illust"
                         ,
             isMultiple  :elt.matches(".multiple"),
-            id          :elt.href.match(/illust_id=(\d+)/)[1]
+            id          :elt.getAttribute('href').match(/illust_id=(\d+)/)[1]
         });
 
         task.url =getUrlList(task);

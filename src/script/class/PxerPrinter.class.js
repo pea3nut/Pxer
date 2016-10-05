@@ -16,7 +16,7 @@ class PxerPrint{
 
         /*!输出配置信息*/
         this.config ={
-            "manga_single"  :"max",//[max|600p|no]
+            "manga_single"  :"600p",//[max|600p|no]
             "manga_medium"  :"max",//[max|1200p|cover_600p|no]
             "illust_single" :"max",//[max|600p|no]
             "illust_medium" :"max",//[max|1200p|cover_600p|no]
