@@ -1,19 +1,30 @@
 ~function(){
-    var xhr =new XMLHttpRequest();
-    xhr.open('GET' ,pxerDefinePxerConfig['URL_ROOT']+pxerDefinePxerConfig['TEMPLATE_URL'] ,true);
-    xhr.responseType='document';
-    xhr.addEventListener('load' ,function(){
+    // 向下兼容
+    if(/\.php(\?.+)?$/.test(pxerDefinePxerConfig['TEMPLATE_URL'])){
+        pxerDefinePxerConfig['TEMPLATE_URL']
+        =pxerDefinePxerConfig['TEMPLATE_URL'].replace(/\.php(\?.+)?$/ ,'.js$1');
+    };
+
+    var tpl =document.createElement('script');
+    tpl.src =pxerDefinePxerConfig['URL_ROOT']+pxerDefinePxerConfig['TEMPLATE_URL'];
+    tpl.addEventListener('load' ,function(){
         var parentNote =document.getElementById('page-mypage')
             ||document.getElementById('wrapper')
             ||document.getElementById('contents')
             ||document.body
         ;
-        parentNote.insertBefore(this.responseXML.body ,parentNote.firstChild);
+        var pxerTpl =
+            (new DOMParser())
+            .parseFromString(
+                pxerDefinePxerConfig['PXER_TPL'] ,'text/html'
+            ).body
+        ;
+        parentNote.insertBefore(pxerTpl ,parentNote.firstChild);
         var pu =new PxerUI(document.getElementById('pxer'));
         afterLoad(pu.init.bind(pu));
         window.pu =pu;
     });
-    xhr.send();
+    document.head.appendChild(tpl);
 }();
 class PxerUI{
     constructor(elt){

@@ -1,4 +1,4 @@
-<?php header('Access-Control-Allow-Origin: *')?>
+pxerDefinePxerConfig["PXER_TPL"]=`\
 <div id="pxer">
 
     <nav class="pxer-nav navbar navbar-default">
@@ -214,4 +214,4 @@
         </div>
     </div>
 
-</div>
+</div>`;
