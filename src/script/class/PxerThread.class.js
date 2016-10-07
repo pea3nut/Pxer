@@ -3,7 +3,7 @@ class PxerThread extends PxerEvent{
         super(['load','error','fail']);
         /*!当前线程的ID*/
         this.id =id;
-        /*!当前线程十分空闲*/
+        /*!当前线程是否空闲*/
         this.isFree=true;
         /*!线程执行的任务*/
         this.task =task;
@@ -11,7 +11,6 @@ class PxerThread extends PxerEvent{
         this.config =config ||{
             /*!ajax超时重试时间*/
             timeout:5000,
-
             /*!最多重试次数*/
             retry:3
         };
@@ -24,17 +23,12 @@ class PxerThread extends PxerEvent{
         this.xhr.timeout =this.config.timeout;
         this.xhr.responseType ='text';
 
-
     };
 };
-PxerThread.prototype["stop"] =function(){
+PxerThread.prototype['stop'] =function(){
     this.xhr.abort();
 };
-PxerThread.prototype["clear"] =function(){
-    this.isFree =true;
-    this.runtime ={};
-};
-PxerThread.prototype["run"] =function(task){
+PxerThread.prototype['init'] =function(task){
     if(task) this.task=task;
 
     this.runtime ={};
@@ -42,124 +36,106 @@ PxerThread.prototype["run"] =function(task){
 
     //判断行为，读取要请求的URL
     if(this.task instanceof PxerWorksRequest){
-        this.runtime.urlList =Object.create(this.task.url);
+        this.runtime.urlList =this.task.url.slice();
     }else if(this.task instanceof PxerPageRequest){
         this.runtime.urlList =[this.task.url];
     }else{
-        this.error(`PxerThread: "${this.task}" is not PxerRequest`);
+        console.error(`PxerThread: "${this.task}" is not PxerRequest`);
         return false;
     };
 
+};
+PxerThread.prototype['run'] =function(){
 
-    //发送ajax请求
     var prms =Promise.resolve();
+    var thread =this;
+    var xhr =this.xhr;
+
     this.runtime.urlList.forEach((url)=>{
-        prms =prms.then(()=>{
-            let startAjax=()=>{
-                this.xhr.open('GET' ,url ,true);
-                this.xhr.send();
+        prms =prms.then(()=>{return new Promise((resolve ,reject)=>{
+
+            var sendAjax =function(){
+                // 单副漫画请求需要更改Referer头信息
+                if(
+                    thread.task.type ==='manga'
+                    && thread.task.isMultiple===false
+                    && /mode=big/.test(url)
+                ){
+                    var referer;
+                    for(let url of thread.task.url){
+                        if(/mode=medium/.test(url)){
+                            referer =url;
+                            break;
+                        }
+                    };
+                    xhr.open('GET' ,url ,true);
+                    xhr.refererSend(referer);
+                }else{
+                    xhr.open('GET' ,url ,true);
+                    xhr.send();
+                };
             };
-            return new Promise((resolve ,reject)=>{
-                this.xhr.onload =()=>{
-                    if(/^2/.test(this.xhr.status) ||this.xhr.status=='304'){
-                        if(this.task instanceof PxerWorksRequest){
-                            resolve(Object.assign(
-                                this.task.html=Object(this.task.html) ,
-                                {[url]:this.xhr.responseText}
-                            ));
-                        }else{
-                            resolve(this.task.html=this.xhr.responseText);
-                        };
+
+            xhr.addOneEventListener("load" ,function(){
+                if(/^2/.test(xhr.status) ||xhr.status=='304'){
+                    if(thread.task instanceof PxerWorksRequest){
+                        resolve(Object.assign(
+                            thread.task.html=Object(thread.task.html) ,
+                            {[url]:xhr.responseText}
+                        ));
                     }else{
-                        console.error(`PxerThread#${this.id}: "${this.xhr.status} ${this.xhr.statusText}" in ${url}`);
-                        reject(new Error(`Unknow status with ${this.xhr.status}`));
+                        resolve(thread.task.html=xhr.responseText);
                     };
+                }else{
+                    console.error(`PxerThread#${thread.id}: "${xhr.status} ${xhr.statusText}" in ${url}`);
+                    reject(new Error(`Unknow status with ${xhr.status}`));
                 };
-                this.xhr.onerror =(error)=>{
-                    console.error(`PxerThread #${this.id} error!`);
-                    console.error(error);
-                    reject(error);
-                };
-                this.xhr.ontimeout =()=>{
-                    this.runtime.retry ||(this.runtime.retry=0);
-
-                    if(++this.runtime.retry >=this.config.retry){
-                        console.warn(`Request timeout form PxerThread#${this.id} @${url}`);
-                        this.fail(this.task);
-                        reject(new Error(`Time out with "${url}"`));
-                        return false;
-                    };
-
-                    startAjax();
-
-                };
-                startAjax();
             });
-        });
+            xhr.addOneEventListener("error" ,function(){
+                reject({
+                    type:"error",
+                    url,
+                    xhr,
+                });
+            });
+            xhr.addOneEventListener("timeout" ,function(){
+                thread.runtime.retry ||(thread.runtime.retry=0);
+                if(++thread.runtime.retry >=thread.config.retry){
+                    reject({
+                        type:"timeout",
+                        url,
+                        xhr,
+                    });
+                }else{
+                    sendAjax();
+                };
+
+            });
+
+            sendAjax();
+
+        });});
     });
 
     //处理回调
     prms.finally(()=>{
-        this.clear();
+        thread.isFree =true;
     }).then(()=>{
-        //拦截单副漫画操作
-        if(this.task.type ==='manga' && this.task.isMultiple===false){
-            setTimeout(this.processManga.bind(this));
-            return;
-        }else{
-            this.load(this.task);
-        };
-    }).catch(err=>{
-        console.error(err);
-        this.error(err);
-    });
+        thread.dispatch("load" ,thread.task);
+    }).catch(function({type,url,xhr}){switch(type){
+        case 'error':
+            console.error(`PxerThread #${thread.id} error!`);
+            thread.dispatch("error" ,thread.task);
+            break;
+        case 'timeout':
+            console.warn(`Request timeout form PxerThread#${thread.id} @${url}`);
+            thread.dispatch("fail" ,thread.task);
+            break;
+    };});
 
     return true;
 
 };
-
-PxerThread.prototype.processManga =function(){
-    var id =Symbol('no file format');
-    this.task.fileFormat =id;
-
-    var task =Object.create(this.task);
-    var path =PxerHtmlParser.getMangaPath(this.task);
-
-    var fxList =['gif','png','jpg'];
-
-
-    var imgList =[];
-    fxList.forEach(fileFormat=>{
-        let img =new Image();
-        img.src =path+fileFormat;
-        img.addEventListener('error' ,()=>{
-            fxList.splice(fxList.indexOf(fileFormat) ,1);
-
-            if(fxList.length ===1){
-                if(this.task.fileFormat ===id) this.task.fileFormat =fileFormat;
-                for(let img of imgList){
-                    img.src='';
-                };
-                this.clear();
-                this.load(this.task);
-            }else if(fxList.length ===0){
-                this.fail(task);
-            };
-        });
-        img.addEventListener('load' ,()=>{
-            if(this.task.fileFormat ===id) this.task.fileFormat =fileFormat;
-            for(let img of imgList){
-                img.src='';
-            };
-            this.clear();
-            this.load(this.task);
-        });
-        imgList.push(img);
-    });
-
-
-};
-
 
 
 // 测试代码

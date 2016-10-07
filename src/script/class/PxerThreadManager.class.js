@@ -9,38 +9,26 @@ class PxerThreadManager extends PxerEvent{
         };
 
         this.taskList =[];
-
         this.resultSet =[];
-
         this.runtime={};
-
         this.threads=[];
 
     };
 };
 
-PxerThreadManager.prototype.stop =function(){
-    for(let thread of this.threads){
-        thread.stop();
-    };
-    this.complete();
-};
-PxerThreadManager.prototype.clear =function(){
+PxerThreadManager.prototype['stop'] =function(){
     for(let thread of this.threads){
         thread.off('*');
+        thread.stop();
     };
-    this.runtime ={};
 };
-PxerThreadManager.prototype.complete =function(){
-    this.clear();
-    this.load(this.resultSet);
-    this.resultSet=[];
-};
-PxerThreadManager.prototype.run =function(taskList){
+PxerThreadManager.prototype['init'] =function(taskList){
+    // 初始任务与结果
     if(taskList) this.taskList=taskList.slice();
-    if(!this.resultSet) this.resultSet=[];
+    this.resultSet=[];
+    this.runtime ={};
 
-
+    // 建立线程对象
     this.threads =[];
     for(let i=0 ;i<this.config.thread ;i++){
         this.threads.push(new PxerThread({
@@ -51,31 +39,38 @@ PxerThreadManager.prototype.run =function(taskList){
             },
             task:null,
         }));
-    }
+    };
 
-
+    return this;
+};
+PxerThreadManager.prototype['run'] =function(){
     this.threads.forEach(thread=>{
-
         let task =this.taskList.shift();
         if(!task) return;
 
         thread.on('load' ,data=>{
             this.resultSet.push(data);
-            if(thread.task=this.taskList.shift()){
+
+            var task =this.taskList.shift();
+            if(task){
+                thread.init(task);
                 setTimeout(thread.run.bind(thread));
             }else if(this.threads.every(thread=>thread.isFree)){
-                setTimeout(this.complete.bind(this));
+                this.dispatch('load' ,this.resultSet);
             };
+
         });
-        thread.on('fail' ,pr=>console.warn(pr));
-        thread.on('error' ,err=>console.error(err));
+        thread.init(task);
 
 
-        setTimeout(thread.run.bind(thread ,task));
+        // 将thread的错误简单的向上传递
+        thread.on('fail' ,task=>this.dispatch("fail" ,task));
+        thread.on('error' ,task=>this.dispatch("error" ,task));
+
+
+        setTimeout(thread.run.bind(thread));
 
     });
-
-
 };
 
 

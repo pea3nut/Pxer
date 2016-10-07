@@ -59,7 +59,10 @@ EventTarget.prototype.addOneEventListener =function(type,listener,useCapture){
     },useCapture);
 };
 
-
-
-
+XMLHttpRequest.prototype.refererSend =function(url){
+    var originUrl =document.URL;
+    history.replaceState({} ,null ,url);
+    this.send();
+    history.replaceState({} ,null ,originUrl);
+};
 

@@ -56,7 +56,8 @@ class PxerApp extends PxerEvent{
         /*!内置的PxerHtmlParser对象*/
         this.php =new PxerHtmlParser();
 
-
+        this.ptm.on("error" ,task=>console.error(err));
+        this.ptm.on("fail" ,task=>console.warn(err));
         this.on('error' ,err=>console.error(err));
 
     };
@@ -111,7 +112,8 @@ PxerApp.prototype["executePageTask"]=function(){
         setTimeout(this.dispatch.bind(this ,'finishPageTask'));
     });
 
-    this.ptm.run(this.taskList);
+    this.ptm.init(this.taskList);
+    this.ptm.run();
 
     return true;
 
@@ -136,7 +138,8 @@ PxerApp.prototype["executeWroksTask"]=function(){
         setTimeout(this.dispatch.bind(this ,'finishWorksTask'));
     });
 
-    this.ptm.run(this.taskList);
+    this.ptm.init(this.taskList);
+    this.ptm.run();
 
     return true;
 

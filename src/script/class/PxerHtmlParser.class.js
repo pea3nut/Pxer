@@ -45,6 +45,7 @@ PxerHtmlParser.prototype.parseWorks =function(){
             case /mode=medium/.test(url):
                 pw =PxerHtmlParser.parseMediumHtml(data);
                 break;
+            case /mode=big/.test(url):
             case /mode=manga_big/.test(url):
                 pw =PxerHtmlParser.parseMangaBigHtml(data);
                 break;
@@ -106,6 +107,8 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
     };
 
     if(task.type ==='illust' &&!task.isMultiple){
+        console.log(task);
+        console.log(dom);
         let src =dom.querySelector(".ui-modal-close-box img.original-image").getAttribute("data-src");
         Object.assign(rePw ,{
             server :src.match(/(i\d+)\.pixiv\.net/)[1],
@@ -119,7 +122,6 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
         Object.assign(rePw ,{
             server :src.match(/(i\d+)\.pixiv\.net/)[1],
             date   :src.match(PxerHtmlParser.REGEXP['getDate'])[1],
-            fileFormat:task.fileFormat,
         });
     }
 
@@ -192,6 +194,7 @@ PxerHtmlParser.prototype.parsePage =function(){
         }else if(task.type ==="manga" && !task.isMultiple){
             return [
                 "http://www.pixiv.net/member_illust.php?mode=medium&illust_id="+task.id,
+                "http://www.pixiv.net/member_illust.php?mode=big&illust_id="+task.id,
             ];
         }else{
             console.warn('miss task '+task.id);
