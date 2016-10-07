@@ -1,5 +1,4 @@
 ~function(){
-    if(window.pxerDefinePxerConfig['LOAD_START']) return console.warn('Prevent repeat load.');
     var script =document.createElement('script');
     script.src =pxerDefinePxerConfig['URL_ROOT']+'src/script/class/PxerLauncher.class.js';
     script.addEventListener('load' ,function(){
@@ -23,8 +22,11 @@
         });
         pl.load();
     });
-    document.head.appendChild(script);
-    window.pxerDefinePxerConfig['LOAD_START'] =true;
+    setTimeout(()=>{
+        if(window.pxerDefinePxerConfig['LOAD_START']) return console.warn('Prevent repeat load.');
+        document.head.appendChild(script);
+        window.pxerDefinePxerConfig['LOAD_START'] =true;
+    });
 }();
 
 
