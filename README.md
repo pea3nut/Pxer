@@ -8,7 +8,7 @@
 </p>
 
 
-纯客户端JavaScript编写的pixiv.net爬虫。
+纯客户端JavaScript编写的[pixiv.net](http://www.pixiv.net)爬虫。
 
 ## 快速链接
 
@@ -18,15 +18,32 @@
 - 教程：[Pxer使用教程](http://pea.nutjs.com/e616)
 - 安装：通过诸如Greasemonkey的浏览器扩展安装Pxer[最新版](http://pxer.nutjs.com/pxer6/src/pxer.user.js)或[稳定版](http://pxer.nutjs.com/pxer6/lib/pxer.user.js)
 
+## 文档说明
+
+本篇文档面向拥有一定开发能力的开发人员，若仅仅是想使用Pxer请直接参考[起步：Pxer 6](http://pea.nutjs.com/e609)即可，无需阅读此文档。
+
+## 快速体验Pxer
+
+Pxer是一个纯JS编写的爬虫，可以直接在浏览器里运行。
+
+Pxer最大作用是将pixiv.net网站（类似于花瓣网）中的图片作品快速的抓取下来，它不是简单的检索img标签，而是通过一定的算法和Ajax请求来完成更复杂的功能。
+
+你可以通过下面流程快速体验Pxer的强大功能：
+
+1. 在[Pixiv网站](http://www.pixiv.net)登陆注册一个账号
+2. 打开“[机器猫 - 哆啦A梦](http://www.pixiv.net/search.php?s_mode=s_tag&word=%E3%83%89%E3%83%A9%E3%81%88%E3%82%82%E3%82%93%20000user)”的图片检索页面
+3. 在浏览器运行[pxer.user.js](http://pxer.nutjs.com/pxer6/src/pxer.user.js)代码（将代码文件复制到控制台运行或存成书签点击运行）
+4. 操作页面中Pxer UI界面
+
 ## 运行原理说明
 
 Pxer启动的本质是将js文件载入进网页页面，阅读`pxer.user.js`的代码就可以发现：它做的仅仅是将项目的`launcher.js`文件载入进页面。
 
-而Pxer的爬取功能则是利用了Ajax通过一定的算法批量的去请求特定页面，然后解析HTML筛选数据。有时碍于Ajax的限制（读写请求头），Pxer在请求过程中会使用一些较为“巧妙”的方式来规避（利用Image对象）。
+而Pxer的爬取功能则是利用了Ajax通过一定的算法批量的去请求特定页面，然后解析HTML筛选数据。有时碍于Ajax的限制（读写请求头），Pxer在请求过程中会使用一些较为“巧妙”的方式来规避。
 
 ## 部署配置说明
 
-如果你需要在本地环境中部署运行Pxer客户端，可以参见下文。如仅想使用Pxer爬取pixiv.net作品，请参考：[起步：Pxer 6](http://pea.nutjs.com/e609)。
+如果你需要在本地环境中部署运行Pxer客户端，可以参见下文。
 
 本地部署Pxer需要有**服务器环境**，请自行配置。
 

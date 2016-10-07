@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          Pxer-beta-6
-// @version       6.0.2
+// @version       6.0.3
 // @namespace     https://github.com/pea3nut/Pxer
 // @author        花生PeA
 // @description   pixiv.net Tools
