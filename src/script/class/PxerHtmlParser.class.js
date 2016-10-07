@@ -107,8 +107,6 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
     };
 
     if(task.type ==='illust' &&!task.isMultiple){
-        console.log(task);
-        console.log(dom);
         let src =dom.querySelector(".ui-modal-close-box img.original-image").getAttribute("data-src");
         Object.assign(rePw ,{
             server :src.match(/(i\d+)\.pixiv\.net/)[1],
