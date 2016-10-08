@@ -78,6 +78,18 @@ PxerThread.prototype['run'] =function(){
 
             xhr.addOneEventListener("load" ,function(){
                 if(/^2/.test(xhr.status) ||xhr.status=='304'){
+                    // 判断是否真的请求成功
+                    var msg =PxerThread.checkRequest(url ,xhr.responseText);
+                    if(msg !==true){
+                        reject({
+                            type:msg,
+                            url,
+                            xhr,
+                        });
+                        return;
+                    };
+
+                    // 执行成功回调
                     if(thread.task instanceof PxerWorksRequest){
                         resolve(Object.assign(
                             thread.task.html=Object(thread.task.html) ,
@@ -127,6 +139,13 @@ PxerThread.prototype['run'] =function(){
             console.error(`PxerThread #${thread.id} error!`);
             thread.dispatch("error" ,thread.task);
             break;
+        case 'empty':
+        case 'r-18g':
+        case 'r-18':
+        case 'mypixiv':
+            console.warn(`Request check return ${type} form PxerThread#${thread.id} @${url}`);
+            thread.dispatch("fail" ,thread.task);
+            break;
         case 'timeout':
             console.warn(`Request timeout form PxerThread#${thread.id} @${url}`);
             thread.dispatch("fail" ,thread.task);
@@ -136,7 +155,15 @@ PxerThread.prototype['run'] =function(){
     return true;
 
 };
-
+PxerThread.checkRequest =function(url ,html){
+    if(!html) return 'empty';
+    if(html.indexOf("_no-item _error") !==-1){
+        if(html.indexOf("sprites-r-18g-badge") !==-1) return 'r-18g';
+        if(html.indexOf("sprites-r-18-badge") !==-1) return 'r-18';
+    };
+    if(html.indexOf("sprites-mypixiv-badge") !==-1) return 'mypixiv';
+    return true;
+};
 
 // 测试代码
 //

@@ -62,6 +62,16 @@ PxerThreadManager.prototype['run'] =function(){
         });
         thread.init(task);
 
+        // 当出现fail时依旧继续
+        thread.on('fail' ,()=>{
+            var task =this.taskList.shift();
+            if(task){
+                thread.init(task);
+                setTimeout(thread.run.bind(thread));
+            }else if(this.threads.every(thread=>thread.isFree)){
+                this.dispatch('load' ,this.resultSet);
+            };
+        });
 
         // 将thread的错误简单的向上传递
         thread.on('fail' ,task=>this.dispatch("fail" ,task));

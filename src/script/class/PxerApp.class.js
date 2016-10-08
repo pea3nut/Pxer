@@ -56,8 +56,8 @@ class PxerApp extends PxerEvent{
         /*!内置的PxerHtmlParser对象*/
         this.php =new PxerHtmlParser();
 
-        this.ptm.on("error" ,task=>console.error(err));
-        this.ptm.on("fail" ,task=>console.warn(err));
+        this.ptm.on("error" ,task=>console.error(task));
+        this.ptm.on("fail" ,task=>console.warn(task));
         this.on('error' ,err=>console.error(err));
 
     };
