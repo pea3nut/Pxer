@@ -4,14 +4,38 @@ pxerDefinePxerConfig["PXER_TPL"]=`\
     <nav class="pxer-nav navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a href="#" class="navbar-brand">Pxer <em>β </em>6</a>
+                <a href="#" class="navbar-brand">Pxer <em class="">β </em>6</a>
             </div>
             <ul class="nav navbar-nav navbar-right"></ul>
+            <div class="navbar-right pxer-sign-btn" pxer-bind="hasFailTask">
+                <button class="btn btn-warning navbar-btn glyphicon" pxer-button="warn"><span class="glyphicon glyphicon-warning-sign"></span></button>
+                <span class="badge" pxer-bind="failTaskLength">-1</span>
+            </div>
             <button class="btn btn-success navbar-btn navbar-right" pxer-button="run">　</button>
         </div>
     </nav>
 
 
+    <div class="pxer-warn panel panel-default" pxer-window="warn" pxer-bind="hasFailTask" style="display: none;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <td>图片ID</td>
+                    <td>失败原因</td>
+                    <td>解决方案</td>
+                    <td width="50" class="text-center"><button class="btn btn-default" pxer-button="selectAllfw">全选</button></td>
+                </tr>
+            </thead>
+            <tbody pxer-bind="failList"></tbody>
+            <tbody>
+                <tr>
+                    <td class="text-right" colspan="4"><button class="btn btn-default" pxer-button="again">重试选中</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    
     <div class="pxer-inf container-fluid" pxer-window="inf" style="display: none;">
         <div class="row">
             <div class="col-xs-3">
@@ -72,7 +96,7 @@ pxerDefinePxerConfig["PXER_TPL"]=`\
                     <div class="panel-heading">执行进度</div>
                     <table class="table">
                         <tr>
-                            <td>预处理：</td>
+                            <td>总任务数：</td>
                             <td pxer-bind="pret">9</td>
                         </tr>
                         <tr>

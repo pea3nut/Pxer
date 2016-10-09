@@ -58,11 +58,37 @@ EventTarget.prototype.addOneEventListener =function(type,listener,useCapture){
         fn=null;
     },useCapture);
 };
+~function(originAdd ,originRemove){
+    var map =new Map();
+    EventTarget.prototype.addEventListener =function(type,listener,useCapture){
+        let eltMap =map.get(this);
+        if(eltMap ===undefined) map.set(this ,eltMap={});
+        if(eltMap[type] ===undefined) eltMap[type] =[];
+        eltMap[type].push({listener ,useCapture});
+        return originAdd.apply(this ,arguments);
+    };
+    EventTarget.prototype.removeEventListener =function(type,listener,useCapture){
+        if(listener !=='*'){
+            return originRemove.apply(this ,arguments);
+        };
+        let eltMap =map.get(this);
+        if(eltMap[type] ===undefined) return;
+        for(let {listener:l ,useCapture:u} of eltMap[type]){
+            originRemove.bind(this)(type ,l ,u);
+        };
+    };
+}(EventTarget.prototype.addEventListener ,EventTarget.prototype.removeEventListener);
 
 XMLHttpRequest.prototype.refererSend =function(url){
     var originUrl =document.URL;
     history.replaceState({} ,null ,url);
     this.send();
     history.replaceState({} ,null ,originUrl);
+};
+
+window.setDefalut =function(obj ,key ,val){
+    if(key in obj) return false;
+    obj[key] =val;
+    return true;
 };
 

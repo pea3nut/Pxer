@@ -137,18 +137,18 @@ PxerThread.prototype['run'] =function(){
     }).catch(function({type,url,xhr}){switch(type){
         case 'error':
             console.error(`PxerThread #${thread.id} error!`);
-            thread.dispatch("error" ,thread.task);
+            thread.dispatch("error" ,{task:thread.task ,msg:type});
             break;
         case 'empty':
         case 'r-18g':
         case 'r-18':
         case 'mypixiv':
             console.warn(`Request check return ${type} form PxerThread#${thread.id} @${url}`);
-            thread.dispatch("fail" ,thread.task);
+            thread.dispatch("fail" ,{task:thread.task ,msg:type});
             break;
         case 'timeout':
             console.warn(`Request timeout form PxerThread#${thread.id} @${url}`);
-            thread.dispatch("fail" ,thread.task);
+            thread.dispatch("fail" ,{task:thread.task ,msg:type});
             break;
     };});
 

@@ -33,6 +33,7 @@ class PxerApp extends PxerEvent{
             "pageType":'',
             /*!页面的作品数量*/
             "illust_number":0,
+            "failList":[],
         };
 
         /*!抓取到的结果集*/
@@ -56,8 +57,12 @@ class PxerApp extends PxerEvent{
         /*!内置的PxerHtmlParser对象*/
         this.php =new PxerHtmlParser();
 
-        this.ptm.on("error" ,task=>console.error(task));
-        this.ptm.on("fail" ,task=>console.warn(task));
+        this.ptm.on("error" ,({task})=>console.error(task));
+        this.ptm.on("fail" ,({task})=>console.warn(task));
+        this.ptm.on("fail" ,({task,msg})=>{
+            setDefalut(this.runtime ,'failList' ,[]);
+            this.runtime.failList.push({task,msg});
+        });
         this.on('error' ,err=>console.error(err));
 
     };
@@ -80,6 +85,7 @@ PxerApp.prototype["autoSwitch"]=function(){
 
     this.one('finishWorksTask' ,()=>{
         this.pp.works =this.php.parseAll(this.resultSet);
+        this.taskList =[];
     });
 
 };
@@ -108,7 +114,8 @@ PxerApp.prototype["executePageTask"]=function(){
     this.dispatch('executePageTask');
 
     this.ptm.one('load' ,(data)=>{
-        this.resultSet =data;
+        setDefalut(this ,'resultSet' ,[]);
+        this.resultSet.push(...data);
         setTimeout(this.dispatch.bind(this ,'finishPageTask'));
     });
 
@@ -134,7 +141,8 @@ PxerApp.prototype["executeWroksTask"]=function(){
     this.dispatch('executeWroksTask');
 
     this.ptm.one('load' ,(data)=>{
-        this.resultSet =data;
+        setDefalut(this ,'resultSet' ,[]);
+        this.resultSet.push(...data);
         setTimeout(this.dispatch.bind(this ,'finishWorksTask'));
     });
 
@@ -197,6 +205,6 @@ PxerApp.prototype["getPageType"]=function(){
     return false;
 };
 
-PxerApp.version ='6.0.0';
+PxerApp.version ='6.1.0';
 
 

@@ -74,8 +74,8 @@ PxerThreadManager.prototype['run'] =function(){
         });
 
         // 将thread的错误简单的向上传递
-        thread.on('fail' ,task=>this.dispatch("fail" ,task));
-        thread.on('error' ,task=>this.dispatch("error" ,task));
+        thread.on('fail' ,this.dispatch.bind(this ,"fail"));
+        thread.on('error' ,this.dispatch.bind(this ,"error"));
 
 
         setTimeout(thread.run.bind(thread));

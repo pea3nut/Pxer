@@ -6,7 +6,7 @@
     };
 
     var tpl =document.createElement('script');
-    tpl.src =pxerDefinePxerConfig['URL_ROOT']+pxerDefinePxerConfig['TEMPLATE_URL'];
+    tpl.src =pxerDefinePxerConfig['URL_ROOT']+pxerDefinePxerConfig['TEMPLATE_URL']+"?"+(new Date()).getTime();;
     tpl.addEventListener('load' ,function(){
         var parentNote =document.getElementById('page-mypage')
             ||document.getElementById('wrapper')
@@ -84,20 +84,27 @@ class PxerUI{
         // 挂载UI事件
         this.pxer.on('finishWorksTask' ,()=>this.window.print.style.display='');
         this.pxer.on('finishWorksTask' ,()=>this.window.inf.style.display='none');
-        this.button.run.addOneEventListener('click' ,()=>{
-            this.button.run.classList.remove('btn-success');
-            this.button.run.classList.add('btn-info');
-            this.button.run.innerHTML='<span class="glyphicon glyphicon-ok"></span>';
-            this.window.inf.style.display ='';
-            this.button.run.addOneEventListener('click' ,()=>{
+        this.button.run.addEventListener('click' ,()=>{
+            if(this.button.run.classList.contains('btn-success')){
+                this.button.run.classList.remove('btn-success');
+                this.button.run.classList.add('btn-info');
+                this.button.run.innerHTML='<span class="glyphicon glyphicon-ok"></span>';
+                this.window.inf.style.display ='';
+            }else if(this.button.run.classList.contains('btn-info')){
                 this.button.run.classList.remove('btn-info');
                 this.button.run.classList.add('btn-danger');
                 this.button.run.innerHTML='<span class="glyphicon glyphicon-remove"></span>';
-            })
+            }else if(this.button.run.classList.contains('btn-danger')){
+                this.button.run.style.display ='none';
+                this.button.run.classList.remove('btn-danger');
+                this.button.run.classList.add('btn-success');
+                this.button.run.innerHTML='<span class="glyphicon glyphicon-play"></span>';
+            };
         });
         this.pxer.on('executePageTask' ,()=>this.runtime.state='getPageTask');
         this.pxer.on('executeWroksTask' ,()=>this.runtime.state='getWorks');
         this.pxer.on('finishWorksTask' ,()=>this.runtime.state='finish');
+        this.pxer.on('finishWorksTask' ,()=>this.button.run.style.display='none');
         this.pxer.on('error' ,()=>this.runtime.state='error');
         this.pxer.on('stop' ,()=>this.runtime.state='stop');
 
@@ -132,8 +139,8 @@ class PxerUI{
             this.button.run.addOneEventListener('click' ,()=>{
                 this.pxer.executePageTask();
                 this.button.run.addOneEventListener('click' ,()=>{
-                    this.pxer.stop();
-                })
+                    if(this.runtime.state==='getPageTask' ||this.runtime.state ==='getWorks') this.pxer.stop();
+                });
             });
         });
         this.button.echo.addEventListener('click' ,()=>this.pxer.pp.queryPrint());
@@ -141,12 +148,62 @@ class PxerUI{
             this.window.taskInfo.style.display='';
             this.pxer.pp.filterWorks().countAddress().getTaskInfo();
         });
+        this.button.warn.addEventListener('click' ,()=>{
+            this.window.warn.classList.toggle('show-block');
+        });
+        this.button.selectAllfw.addEventListener('click' ,()=>{
+            var elt =this.button.selectAllfw.parentNode;
+            while(elt.tagName.toLowerCase() !=='table'){
+                elt =elt.parentNode;
+            };
+            [...elt.querySelectorAll('[name="again_works"]')].forEach(elt=>elt.checked=true);
+        });
+        this.button.again.addEventListener('click' ,()=>{
+            var againIds =[...document.querySelectorAll('[name="again_works"]:checked')].map(elt=>elt.value);
+            if(againIds.length ===0) return;
+            setDefalut(this.pxer ,'taskList' ,[]);
+            this.pxer.runtime.failList =this.pxer.runtime.failList.filter(({task})=>{
+                if(againIds.some(id=>id==task.id)){
+                    this.pxer.taskList.push(task);
+                    return false;
+                }else{
+                    return true;
+                };
+            });
+
+            if(this.pxer.runtime.failList.length ===0) this.window.warn.classList.remove('show-block');
+            this.readyAgain();
+        });
 
 
     };
 };
 PxerUI.prototype.constMap ={
     version :PxerApp.version
+};
+PxerUI.prototype.readyAgain =function(){
+    // 避免重复
+    if(this.runtime.readyAgain) return;
+    this.runtime.readyAgain =true;
+
+    // 显示按钮
+    this.pxer.one('finishWorksTask' ,()=>this.pxer.taskList=[]);
+    this.pxer.one('finishWorksTask' ,()=>this.runtime.readyAgain=false);
+    this.pxer.one('finishWorksTask' ,()=>this.runtime.failList =[]);
+
+    // 处理按钮
+    console.log(this.pxer.taskList);
+    this.button.run.classList.contains('btn-danger') &&this.button.run.click();
+    console.log(this.pxer.taskList);
+    this.button.run.style.display='';
+    this.button.run.addOneEventListener('click' ,()=>{this.button.run.addOneEventListener('click' ,()=>{
+        this.pxer.executeWroksTask();
+        this.button.run.addOneEventListener('click' ,()=>{
+            if(this.runtime.state==='getPageTask' ||this.runtime.state ==='getWorks') this.pxer.stop();
+        });
+    });});
+
+
 };
 
 PxerUI.prototype.signBind =function(elt ,key){
@@ -165,20 +222,38 @@ PxerUI.prototype.signBind =function(elt ,key){
         };
         let newOpd =Object.assign(Object.copy(oldOpd) ,{
             set(newValue){
-                oldOpd.value =newValue;
                 if(newValue instanceof Array){
-                    Object.defineProperty(newValue ,'Hook:change', {
-                        value :function(){
+                    if('Hook:change' in newValue){
+                        var originHook =newValue['Hook:change'];
+                        newValue['Hook:change'] =function(){
                             bindMap.update(elt ,newValue);
-                        },
-                        enumerable:false,
-                        configurable:true,
-                        writable:true,
-                    });
+                            originHook.bind(newValue)();
+                        };
+                    }else{
+                        Object.defineProperty(newValue ,'Hook:change', {
+                            value :function(){
+                                bindMap.update(elt ,newValue);
+                            },
+                            enumerable:false,
+                            configurable:true,
+                            writable:true,
+                        });
+                    };
                 };
                 bindMap.update(elt ,newValue);
+                if(typeof oldOpd.set ==='function'){
+                    oldOpd.set(newValue);
+                }else{
+                    oldOpd.value =newValue;
+                };
             },
-            get(){return oldOpd.value}
+            get(){
+                if(typeof oldOpd.get ==='function'){
+                    return oldOpd.get();
+                }else{
+                    return oldOpd.value;
+                };
+            },
         });
         delete newOpd.value;
         delete newOpd.writable;
@@ -195,15 +270,25 @@ PxerUI.prototype.signBind =function(elt ,key){
         configurable: true,
     };
     var newOpd =Object.assign(Object.copy(oldOpd) ,{
-        set(value){
-            oldOpd.value =value;
-            if (bindMap.update){
-                bindMap.update(elt ,value);
+        set(newValue){
+            if(typeof oldOpd.set ==='function'){
+                oldOpd.set(newValue);
             }else{
-                elt.innerHTML =value;
+                oldOpd.value =newValue;
+            };
+            if (bindMap.update){
+                bindMap.update(elt ,newValue);
+            }else{
+                elt.innerHTML =newValue;
             };
         },
-        get(){return oldOpd &&oldOpd.value}
+        get(){
+            if(typeof oldOpd.get ==='function'){
+                return oldOpd.get();
+            }else{
+                return oldOpd.value;
+            };
+        },
     });
     delete newOpd.value;
     delete newOpd.writable;
@@ -255,7 +340,7 @@ PxerUI.prototype.bindMap =function(key){
             propertyName :'illust_number',
         },
         pret :{
-            object:this.pxer.ptm,
+            object:this.pxer,
             propertyName :'taskList',
             update(elt ,arr){elt.innerHTML=arr.length},
         },
@@ -275,6 +360,50 @@ PxerUI.prototype.bindMap =function(key){
                 if(second<10) second='0'+second;
                 elt.innerHTML =`${minute}:${second}`;
             },
+        },
+        failTaskLength :{
+            object:this.pxer.runtime,
+            propertyName :'failList',
+            update(elt ,arr){
+                if(arr &&arr.length){
+                    elt.innerHTML=arr.length;
+                };
+            }
+        },
+        hasFailTask :{
+            object:this.pxer.runtime,
+            propertyName :'failList',
+            update(elt ,arr){
+                if(arr &&arr.length){
+                    elt.style.display='';
+                }else{
+                    elt.style.display='none';
+                };
+            }
+        },
+        failList :{
+            object:this.pxer.runtime,
+            propertyName :'failList',
+            update(elt ,arr){
+                var signMap ={
+                    mypixiv:'申请画师好友获得查看权限',
+                    empty:'重试或手动保存',
+                    'r-18':'在用户设置中设置显示R-18作品',
+                    'r-18g':'在用户设置中设置显示R-18G作品',
+                };
+                var html ='';
+                for(let {task,msg} of arr){
+                    html+=`\
+                        <tr>
+                            <td><a href="http://www.pixiv.net/member_illust.php?mode=medium&illust_id=${task.id}">${task.id}</a></td>
+                            <td>${msg}</td>
+                            <td>${signMap[msg]}</td>
+                            <td class="text-center"><input type="checkbox" name="again_works" value="${task.id}" /></td>
+                        </tr>\
+                    `;
+                };
+                elt.innerHTML=html;
+            }
         },
         taskInfo :{
             object:this.pxer.pp.runtime,
