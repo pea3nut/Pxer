@@ -92,3 +92,13 @@ window.setDefalut =function(obj ,key ,val){
     return true;
 };
 
+[DocumentFragment,HTMLDocument,Element].forEach(constructor=>{
+    constructor.prototype.querySelectorList =function(...selector){
+        var result;
+        for(let i=0 ;i<selector.length ;i++){
+            result =this.querySelector(selector[i]);
+            if(result !==null) return result;
+        };
+    };
+});
+

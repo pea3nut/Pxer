@@ -63,7 +63,7 @@ PxerHtmlParser.prototype.parseWorks =function(){
 
 PxerHtmlParser.parseMangaHtml =function({task,dom,url,pw}){
     var rePw =new PxerMultipleWorks(pw);
-    rePw.multiple =+dom.querySelector(".page .total").innerHTML;
+    rePw.multiple =+dom.querySelectorList(".page .total",".position .total").innerHTML;
     return rePw;
 };
 
