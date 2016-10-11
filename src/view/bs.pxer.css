@@ -4,6 +4,16 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
+@font-face {
+  font-family: 'Glyphicons Halflings';
+  src: url(//cdn.bootcss.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot);
+  src: url(//cdn.bootcss.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot?#iefix) format("embedded-opentype")
+      ,url(//cdn.bootcss.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2) format("woff2")
+      ,url(//cdn.bootcss.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff) format("woff")
+      ,url(//cdn.bootcss.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.ttf) format("truetype")
+      ,url(//cdn.bootcss.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format("svg")
+  ;
+}
 #pxer {
   /*! Source: https://github.com/h5bp/html5-boilerplate/blob/master/src/css/main.css */ }
   #pxer html {
@@ -154,11 +164,6 @@
       background-color: #fff !important; }
     #pxer .table-bordered td, #pxer .table-bordered th {
       border: 1px solid #ddd !important; } }
-@font-face {
-  #pxer {
-    font-family: 'Glyphicons Halflings';
-    src: url(../fonts/glyphicons-halflings-regular.eot);
-    src: url(../fonts/glyphicons-halflings-regular.eot?#iefix) format("embedded-opentype"), url(../fonts/glyphicons-halflings-regular.woff2) format("woff2"), url(../fonts/glyphicons-halflings-regular.woff) format("woff"), url(../fonts/glyphicons-halflings-regular.ttf) format("truetype"), url(../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format("svg"); } }
   #pxer .glyphicon {
     position: relative;
     top: 1px;
