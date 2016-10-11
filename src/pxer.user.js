@@ -12,6 +12,7 @@
 javascript:void((function() {
     function loadPxer(){
         window.pxerDefinePxerConfig ={
+            //"URL_ROOT":"http://pxer.nutjs.com/pxer6/",
             "URL_ROOT":"http://127.0.0.1/github/pxer-beta-6/",
             "TEMPLATE_URL":'src/view/template.php',
             "DEBUG":true,
