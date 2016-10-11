@@ -197,7 +197,6 @@ PxerUI.prototype.readyAgain =function(){
 
     // 处理按钮
     this.button.run.classList.contains('btn-danger') &&this.button.run.click();
-    console.log(this.pxer.taskList);
     this.button.run.style.display='';
     this.button.run.addOneEventListener('click' ,()=>{this.button.run.addOneEventListener('click' ,()=>{
         this.pxer.executeWroksTask();

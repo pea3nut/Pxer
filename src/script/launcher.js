@@ -24,8 +24,8 @@
     });
     setTimeout(()=>{
         if(window.pxerDefinePxerConfig['LOAD_START']) return console.warn('Prevent repeat load.');
-        document.head.appendChild(script);
         window.pxerDefinePxerConfig['LOAD_START'] =true;
+        document.head.appendChild(script);
     });
 }();
 

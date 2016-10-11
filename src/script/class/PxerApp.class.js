@@ -205,6 +205,6 @@ PxerApp.prototype["getPageType"]=function(){
     return false;
 };
 
-PxerApp.version ='6.1.0';
+PxerApp.version ='6.1.1';
 
 

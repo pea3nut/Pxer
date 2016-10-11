@@ -50,6 +50,7 @@ PxerThread.prototype['run'] =function(){
     var prms =Promise.resolve();
     var thread =this;
     var xhr =this.xhr;
+    xhr.removeEventListener('*');
 
     this.runtime.urlList.forEach((url)=>{
         prms =prms.then(()=>{return new Promise((resolve ,reject)=>{

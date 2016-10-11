@@ -68,10 +68,16 @@ EventTarget.prototype.addOneEventListener =function(type,listener,useCapture){
         return originAdd.apply(this ,arguments);
     };
     EventTarget.prototype.removeEventListener =function(type,listener,useCapture){
-        if(listener !=='*'){
+        if(listener!=='*' && type!=='*'){
             return originRemove.apply(this ,arguments);
         };
         let eltMap =map.get(this);
+        if(type==='*'){
+            for(let hasType in eltMap){
+                this.removeEventListener(hasType,'*',useCapture);
+            };
+            return;
+        };
         if(eltMap[type] ===undefined) return;
         for(let {listener:l ,useCapture:u} of eltMap[type]){
             originRemove.bind(this)(type ,l ,u);
