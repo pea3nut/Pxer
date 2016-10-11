@@ -60,7 +60,6 @@ class PxerUI{
         this.window.forEach(
             (item,index,array)=> array[item.getAttribute('pxer-window')]=item
         );
-
         // 处理pxer-const
         [...this.elt.querySelectorAll('[pxer-const]')].forEach(
             item=> item.innerHTML =this.constMap[item.getAttribute('pxer-const')]
@@ -78,6 +77,11 @@ class PxerUI{
         };
         this.pxer.autoSwitch();
         this.pxer.on('finishWorksTask' ,()=>clearInterval(this.timer));
+        (()=>{// 获取页码时无限次尝试
+            var originRetry =this.pxer.ptm.config.retry;
+            this.pxer.on('executePageTask' ,()=>this.pxer.ptm.config.retry=0);
+            this.pxer.on('finishPageTask'  ,()=>this.pxer.ptm.config.retry=originRetry);
+        })();
 
 
 
@@ -192,7 +196,6 @@ PxerUI.prototype.readyAgain =function(){
     this.pxer.one('finishWorksTask' ,()=>this.runtime.failList =[]);
 
     // 处理按钮
-    console.log(this.pxer.taskList);
     this.button.run.classList.contains('btn-danger') &&this.button.run.click();
     console.log(this.pxer.taskList);
     this.button.run.style.display='';
@@ -202,6 +205,12 @@ PxerUI.prototype.readyAgain =function(){
             if(this.runtime.state==='getPageTask' ||this.runtime.state ==='getWorks') this.pxer.stop();
         });
     });});
+
+    // 额外的追加逻辑
+    this.pxer.on('finishWorksTask' ,()=>{
+        this.pxer.pp.works.push(...this.pxer.php.parseAll(this.pxer.ptm.resultSet));
+        this.pxer.ptm.resultSet=[];
+    });
 
 
 };
@@ -386,6 +395,7 @@ PxerUI.prototype.bindMap =function(key){
             propertyName :'failList',
             update(elt ,arr){
                 var signMap ={
+                    timeout:'重试',
                     mypixiv:'申请画师好友获得查看权限',
                     empty:'重试或手动保存',
                     'r-18':'在用户设置中设置显示R-18作品',

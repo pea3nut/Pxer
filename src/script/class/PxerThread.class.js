@@ -55,6 +55,20 @@ PxerThread.prototype['run'] =function(){
         prms =prms.then(()=>{return new Promise((resolve ,reject)=>{
 
             var sendAjax =function(){
+                //绑定超时事件
+                xhr.addOneEventListener("timeout" ,function(){
+                    setDefalut(thread.runtime,"retry",0);
+                    if( (+thread.config.retry!==0)&&(++thread.runtime.retry >=thread.config.retry) ){
+                        reject({
+                            type:"timeout",
+                            url,
+                            xhr,
+                        });
+                    }else{
+                        sendAjax();
+                    };
+
+                });
                 // 单副漫画请求需要更改Referer头信息
                 if(
                     thread.task.type ==='manga'
@@ -110,19 +124,6 @@ PxerThread.prototype['run'] =function(){
                     xhr,
                 });
             });
-            xhr.addOneEventListener("timeout" ,function(){
-                thread.runtime.retry ||(thread.runtime.retry=0);
-                if(++thread.runtime.retry >=thread.config.retry){
-                    reject({
-                        type:"timeout",
-                        url,
-                        xhr,
-                    });
-                }else{
-                    sendAjax();
-                };
-
-            });
 
             sendAjax();
 
@@ -150,6 +151,9 @@ PxerThread.prototype['run'] =function(){
             console.warn(`Request timeout form PxerThread#${thread.id} @${url}`);
             thread.dispatch("fail" ,{task:thread.task ,msg:type});
             break;
+        default:
+            console.error(`PxerThread #${thread.id} error!`);
+            thread.dispatch("error" ,{task:thread.task ,msg:'unknown'});
     };});
 
     return true;
@@ -181,7 +185,10 @@ PxerThread.checkRequest =function(url ,html){
 //     task:pwr,
 //     config:{timeout:2000 ,retry:3},
 // });
+// pt.init();
 // pt.on('load' ,data=>console.log(data));
+// pt.on('error' ,err=>console.error(err));
+// pt.on('fail' ,err=>console.warn(err));
 // pt.one('load' ,()=>{pt.run(new PxerPageRequest({url:'sleep.css.php?sleep=1&bg=blue'}))});
 // pt.run();
 //
