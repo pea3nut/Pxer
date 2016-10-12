@@ -1,3 +1,5 @@
+'use strict';
+
 class PxerApp extends PxerEvent{
     constructor(){
         /**
@@ -17,7 +19,6 @@ class PxerApp extends PxerEvent{
             'executeWroksTask','executePageTask',
             'finishWorksTask','finishPageTask',
             'error','stop',
-            'hasNoTask','timerRunning','finishTask','upDateConfigFromPredefine','analyzePage'
         ]);
 
 
@@ -69,6 +70,10 @@ class PxerApp extends PxerEvent{
 
 };
 
+
+PxerApp.version ='6.1.1';
+
+
 PxerApp.prototype["stop"]=function(){
     this.ptm.stop();
     this.dispatch('finishWorksTask');
@@ -89,7 +94,6 @@ PxerApp.prototype["autoSwitch"]=function(){
     });
 
 };
-
 PxerApp.prototype["queryExecute"]=function(){
     this.autoSwitch();
     this.one('finishWorksTask' ,()=>{
@@ -97,6 +101,7 @@ PxerApp.prototype["queryExecute"]=function(){
     });
     this.executePageTask();
 };
+
 
 PxerApp.prototype["executePageTask"]=function(){
 
@@ -153,6 +158,7 @@ PxerApp.prototype["executeWroksTask"]=function(){
 
 };
 
+
 PxerApp.prototype["analyzePage"]=function(){
     switch(this.runtime.pageType){
         case "member_illust":
@@ -176,7 +182,6 @@ PxerApp.prototype["analyzePage"]=function(){
     return true;
 
 };
-
 PxerApp.prototype["getPageType"]=function(){
     var typeAnalyzer={
         "member"        :function(url){
@@ -204,7 +209,5 @@ PxerApp.prototype["getPageType"]=function(){
     }
     return false;
 };
-
-PxerApp.version ='6.1.1';
 
 

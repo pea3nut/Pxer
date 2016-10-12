@@ -1,3 +1,4 @@
+'use strict';
 
 /**
  * Pxer任务队列中的任务对象
@@ -9,7 +10,6 @@ class PxerRequest{
         this.html =html;
     };
 }
-
 /**
  * 页面任务对象
  * @constructor
@@ -20,7 +20,6 @@ class PxerPageRequest extends PxerRequest{
         super(...argn);
     }
 }
-
 /**
  * 作品任务对象
  * @constructor
@@ -69,7 +68,6 @@ class PxerWorks{
 
     }
 }
-
 /**
  * 抓取到的多张插画/漫画作品对象
  * @extends {PxerWorks}
@@ -82,7 +80,6 @@ class PxerMultipleWorks extends PxerWorks{
         this.multiple =data.multiple;
     }
 };
-
 /**
  * 抓取到的动图作品对象
  * @extends {PxerWorks}
@@ -96,9 +93,5 @@ class PxerUgoiraWorks extends PxerWorks{
         this.frames =data.frames;
     }
 };
-
-
-
-
 
 

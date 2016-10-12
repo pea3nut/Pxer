@@ -26,7 +26,6 @@ class PxerEvent{
 };
 
 
-
 PxerEvent.prototype.on =function(type, listener){
 
     if( !( this._checkEventType(type) && this._checkListener(listener) )) return false;
@@ -37,7 +36,6 @@ PxerEvent.prototype.on =function(type, listener){
     return true;
 
 };
-
 PxerEvent.prototype.one =function(type, listener){
 
     if( !( this._checkEventType(type) && this._checkListener(listener) )) return false;
@@ -48,7 +46,6 @@ PxerEvent.prototype.one =function(type, listener){
     return true;
 
 };
-
 PxerEvent.prototype.off =function(type, listener){
 
     if( !(
@@ -81,9 +78,6 @@ PxerEvent.prototype.off =function(type, listener){
     return true;
 
 };
-
-
-
 PxerEvent.prototype.dispatch =function(type ,data){
 
     if(!this._checkEventType(type))return false;
@@ -106,7 +100,6 @@ PxerEvent.prototype.dispatch =function(type ,data){
 };
 
 
-
 PxerEvent.prototype._checkEventType =function(type){
 
     let inEvent =this.eventList.some( item => type &&(item===type) );
@@ -118,7 +111,6 @@ PxerEvent.prototype._checkEventType =function(type){
     return true;
 
 };
-
 PxerEvent.prototype._checkListener =function(listener){
 
     if(typeof listener !=='function'){

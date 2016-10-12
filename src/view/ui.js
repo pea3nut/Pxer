@@ -1,3 +1,5 @@
+'use strict';
+
 ~function(){
     // 向下兼容
     if(/\.php(\?.+)?$/.test(pxerDefinePxerConfig['TEMPLATE_URL'])){
@@ -26,6 +28,8 @@
     });
     document.head.appendChild(tpl);
 }();
+
+
 class PxerUI{
     constructor(elt){
         this.elt =elt;
@@ -49,144 +53,150 @@ class PxerUI{
 
 
     };
-    init(){
-        // 处理pxer-button
-        this.button =[...this.elt.querySelectorAll('[pxer-button]')];
-        this.button.forEach(
-            (item,index,array)=> array[item.getAttribute('pxer-button')]=item
-        );
-        // 处理pxer-window
-        this.window =[...this.elt.querySelectorAll('[pxer-window]')];
-        this.window.forEach(
-            (item,index,array)=> array[item.getAttribute('pxer-window')]=item
-        );
-        // 处理pxer-const
-        [...this.elt.querySelectorAll('[pxer-const]')].forEach(
-            item=> item.innerHTML =this.constMap[item.getAttribute('pxer-const')]
-        );
-
-
-        // 处理页面逻辑
-        if(this.pxer.getPageType() ===false && pxerDefinePxerConfig['DEBUG']!==true){
-            this.button.run.disabled =true;
-            console.warn('getPageType return false');
-            return false;
-        }else{
-            this.button.run.disabled =false;
-            this.button.run.innerHTML ='<span class="glyphicon glyphicon-play"></span>';
-        };
-        this.pxer.autoSwitch();
-        this.pxer.on('finishWorksTask' ,()=>clearInterval(this.timer));
-        (()=>{// 获取页码时无限次尝试
-            var originRetry =this.pxer.ptm.config.retry;
-            this.pxer.on('executePageTask' ,()=>this.pxer.ptm.config.retry=0);
-            this.pxer.on('finishPageTask'  ,()=>this.pxer.ptm.config.retry=originRetry);
-        })();
-
-
-
-        // 挂载UI事件
-        this.pxer.on('finishWorksTask' ,()=>this.window.print.style.display='');
-        this.pxer.on('finishWorksTask' ,()=>this.window.inf.style.display='none');
-        this.button.run.addEventListener('click' ,()=>{
-            if(this.button.run.classList.contains('btn-success')){
-                this.button.run.classList.remove('btn-success');
-                this.button.run.classList.add('btn-info');
-                this.button.run.innerHTML='<span class="glyphicon glyphicon-ok"></span>';
-                this.window.inf.style.display ='';
-            }else if(this.button.run.classList.contains('btn-info')){
-                this.button.run.classList.remove('btn-info');
-                this.button.run.classList.add('btn-danger');
-                this.button.run.innerHTML='<span class="glyphicon glyphicon-remove"></span>';
-            }else if(this.button.run.classList.contains('btn-danger')){
-                this.button.run.style.display ='none';
-                this.button.run.classList.remove('btn-danger');
-                this.button.run.classList.add('btn-success');
-                this.button.run.innerHTML='<span class="glyphicon glyphicon-play"></span>';
-            };
-        });
-        this.pxer.on('executePageTask' ,()=>this.runtime.state='getPageTask');
-        this.pxer.on('executeWroksTask' ,()=>this.runtime.state='getWorks');
-        this.pxer.on('finishWorksTask' ,()=>this.runtime.state='finish');
-        this.pxer.on('finishWorksTask' ,()=>this.button.run.style.display='none');
-        this.pxer.on('error' ,()=>this.runtime.state='error');
-        this.pxer.on('stop' ,()=>this.runtime.state='stop');
-        this.pxer.on('finishWorksTask' ,()=>document.blinkTitle());
-
-        // 预计时间计算
-        this.pxer.on('executePageTask' ,()=>{
-            this.runtime.taskTimer =setInterval(()=>{
-                this.runtime.taskRuntime++;
-            } ,500);
-        });
-        this.pxer.on('executeWroksTask' ,()=>{
-            this.runtime.taskRuntime =0;
-        });
-        this.pxer.on('finishWorksTask' ,()=>{
-            clearInterval(this.runtime.taskTimer);
-        });
-
-
-        // 处理pxer-bind
-        [...this.elt.querySelectorAll('[pxer-bind]')].forEach(
-            item=> this.signBind(item ,item.getAttribute('pxer-bind'))
-        );
-
-        // 处理pxer-config
-        [...this.elt.querySelectorAll('[pxer-config]')].forEach(
-            item=> this.signConfig(item ,item.getAttribute('pxer-config'))
-        );
-
-
-        // 响应用户行为
-        this.button.run.addOneEventListener('click' ,()=>{
-            this.pxer.analyzePage();
-            this.button.run.addOneEventListener('click' ,()=>{
-                this.pxer.executePageTask();
-                this.button.run.addOneEventListener('click' ,()=>{
-                    if(this.runtime.state==='getPageTask' ||this.runtime.state ==='getWorks') this.pxer.stop();
-                });
-            });
-        });
-        this.button.echo.addEventListener('click' ,()=>this.pxer.pp.queryPrint());
-        this.button.count.addEventListener('click' ,()=>{
-            this.window.taskInfo.style.display='';
-            this.pxer.pp.filterWorks().countAddress().getTaskInfo();
-        });
-        this.button.warn.addEventListener('click' ,()=>{
-            this.window.warn.classList.toggle('show-block');
-        });
-        this.button.selectAllfw.addEventListener('click' ,()=>{
-            var elt =this.button.selectAllfw.parentNode;
-            while(elt.tagName.toLowerCase() !=='table'){
-                elt =elt.parentNode;
-            };
-            [...elt.querySelectorAll('[name="again_works"]')].forEach(elt=>elt.checked=true);
-        });
-        this.button.again.addEventListener('click' ,()=>{
-            var againIds =[...document.querySelectorAll('[name="again_works"]:checked')].map(elt=>elt.value);
-            if(againIds.length ===0) return;
-            setDefalut(this.pxer ,'taskList' ,[]);
-            this.pxer.runtime.failList =this.pxer.runtime.failList.filter(({task})=>{
-                if(againIds.some(id=>id==task.id)){
-                    this.pxer.taskList.push(task);
-                    return false;
-                }else{
-                    return true;
-                };
-            });
-
-            if(this.pxer.runtime.failList.length ===0) this.window.warn.classList.remove('show-block');
-            this.readyAgain();
-        });
-
-
-    };
 };
-PxerUI.prototype.constMap ={
+
+
+PxerUI.prototype['constMap'] ={
     version :PxerApp.version
 };
-PxerUI.prototype.readyAgain =function(){
+
+
+PxerUI.prototype['init'] =function(){
+    // 处理pxer-button
+    this.button =[...this.elt.querySelectorAll('[pxer-button]')];
+    this.button.forEach(
+        (item,index,array)=> array[item.getAttribute('pxer-button')]=item
+    );
+    // 处理pxer-window
+    this.window =[...this.elt.querySelectorAll('[pxer-window]')];
+    this.window.forEach(
+        (item,index,array)=> array[item.getAttribute('pxer-window')]=item
+    );
+    // 处理pxer-const
+    [...this.elt.querySelectorAll('[pxer-const]')].forEach(
+        item=> item.innerHTML =this.constMap[item.getAttribute('pxer-const')]
+    );
+
+
+    // 处理页面逻辑
+    if(this.pxer.getPageType() ===false && pxerDefinePxerConfig['DEBUG']!==true){
+        this.button.run.disabled =true;
+        console.warn('getPageType return false');
+        return false;
+    }else{
+        this.button.run.disabled =false;
+        this.button.run.innerHTML ='<span class="glyphicon glyphicon-play"></span>';
+    };
+    this.pxer.autoSwitch();
+    this.pxer.on('finishWorksTask' ,()=>clearInterval(this.timer));
+    (()=>{// 获取页码时无限次尝试
+        var originRetry =this.pxer.ptm.config.retry;
+        this.pxer.on('executePageTask' ,()=>this.pxer.ptm.config.retry=0);
+        this.pxer.on('finishPageTask'  ,()=>this.pxer.ptm.config.retry=originRetry);
+    })();
+
+
+
+    // 挂载UI事件
+    this.pxer.on('finishWorksTask' ,()=>this.window.print.style.display='');
+    this.pxer.on('finishWorksTask' ,()=>this.window.inf.style.display='none');
+    this.button.run.addEventListener('click' ,()=>{
+        if(this.button.run.classList.contains('btn-success')){
+            this.button.run.classList.remove('btn-success');
+            this.button.run.classList.add('btn-info');
+            this.button.run.innerHTML='<span class="glyphicon glyphicon-ok"></span>';
+            this.window.inf.style.display ='';
+        }else if(this.button.run.classList.contains('btn-info')){
+            this.button.run.classList.remove('btn-info');
+            this.button.run.classList.add('btn-danger');
+            this.button.run.innerHTML='<span class="glyphicon glyphicon-remove"></span>';
+        }else if(this.button.run.classList.contains('btn-danger')){
+            this.button.run.style.display ='none';
+            this.button.run.classList.remove('btn-danger');
+            this.button.run.classList.add('btn-success');
+            this.button.run.innerHTML='<span class="glyphicon glyphicon-play"></span>';
+        };
+    });
+    this.pxer.on('executePageTask' ,()=>this.runtime.state='getPageTask');
+    this.pxer.on('executeWroksTask' ,()=>this.runtime.state='getWorks');
+    this.pxer.on('finishWorksTask' ,()=>this.runtime.state='finish');
+    this.pxer.on('finishWorksTask' ,()=>this.button.run.style.display='none');
+    this.pxer.on('error' ,()=>this.runtime.state='error');
+    this.pxer.on('stop' ,()=>this.runtime.state='stop');
+    this.pxer.on('finishWorksTask' ,()=>document.blinkTitle());
+
+    // 预计时间计算
+    this.pxer.on('executePageTask' ,()=>{
+        this.runtime.taskTimer =setInterval(()=>{
+            this.runtime.taskRuntime++;
+        } ,500);
+    });
+    this.pxer.on('executeWroksTask' ,()=>{
+        this.runtime.taskRuntime =0;
+    });
+    this.pxer.on('finishWorksTask' ,()=>{
+        clearInterval(this.runtime.taskTimer);
+    });
+
+
+    // 处理pxer-bind
+    [...this.elt.querySelectorAll('[pxer-bind]')].forEach(
+        item=> this.signBind(item ,item.getAttribute('pxer-bind'))
+    );
+
+    // 处理pxer-config
+    [...this.elt.querySelectorAll('[pxer-config]')].forEach(
+        item=> this.signConfig(item ,item.getAttribute('pxer-config'))
+    );
+
+
+    // 响应用户行为
+    this.button.run.addOneEventListener('click' ,()=>{
+        this.pxer.analyzePage();
+        this.button.run.addOneEventListener('click' ,()=>{
+            this.pxer.executePageTask();
+            this.button.run.addOneEventListener('click' ,()=>{
+                if(this.runtime.state==='getPageTask' ||this.runtime.state ==='getWorks') this.pxer.stop();
+            });
+        });
+    });
+    this.button.echo.addEventListener('click' ,()=>this.pxer.pp.queryPrint());
+    this.button.count.addEventListener('click' ,()=>{
+        this.window.taskInfo.style.display='';
+        this.pxer.pp.filterWorks().countAddress().getTaskInfo();
+    });
+    this.button.warn.addEventListener('click' ,()=>{
+        this.window.warn.classList.toggle('show-block');
+    });
+    this.button.selectAllfw.addEventListener('click' ,()=>{
+        var elt =this.button.selectAllfw.parentNode;
+        while(elt.tagName.toLowerCase() !=='table'){
+            elt =elt.parentNode;
+        };
+        [...elt.querySelectorAll('[name="again_works"]')].forEach(elt=>elt.checked=true);
+    });
+    this.button.again.addEventListener('click' ,()=>{
+        var againIds =[...document.querySelectorAll('[name="again_works"]:checked')].map(elt=>elt.value);
+        if(againIds.length ===0) return;
+        setDefalut(this.pxer ,'taskList' ,[]);
+        this.pxer.runtime.failList =this.pxer.runtime.failList.filter(({task})=>{
+            if(againIds.some(id=>id==task.id)){
+                this.pxer.taskList.push(task);
+                return false;
+            }else{
+                return true;
+            };
+        });
+
+        if(this.pxer.runtime.failList.length ===0) this.window.warn.classList.remove('show-block');
+        this.readyAgain();
+    });
+
+
+};
+
+
+PxerUI.prototype['readyAgain'] =function(){
     // 避免重复
     if(this.runtime.readyAgain) return;
     this.runtime.readyAgain =true;
@@ -215,7 +225,7 @@ PxerUI.prototype.readyAgain =function(){
 
 };
 
-PxerUI.prototype.signBind =function(elt ,key){
+PxerUI.prototype['signBind'] =function(elt ,key){
 
     var bindMap =this.bindMap(key);
 
@@ -305,7 +315,7 @@ PxerUI.prototype.signBind =function(elt ,key){
     bindMap.object[bindMap.propertyName] =bindMap.object[bindMap.propertyName];
 
 };
-PxerUI.prototype.bindMap =function(key){
+PxerUI.prototype['bindMap'] =function(key){
     var obj={
         record :{
             object:this.runtime,
@@ -456,7 +466,7 @@ PxerUI.prototype.bindMap =function(key){
 };
 
 
-PxerUI.prototype.signConfig =function(elt ,key) {
+PxerUI.prototype['signConfig'] =function(elt ,key) {
     var configMap = this.configMap(key);
 
     if (configMap === undefined) return console.warn(`Count not find field "${key}" in PxerUI::configMap`);
@@ -478,7 +488,7 @@ PxerUI.prototype.signConfig =function(elt ,key) {
     })
 
 };
-PxerUI.prototype.configMap =function(key){
+PxerUI.prototype['configMap'] =function(key){
     var obj ={
         thread :{
             object:this.pxer.ptm.config,
@@ -553,36 +563,5 @@ PxerUI.prototype.configMap =function(key){
     };
     return obj[key];
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

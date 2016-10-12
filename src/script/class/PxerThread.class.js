@@ -1,3 +1,5 @@
+'use strict';
+
 class PxerThread extends PxerEvent{
     constructor({id ,config ,task}){
         super(['load','error','fail']);
@@ -25,9 +27,24 @@ class PxerThread extends PxerEvent{
 
     };
 };
+
+
+PxerThread.checkRequest =function(url ,html){
+    if(!html) return 'empty';
+    if(html.indexOf("_no-item _error") !==-1){
+        if(html.indexOf("sprites-r-18g-badge") !==-1) return 'r-18g';
+        if(html.indexOf("sprites-r-18-badge") !==-1) return 'r-18';
+    };
+    if(html.indexOf("sprites-mypixiv-badge") !==-1) return 'mypixiv';
+    return true;
+};
+
+
 PxerThread.prototype['stop'] =function(){
     this.xhr.abort();
 };
+
+
 PxerThread.prototype['init'] =function(task){
     if(task) this.task=task;
 
@@ -164,15 +181,7 @@ PxerThread.prototype['run'] =function(){
     return true;
 
 };
-PxerThread.checkRequest =function(url ,html){
-    if(!html) return 'empty';
-    if(html.indexOf("_no-item _error") !==-1){
-        if(html.indexOf("sprites-r-18g-badge") !==-1) return 'r-18g';
-        if(html.indexOf("sprites-r-18-badge") !==-1) return 'r-18';
-    };
-    if(html.indexOf("sprites-mypixiv-badge") !==-1) return 'mypixiv';
-    return true;
-};
+
 
 // 测试代码
 //

@@ -1,3 +1,5 @@
+'use strict';
+
 class PxerThreadManager extends PxerEvent{
     constructor(config){
         super(['load' ,'error' ,'fail']);
@@ -16,12 +18,15 @@ class PxerThreadManager extends PxerEvent{
     };
 };
 
+
 PxerThreadManager.prototype['stop'] =function(){
     for(let thread of this.threads){
         thread.off('*');
         thread.stop();
     };
 };
+
+
 PxerThreadManager.prototype['init'] =function(taskList){
     // 初始任务与结果
     if(taskList) this.taskList=taskList.slice();

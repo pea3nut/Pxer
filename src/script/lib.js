@@ -1,10 +1,6 @@
-Promise.prototype.finally = function (callback) {
-    return this.then(
-        value  => Promise.resolve(callback()).then(() => value),
-        reason => Promise.resolve(callback()).then(() => { throw reason })
-    );
-};
+'use strict';
 
+// 全局函数
 window.afterLoad =function(fn){
     if(document.readyState !=='loading'){
         setTimeout(fn);
@@ -12,7 +8,14 @@ window.afterLoad =function(fn){
         document.addEventListener('DOMContentLoaded' ,fn);
     };
 };
+window.setDefalut =function(obj ,key ,val){
+    if(key in obj) return false;
+    obj[key] =val;
+    return true;
+};
 
+
+// 类方法
 Object.copy =function(target){
     var obj ={};
     for(let key in target){
@@ -37,19 +40,37 @@ Object.copy =function(target){
 };
 
 
-
-
-//包装Array
-['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse'].forEach(function (method) {
-    var original = Array.prototype[method];
-    Array.prototype[method] =function() {
-        var result = original.apply(this, arguments);
-        if(typeof this['Hook:change'] ==='function') this['Hook:change']();
-        return result;
-    };
-});
-
-EventTarget.prototype.addOneEventListener =function(type,listener,useCapture){
+// 类原型扩展
+Promise.prototype['finally'] =function (callback) {
+    return this.then(
+        value  => Promise.resolve(callback()).then(() => value),
+        reason => Promise.resolve(callback()).then(() => { throw reason })
+    );
+};
+XMLHttpRequest.prototype['refererSend'] =function(url){
+    var originUrl =document.URL;
+    history.replaceState({} ,null ,url);
+    this.send();
+    history.replaceState({} ,null ,originUrl);
+};
+HTMLDocument.prototype['blinkTitle'] =function(addMsg ,spaceMsg){
+    var addMsg =addMsg ||'[完成] ';
+    var spaceMsg =spaceMsg ||'[　　] ';
+    var timer =setInterval(()=>{
+        if(this.title.indexOf(addMsg) !==-1){
+            this.title =this.title.replace(addMsg ,spaceMsg);
+        }else if(this.title.indexOf(spaceMsg) !==-1){
+            this.title =this.title.replace(spaceMsg ,addMsg);
+        }else{
+            this.title =addMsg+this.title;
+        };
+    },300);
+    this.addOneEventListener('mousemove' ,()=>{
+        clearInterval(timer);
+        this.title =this.title.replace(spaceMsg ,"").replace(addMsg ,"");
+    });
+};
+EventTarget.prototype['addOneEventListener'] =function(type,listener,useCapture){
     var fn;
     this.addEventListener(type,listener,useCapture);
     this.addEventListener(type,fn=()=>{
@@ -84,20 +105,14 @@ EventTarget.prototype.addOneEventListener =function(type,listener,useCapture){
         };
     };
 }(EventTarget.prototype.addEventListener ,EventTarget.prototype.removeEventListener);
-
-XMLHttpRequest.prototype.refererSend =function(url){
-    var originUrl =document.URL;
-    history.replaceState({} ,null ,url);
-    this.send();
-    history.replaceState({} ,null ,originUrl);
-};
-
-window.setDefalut =function(obj ,key ,val){
-    if(key in obj) return false;
-    obj[key] =val;
-    return true;
-};
-
+['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse'].forEach(function (method) {
+    var original = Array.prototype[method];
+    Array.prototype[method] =function() {
+        var result = original.apply(this, arguments);
+        if(typeof this['Hook:change'] ==='function') this['Hook:change']();
+        return result;
+    };
+});
 [DocumentFragment,HTMLDocument,Element].forEach(constructor=>{
     constructor.prototype.querySelectorList =function(...selector){
         var result;
@@ -107,28 +122,5 @@ window.setDefalut =function(obj ,key ,val){
         };
     };
 });
-
-HTMLDocument.prototype.blinkTitle =function(addMsg ,spaceMsg){
-    var addMsg =addMsg ||'[完成] ';
-    var spaceMsg =spaceMsg ||'[　　] ';
-    var timer =setInterval(()=>{
-        if(this.title.indexOf(addMsg) !==-1){
-            this.title =this.title.replace(addMsg ,spaceMsg);
-        }else if(this.title.indexOf(spaceMsg) !==-1){
-            this.title =this.title.replace(spaceMsg ,addMsg);
-        }else{
-            this.title =addMsg+this.title;
-        };
-    },300);
-    this.addOneEventListener('mousemove' ,()=>{
-        clearInterval(timer);
-        this.title =this.title.replace(spaceMsg ,"").replace(addMsg ,"");
-    });
-};
-
-
-
-
-
 
 

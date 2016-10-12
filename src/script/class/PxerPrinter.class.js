@@ -1,3 +1,5 @@
+'use strict';
+
 class PxerPrint{
     constructor(){
         /*!全部的作品集合*/
@@ -38,108 +40,6 @@ class PxerPrint{
     };
 };
 
-PxerPrint.prototype.print =function(){
-
-    /*!判断输出动图参数*/
-    if(this.config['ugoira_frames'] ==="yes"){
-        let win =window.open(document.URL ,'_blank');
-        win.document.write("/*! 这个页面是动图压缩包的动画参数，目前pxer还无法将动图压缩包打包成GIF，请寻找其他第三方软件 */\n<br /><br />");
-
-        let frames =JSON.stringify(this.runtime.ugoira_frames ,null ,4);
-        win.document.write("<pre>\n"+frames+"\n</pre>");
-    };
-
-    /*!输出下载地址*/
-    let win =window.open(document.URL ,'_blank');
-    win.document.write(this.runtime.taskInfo.replace(/\n/g ,'<br />'));
-    win.document.write(this.runtime.address.join("<br />"));
-
-
-};
-
-PxerPrint.prototype.filterWorks =function(){
-
-    this.runtime.passWorks=[];
-
-    let isEmpty =function(filter){
-        for(let key in filter){
-            if(filter[key]) return false;
-        };
-        return true;
-    }(this.filter);
-
-    if(isEmpty){
-        this.runtime.passWorks =this.works;
-        return this;
-    }
-
-    for(let works of this.works){
-
-        if(!(
-            this.filter.score ==0
-            || isNaN(this.filter.score)
-            || works.scoreCount >=this.filter.score
-        )) continue;
-
-        if(!(
-            this.filter['yes_and_tag'].length ===0
-            || this.filter['yes_and_tag'].every(tag=>works.tagList.indexOf(tag)!=-1)
-        )) continue;
-
-        if(!(
-            this.filter['yes_or_tag'].length ===0
-            || !this.filter['yes_or_tag'].some(tag=>works.tagList.indexOf(tag)!=-1)
-        )) continue;
-
-        if(!(
-            this.filter['no_and_tag'].length ===0
-            || !this.filter['no_and_tag'].every(tag=>works.tagList.indexOf(tag)==-1)
-        )) continue;
-
-        if(!(
-            this.filter['no_or_tag'].length ===0
-            || !this.filter['no_or_tag'].some(tag=>works.tagList.indexOf(tag)==-1)
-        )) continue;
-
-        this.runtime.passWorks.push(works);
-
-    };
-
-
-    return this;
-
-
-
-
-};
-
-PxerPrint.prototype.countAddress =function(){
-
-    this.runtime.address =[];
-
-
-    for(let works of this.runtime.passWorks){
-        switch(true){
-            case works instanceof PxerUgoiraWorks:
-                this.runtime.ugoira_frames[works.id] =works.frames;
-                this.runtime.address.push(...PxerPrint.getUgoira(works ,this.config));
-                break;
-            case works instanceof PxerMultipleWorks:
-                this.runtime.address.push(...PxerPrint.getMultiple(works ,this.config));
-                break;
-            case works instanceof PxerWorks:
-                this.runtime.address.push(...PxerPrint.getWorks(works ,this.config));
-                break;
-        };
-    };
-
-    return this;
-
-
-
-
-
-};
 
 PxerPrint.getUgoira =function(works ,{ugoira_zip}){
     const tpl ={
@@ -198,22 +98,29 @@ PxerPrint.getWorks=function (works ,{illust_single,manga_single}){
 };
 
 
-PxerPrint.prototype.template={
-    'pic':{
-        "max"   :"http://#server#.pixiv.net/img-original/img/#date#/#workid#_p0.#fx#",
-        "600p"  :"http://#server#.pixiv.net/c/600x600/img-master/img/#date#/#workid#_p0_master1200.jpg",
-    },
-    'ids':{
-        "max"        :"http://#server#.pixiv.net/img-original/img/#date#/#workid#_p#picnum#.#fx#",
-        "1200p"      :"http://#server#.pixiv.net/c/1200x1200/img-master/img/#date#/#workid#_p#picnum#_master1200.jpg",
-        "cover_600p" :"http://#server#.pixiv.net/c/600x600/img-master/img/#date#/#workid#_p0_master1200.jpg",
-    },
-    'zip':{
-        "max"   :"http://#server#.pixiv.net/img-zip-ugoira/img/#date#/#workid#_ugoira1920x1080.zip",
-        "600p"  :"http://#server#.pixiv.net/img-zip-ugoira/img/#date#/#workid#_ugoira600x600.zip",
-    }
+PxerPrint.prototype.queryPrint =function(){
+    this.filterWorks().countAddress().getTaskInfo().print();
 };
 
+
+PxerPrint.prototype.print =function(){
+
+    /*!判断输出动图参数*/
+    if(this.config['ugoira_frames'] ==="yes"){
+        let win =window.open(document.URL ,'_blank');
+        win.document.write("/*! 这个页面是动图压缩包的动画参数，目前pxer还无法将动图压缩包打包成GIF，请寻找其他第三方软件 */\n<br /><br />");
+
+        let frames =JSON.stringify(this.runtime.ugoira_frames ,null ,4);
+        win.document.write("<pre>\n"+frames+"\n</pre>");
+    };
+
+    /*!输出下载地址*/
+    let win =window.open(document.URL ,'_blank');
+    win.document.write(this.runtime.taskInfo.replace(/\n/g ,'<br />'));
+    win.document.write(this.runtime.address.join("<br />"));
+
+
+};
 PxerPrint.prototype.getTaskInfo =function(){
     this.runtime.textHead ||(this.runtime.textHead='');
 
@@ -255,10 +162,92 @@ PxerPrint.prototype.getTaskInfo =function(){
     return this;
 
 };
+PxerPrint.prototype.countAddress =function(){
 
-PxerPrint.prototype.queryPrint =function(){
-    this.filterWorks().countAddress().getTaskInfo().print();
+    this.runtime.address =[];
+
+
+    for(let works of this.runtime.passWorks){
+        switch(true){
+            case works instanceof PxerUgoiraWorks:
+                this.runtime.ugoira_frames[works.id] =works.frames;
+                this.runtime.address.push(...PxerPrint.getUgoira(works ,this.config));
+                break;
+            case works instanceof PxerMultipleWorks:
+                this.runtime.address.push(...PxerPrint.getMultiple(works ,this.config));
+                break;
+            case works instanceof PxerWorks:
+                this.runtime.address.push(...PxerPrint.getWorks(works ,this.config));
+                break;
+        };
+    };
+
+    return this;
+
+
+
+
+
 };
+PxerPrint.prototype.filterWorks =function(){
+
+    this.runtime.passWorks=[];
+
+    let isEmpty =function(filter){
+        for(let key in filter){
+            if(filter[key]) return false;
+        };
+        return true;
+    }(this.filter);
+
+    if(isEmpty){
+        this.runtime.passWorks =this.works;
+        return this;
+    }
+
+    for(let works of this.works){
+
+        if(!(
+            this.filter.score ==0
+            || isNaN(this.filter.score)
+            || works.scoreCount >=this.filter.score
+        )) continue;
+
+        if(!(
+            this.filter['yes_and_tag'].length ===0
+            || this.filter['yes_and_tag'].every(tag=>works.tagList.indexOf(tag)!=-1)
+        )) continue;
+
+        if(!(
+            this.filter['yes_or_tag'].length ===0
+            || !this.filter['yes_or_tag'].some(tag=>works.tagList.indexOf(tag)!=-1)
+        )) continue;
+
+        if(!(
+            this.filter['no_and_tag'].length ===0
+            || !this.filter['no_and_tag'].every(tag=>works.tagList.indexOf(tag)==-1)
+        )) continue;
+
+        if(!(
+            this.filter['no_or_tag'].length ===0
+            || !this.filter['no_or_tag'].some(tag=>works.tagList.indexOf(tag)==-1)
+        )) continue;
+
+        this.runtime.passWorks.push(works);
+
+    };
+
+
+    return this;
+
+
+
+
+};
+
+
+
+
 
 
 

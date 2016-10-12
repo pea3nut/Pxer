@@ -1,3 +1,5 @@
+'use strict';
+
 ~function(){
     var script =document.createElement('script');
     script.src =pxerDefinePxerConfig['URL_ROOT']+'src/script/class/PxerLauncher.class.js';
@@ -28,7 +30,5 @@
         document.head.appendChild(script);
     });
 }();
-
-
 
 
