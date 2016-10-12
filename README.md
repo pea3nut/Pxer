@@ -2,13 +2,14 @@
 
 <p align="left">
 	<img alt="" src="https://img.shields.io/badge/JavaScript-ES6-green.svg" />
+	<img alt="" src="https://img.shields.io/badge/install-Greasemonkey-green.svg" />
 	<img alt="" src="https://img.shields.io/badge/jQuery-No-red.svg" />
 	<img alt="" src="https://img.shields.io/badge/Node.js-No-red.svg" />
 	<img alt="" src="https://img.shields.io/npm/l/express.svg" />
 </p>
 
 
-纯客户端JavaScript编写的[pixiv.net](http://www.pixiv.net)爬虫。
+纯客户端JavaScript编写的[pixiv.net](http://www.pixiv.net)爬虫，上线一周内被上万次使用！
 
 ## 快速链接
 
@@ -16,7 +17,9 @@
 - 教程：[如何取得Pxer的使用授权？](http://pea.nutjs.com/e611)
 - 教程：[如何安装Pxer？](http://pea.nutjs.com/e614)
 - 教程：[Pxer使用教程](http://pea.nutjs.com/e616)
-- 安装：通过诸如Greasemonkey的浏览器扩展安装Pxer[最新版](http://pxer.nutjs.com/pxer6/src/pxer.user.js)或[稳定版](http://pxer.nutjs.com/pxer6/lib/pxer.user.js)
+- 安装：通过诸如Greasemonkey的浏览器扩展安装Pxer[稳定版](http://pxer.nutjs.com/pxer6/lib/pxer.user.js)或[开发版](http://pxer.nutjs.com/pxer6/src/pxer.user.js)
+
+> 稳定版需要授权后使用，开发版可以直接安装使用，但是可能会在未来被移除或调整，请仅将开发版作为试用体验。
 
 ## 文档说明
 
@@ -68,7 +71,7 @@ Pxer启动的本质是将js文件载入进网页页面，阅读`pxer.user.js`的
 
 `./lib`目录中的`pxer.core.js`文件是用JSCompress将目录`./src`部分目录文件合并而成的。在`./lib`目录保留了JSCompress的配置文件，同时你也可以参考`./src/script/launcher.js`文件对`./src`目录进行合并。
 
-而压缩，由于Pxer大量使用ES6语法，导致压缩工具无法进行语义分析，因此js文件的压缩过程仅仅是移除注释、空格、换行符。压缩网站：[javascriptcompressor.com](http://javascriptcompressor.com/)
+而压缩，由于Pxer大量使用ES6语法，导致压缩工具无法进行语义分析，因此js文件的压缩过程仅仅是移除注释、空格、换行符，压缩过程中注意`'use strict';`在第一行，以及部分文件可能需要手动调整ES6模板字符串。压缩网站：[javascriptcompressor.com](http://javascriptcompressor.com/)
 
 ## 开源协议
 
