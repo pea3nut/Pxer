@@ -4,6 +4,7 @@
 // @namespace     https://github.com/pea3nut/Pxer
 // @author        花生PeA
 // @description   pixiv.net Tools
+// @noframes
 // @grant         none
 // @include       http://www.pixiv.net/member_illust.php*
 // @include       http://www.pixiv.net/bookmark.php*
