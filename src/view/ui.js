@@ -111,6 +111,7 @@ class PxerUI{
         this.pxer.on('finishWorksTask' ,()=>this.button.run.style.display='none');
         this.pxer.on('error' ,()=>this.runtime.state='error');
         this.pxer.on('stop' ,()=>this.runtime.state='stop');
+        this.pxer.on('finishWorksTask' ,()=>document.blinkTitle());
 
         // 预计时间计算
         this.pxer.on('executePageTask' ,()=>{
@@ -550,7 +551,6 @@ PxerUI.prototype.configMap =function(key){
     };
     return obj[key];
 };
-
 
 
 

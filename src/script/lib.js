@@ -108,3 +108,27 @@ window.setDefalut =function(obj ,key ,val){
     };
 });
 
+HTMLDocument.prototype.blinkTitle =function(addMsg ,spaceMsg){
+    var addMsg =addMsg ||'[完成] ';
+    var spaceMsg =spaceMsg ||'[　　] ';
+    var timer =setInterval(()=>{
+        if(this.title.indexOf(addMsg) !==-1){
+            this.title =this.title.replace(addMsg ,spaceMsg);
+        }else if(this.title.indexOf(spaceMsg) !==-1){
+            this.title =this.title.replace(spaceMsg ,addMsg);
+        }else{
+            this.title =addMsg+this.title;
+        };
+    },300);
+    this.addOneEventListener('mousemove' ,()=>{
+        clearInterval(timer);
+        this.title =this.title.replace(spaceMsg ,"").replace(addMsg ,"");
+    });
+};
+
+
+
+
+
+
+
