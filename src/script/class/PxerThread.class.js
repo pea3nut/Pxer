@@ -92,7 +92,7 @@ PxerThread.prototype['run'] =function(){
             };
 
             xhr.addOneEventListener("load" ,function(){
-                if(/^2/.test(xhr.status) ||xhr.status=='304'){
+                if(/^2/.test(xhr.status) ||xhr.status===304){
                     // 判断是否真的请求成功
                     var msg =PxerThread.checkRequest(url ,xhr.responseText);
                     if(msg !==true){
@@ -114,8 +114,11 @@ PxerThread.prototype['run'] =function(){
                         resolve(thread.task.html=xhr.responseText);
                     };
                 }else{
-                    console.error(`PxerThread#${thread.id}: "${xhr.status} ${xhr.statusText}" in ${url}`);
-                    reject(new Error(`Unknow status with ${xhr.status}`));
+                    reject({
+                        type:"http:"+xhr.status,
+                        url,
+                        xhr,
+                    });
                 };
             });
             xhr.addOneEventListener("error" ,function(){
@@ -136,26 +139,27 @@ PxerThread.prototype['run'] =function(){
         thread.isFree =true;
     }).then(()=>{
         thread.dispatch("load" ,thread.task);
-    }).catch(function({type,url,xhr}){switch(type){
-        case 'error':
-            console.error(`PxerThread #${thread.id} error!`);
-            thread.dispatch("error" ,{task:thread.task ,msg:type});
-            break;
-        case 'empty':
-        case 'r-18g':
-        case 'r-18':
-        case 'mypixiv':
-            console.warn(`Request check return ${type} form PxerThread#${thread.id} @${url}`);
-            thread.dispatch("fail" ,{task:thread.task ,msg:type});
-            break;
-        case 'timeout':
-            console.warn(`Request timeout form PxerThread#${thread.id} @${url}`);
-            thread.dispatch("fail" ,{task:thread.task ,msg:type});
-            break;
-        default:
-            console.error(`PxerThread #${thread.id} error!`);
-            thread.dispatch("error" ,{task:thread.task ,msg:'unknown'});
-    };});
+    }).catch(function({type,url,xhr}){
+        switch(type){
+            case 'error':
+                console.error(`PxerThread #${thread.id} error!`);
+                thread.dispatch("error" ,{task:thread.task ,msg:type});
+                break;
+            case 'empty':
+            case 'r-18g':
+            case 'r-18':
+            case 'mypixiv':
+                console.warn(`Request check return ${type} form PxerThread#${thread.id} @${url}`);
+                break;
+            case 'timeout':
+                console.warn(`Request timeout form PxerThread#${thread.id} @${url}`);
+                break;
+            default:
+                console.error(`PxerThread #${thread.id} error!`);
+                thread.dispatch("error" ,{task:thread.task ,msg:'unknown'});
+        };
+        thread.dispatch("fail" ,{task:thread.task ,msg:type});
+    });
 
     return true;
 

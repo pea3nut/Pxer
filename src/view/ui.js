@@ -398,6 +398,8 @@ PxerUI.prototype.bindMap =function(key){
                     timeout:'重试',
                     mypixiv:'申请画师好友获得查看权限',
                     empty:'重试或手动保存',
+                    error:'重试或手动保存，并报告给花生',
+                    unknown:'重试或手动保存，并报告给花生',
                     'r-18':'在用户设置中设置显示R-18作品',
                     'r-18g':'在用户设置中设置显示R-18G作品',
                 };
@@ -407,7 +409,7 @@ PxerUI.prototype.bindMap =function(key){
                         <tr>
                             <td><a href="http://www.pixiv.net/member_illust.php?mode=medium&illust_id=${task.id}">${task.id}</a></td>
                             <td>${msg}</td>
-                            <td>${signMap[msg]}</td>
+                            <td>${signMap[msg]||signMap['unknown']}</td>
                             <td class="text-center"><input type="checkbox" name="again_works" value="${task.id}" /></td>
                         </tr>\
                     `;
