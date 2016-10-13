@@ -124,3 +124,13 @@ EventTarget.prototype['addOneEventListener'] =function(type,listener,useCapture)
 });
 
 
+// 兼容性代码
+if(NodeList.prototype[Symbol.iterator] ===undefined){
+    NodeList.prototype[Symbol.iterator] =function*(){
+        for(let i=0 ;i<this.length ;i++){
+            yield this[i];
+        };
+    };
+};
+
+
