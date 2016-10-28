@@ -9,7 +9,9 @@
 </p>
 
 
-纯客户端JavaScript编写的[pixiv.net](http://www.pixiv.net)爬虫，上线一周内被上万次使用！
+纯客户端JavaScript编写的[pixiv.net](http://www.pixiv.net)爬虫，上线一周内被使用上万次！
+
+![](http://pea.nutjs.com/wp-content/uploads/2016/10/pxer-gif.gif)
 
 ## 快速链接
 
