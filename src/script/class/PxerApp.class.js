@@ -71,7 +71,7 @@ class PxerApp extends PxerEvent{
 };
 
 
-PxerApp.version ='6.1.3';
+PxerApp.version ='6.1.4';
 
 
 PxerApp.prototype["stop"]=function(){

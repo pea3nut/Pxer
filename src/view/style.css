@@ -58,3 +58,8 @@
 #pxer .show-block{
     display: block !important;
 }
+
+
+#pxer .pxer-warn .t-head{
+    font-weight: bold;
+}
