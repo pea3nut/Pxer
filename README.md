@@ -15,17 +15,18 @@
 
 ## 快速链接
 
-- 导航：[起步：Pxer 6](http://pea.nutjs.com/e609)
-- 教程：[如何取得Pxer的使用授权？](http://pea.nutjs.com/e611)
-- 教程：[如何安装Pxer？](http://pea.nutjs.com/e614)
-- 教程：[Pxer使用教程](http://pea.nutjs.com/e616)
+- 导航：[官网：pxer6.nutjs.com](http://pxer6.nutjs.com/)
+- 导航：[起步：Pxer 6](http://pxer6.nutjs.com/md/start)
+- 教程：[如何取得Pxer的使用授权？](http://pxer6.nutjs.com/md/accredit)
+- 教程：[如何安装Pxer？](http://pxer6.nutjs.com/md/install)
+- 教程：[Pxer使用教程](http://pxer6.nutjs.com/md/accredit)
 - 安装：通过诸如Greasemonkey的浏览器扩展安装Pxer[稳定版](http://pxer.nutjs.com/pxer6/lib/pxer.user.js)或[开发版](http://pxer.nutjs.com/pxer6/src/pxer.user.js)
 
 > 稳定版需要授权后使用，开发版可以直接安装使用，但是可能会在未来被移除或调整，请仅将开发版作为试用体验。
 
 ## 文档说明
 
-本篇文档面向拥有一定开发能力的开发人员，若仅仅是想使用Pxer请直接参考[起步：Pxer 6](http://pea.nutjs.com/e609)即可，无需阅读此文档。
+本篇文档面向拥有一定开发能力的开发人员，若仅仅是想使用Pxer请直接参考[起步：Pxer 6](http://pxer6.nutjs.com/md/start)即可，无需阅读此文档。
 
 ## 快速体验Pxer
 
