@@ -14,7 +14,7 @@ module.exports.path2URL =function(path){
 };
 module.exports.getAllFile =function(path){
     if(['/','\\'].indexOf(path[path.length-1])){
-        throw new Error('path must be / or \\ end');
+        path =path+'/';
     }
 
     var stack =Fs.readdirSync(path);

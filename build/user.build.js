@@ -23,7 +23,7 @@ Fs.writeFileSync(
     PxerUtility.automaticDoc(__filename)+
     PxerUtility.reader(readerTpl,renderData['dev'])
 );
-var masterSave ='../pxer.user.js';
+var masterSave ='../pxer-master.user.js';
 console.log('build '+Path.resolve(masterSave));
 Fs.writeFileSync(
     masterSave,

@@ -11,7 +11,7 @@
 
 纯客户端JavaScript编写的[pixiv.net](http://www.pixiv.net)爬虫，上线一周内被使用上万次！
 
-![](http://pxer.pea3nut.org/img/pxer-ui-gif.gif)
+<img src="/src/public/pxer-ui-gif.gif?raw=true" />
 
 ## 快速链接
 

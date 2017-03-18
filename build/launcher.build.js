@@ -5,8 +5,8 @@ const PxerUtility =require('./pxer-utility.js');
 const readerTpl =Fs.readFileSync('./launcher.jstpl.ejs').toString();
 const renderData ={
     master:{
-        libURL      :PxerUtility.path2URL('../dist/app/lib.js'),
-        supportURL  :PxerUtility.path2URL('../dist/app/support.js'),
+        libURL      :PxerUtility.path2URL('../dist/lib.js'),
+        supportURL  :PxerUtility.path2URL('../dist/support.js'),
         pxerVersion :PxerUtility.pxerVersion,
     },
     dev   :{
