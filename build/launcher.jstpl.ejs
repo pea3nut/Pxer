@@ -1,0 +1,23 @@
+~function(){
+    var libURL =/*<?-libURL?>*/'';
+    var supportURL =/*<?-supportURL?>*/'';
+    window['PXER_VERSION'] =/*<?-pxerVersion?>*/'';
+
+    Promise.resolve().then(function(){
+        var script = document.createElement('script');
+        return new Promise(function(resolve ,reject){
+            script.onload = resolve;
+            script.onerror = reject;
+            script.src = libURL;
+            document.documentElement.appendChild(script);
+        });
+    }).then(function(){
+        var script = document.createElement('script');
+        return new Promise(function(resolve ,reject){
+            script.onload = resolve;
+            script.onerror = reject;
+            script.src = supportURL;
+            document.documentElement.appendChild(script);
+        });
+    });
+}();

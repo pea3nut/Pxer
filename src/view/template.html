@@ -1,0 +1,208 @@
+<div id="pxerApp" class="pxer-app">
+    <div class="pxer-nav">
+        <div class="pn-header">
+            <a href="http://pxer.pea3nut.org/" target="_blank">Pxer 7</a>
+        </div>
+        <div class="pn-buttons">
+            <button class="btn btn-outline-success"
+                    @click="load"
+                    v-show="state==='loaded'"
+            >Load</button>
+            <button class="btn btn-outline-primary"
+                    @click="run"
+                    v-show="state==='ready' || (state==='re-ready'&&pxer.taskList.length)"
+            >Run</button>
+            <button class="btn btn-outline-danger"
+                    @click="stop"
+                    v-show="isRunning"
+            >Stop</button>
+            <template v-if="pxer.failList.length">
+                <button class="btn btn-outline-warning" @click="showPxerFailWindow=!showPxerFailWindow">Warn</button><span class="pnb-warn-number" v-text="pxer.failList.length>99?99:pxer.failList.length"></span>
+            </template>
+        </div>
+    </div>
+
+    <div class="pxer-fail" v-show="showAll ||(showPxerFailWindow &&pxer.failList.length)">
+        <table class="table">
+            <thead class="pft-head"><tr>
+                <td>图片ID</td>
+                <td>失败原因</td>
+                <td>解决方案</td>
+                <td width="160" class="text-right">
+                    <button class="btn btn-outline-secondary" @click="tryCheckedPfi">重试选中</button>
+                    <button class="btn btn-outline-secondary" @click="checkedFailList =pxer.failList">全选</button>
+                </td>
+            </tr></thead>
+            <tbody><tr v-for="pfi of pxer.failList">
+                    <td><a :href="pfi.url">{{pfi.task.id}}</a></td>
+                    <td v-text="formatFailType(pfi.type)"></td>
+                    <td v-text="formatFailSolution(pfi.type)"></td>
+                    <td class="text-right"><input type="checkbox" :value="pfi" v-model="checkedFailList"></td>
+            </tr></tbody>
+        </table>
+    </div>
+
+    <div class="pxer-info" v-show="showAll ||isRunning||['ready','re-ready'].indexOf(state)!==-1">
+        <div class="pi-item">
+            <div class="pii-title">程序状态</div>
+            <table class="table">
+                <tr>
+                    <td>主程序版本：</td>
+                    <td v-text="pxerVersion"></td>
+                </tr>
+                <tr>
+                    <td>当前状态：</td>
+                    <td v-text="state"></td>
+                </tr>
+                <tr>
+                    <td>已运行时间：</td>
+                    <td v-text="formatTime(runTimeTimestamp)"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="pi-item">
+            <div class="pii-title">配置信息</div>
+            <table class="table"><tr>
+                    <td>线程数：</td>
+                    <td><input v-model="pxer.ptmConfig.thread" class="form-control" type="text" /></td>
+                </tr><tr>
+                    <td>等待时间：</td>
+                    <td><input v-model="pxer.ptmConfig.timeout" class="form-control" type="text" /></td>
+                </tr><tr>
+                    <td>重试次数：</td>
+                    <td><input v-model="pxer.ptmConfig.retry" class="form-control" type="text" /></td>
+            </tr></table>
+        </div>
+        <div class="pi-item">
+            <div class="pii-title">当前页面信息</div>
+            <table class="table">
+                <tr>
+                    <td>页面类型：</td>
+                    <td v-text="pageType"></td>
+                </tr>
+                <tr>
+                    <td>作品数量：</td>
+                    <td v-text="pxer.worksNum"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="pi-item">
+            <div class="pii-title">执行进度</div>
+            <table class="table">
+                <tr>
+                    <td>总任务数：</td>
+                    <td v-text="taskCount"></td>
+                </tr>
+                <tr>
+                    <td>已完成：</td>
+                    <td v-text="finishCount>=0?finishCount:'-'"></td>
+                </tr>
+                <tr>
+                    <td>剩余时间：</td>
+                    <td v-text="forecastTime>=0?formatTime(forecastTime):'-'"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+
+
+    <div class="pxer-print" v-show="showAll ||['finish'].indexOf(state)!==-1">
+        <div class="pp-filter pxer-class-fieldset">
+            <div class="ppf-title pcf-title">过滤选项</div>
+            <div class="ppf-form">
+                <div class="form-group">
+                    <label>总分 ≥</label>
+                    <input type="number" class="form-control" v-model.number="pxer.pfConfig.score" />
+                </div>
+                <div class="form-group">
+                    <label>浏览数 ≥</label>
+                    <input type="number" class="form-control" v-model.number="pxer.pfConfig.view" />
+                </div>
+                <div class="form-group">
+                    <label>平均分 ≥</label>
+                    <input type="number" class="form-control" v-model.number="pxer.pfConfig.avg" />
+                </div>
+                <div class="form-group">
+                    <label>作品中<strong>不能</strong>含有以下<strong>任意一个</strong>标签</label>
+                    <input v-model="no_tag_any" type="text" class="form-control" placeholder="可以有多个，空格分割" />
+                </div>
+                <div class="form-group">
+                    <label>作品中<strong>不能同时</strong>含有以下<strong>所有</strong>标签</label>
+                    <input v-model="no_tag_every" type="text" class="form-control" placeholder="可以有多个，空格分割" />
+                </div>
+                <div class="form-group">
+                    <label>作品中<strong>必须</strong>含有以下<strong>任意一个</strong>标签</label>
+                    <input v-model="has_tag_some" type="text" class="form-control" placeholder="可以有多个，空格分割" />
+                </div>
+                <div class="form-group">
+                    <label>作品中<strong>必须同时</strong>含有以下<strong>所有</strong>标签</label>
+                    <input v-model="has_tag_every" type="text" class="form-control" placeholder="可以有多个，空格分割" />
+                </div>
+            </div>
+        </div>
+        <div class="pp-print pxer-class-fieldset">
+            <div class="ppp-title pcf-title">输出选项</div>
+            <div class="ppp-form">
+                <div class="form-group">
+                    <label>单张插画</label>
+                    <select class="form-control" v-model="pxer.ppConfig.illust_single">
+                        <option value="max">最大</option>
+                        <option value="600p">600p</option>
+                        <option value="no">不输出</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>单张插画</label>
+                    <select class="form-control" v-model="pxer.ppConfig.illust_single">
+                        <option value="max">最大</option>
+                        <option value="600p">600p</option>
+                        <option value="no">不输出</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>多张插画</label>
+                    <select class="form-control" v-model="pxer.ppConfig.illust_multiple">
+                        <option value="max">最大</option>
+                        <option value="1200p">1200p</option>
+                        <option value="cover_600p">仅封面（600p）</option>
+                        <option value="no">不输出</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>单张漫画</label>
+                    <select class="form-control" v-model="pxer.ppConfig.manga_single">
+                        <option value="max">最大</option>
+                        <option value="600p">600p</option>
+                        <option value="no">不输出</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>多张漫画</label>
+                    <select class="form-control" v-model="pxer.ppConfig.manga_multiple">
+                        <option value="max">最大</option>
+                        <option value="1200p">1200p</option>
+                        <option value="cover_600p">仅封面（600p）</option>
+                        <option value="no">不输出</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>动图</label>
+                    <select class="form-control" v-model="printConfigUgoira">
+                        <option value="max-no">最大压缩包</option>
+                        <option value="600p-no">600p压缩包</option>
+                        <option value="max-yes">最大压缩包 + 参数</option>
+                        <option value="600p-yes">600p压缩包 + 参数</option>
+                        <option value="no-no">不输出</option>
+                    </select>
+                </div>
+                <div class="pppf-buttons">
+                    <p class="pppfb-msg" v-html="taskInfo" v-show="taskInfo"></p>
+                    <button class="btn btn-outline-info" @click="count">Count</button>
+                    <button class="btn btn-outline-success" @click="pxer.printWorks()">Print</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
