@@ -2,6 +2,7 @@
 
 class PxerApp extends PxerEvent{
     constructor(){
+
         /**
          * 绑定的标签事件，提供给UI的API，有以下事件：
          * - stop 被强行终止
@@ -20,16 +21,15 @@ class PxerApp extends PxerEvent{
             'finishWorksTask','finishPageTask',
             'error','stop',
         ]);
-
         /**
          * 当前页面类型。可能的值
          * - member 个人资料页
          * - member_illust 作品列表页
-         * - search 搜索页
          * - bookmark 收藏页
-         * - medium 作品详情查看
+         * - search 搜索页
+         * - illust_medium 作品详情查看
          * */
-        this.pageType =PxerApp.getPageType();
+        this.pageType =getPageType();
         /*!页面的作品数量*/
         this.worksNum =PxerApp.getWorksNum();
 
@@ -173,7 +173,7 @@ class PxerApp extends PxerEvent{
 
 PxerApp.prototype['getThis'] =function(){
     // 生成任务对象
-    var pwr =PxerWorksRequest({
+    var pwr =new PxerWorksRequest({
         isMultiple  :!!document.querySelector('.multiple ._icon-files'),
         id          :document.URL.match(/illust_id=(\d+)/)[1],
     });//[manga|ugoira|illust]
@@ -185,22 +185,10 @@ PxerApp.prototype['getThis'] =function(){
         pwr.type ='manga';
     }
     pwr.url =PxerHtmlParser.getUrlList(pwr);
-    if(pwr.url.length ===1){
-        pwr.html[pwr.url[0]]=document.documentElement.outerHTML;
-        var pw =this.php.parseWorks(pwr);
-        this.pp.countAddress([pw]);
-        return '@@';
-    }
-
-    // h
-    var pt =new PxerThread();
-    pt.init(pwr);
-    pt.run();
-    pt.on('load',task=>{
-        var php =new PxerHtmlParser();
-        php.parseWorks(task);
-    });
-
+    // 添加执行
+    this.taskList.push(pwr);
+    this.one('finishWorksTask',()=>this.printWorks());
+    this.executeWroksTask();
 };
 
 PxerApp.prototype["autoSwitch"]=function(){
@@ -225,40 +213,10 @@ PxerApp.prototype["queryExecute"]=function(){
 };
 
 
-
-
-
-PxerApp.version ='6.1.4';
 PxerApp.getWorksNum =function(dom=document){
     var elt =dom.querySelector(".count-badge");
     if(!elt) return null;
     return parseInt(elt.innerHTML);
 };
-PxerApp.getPageType =function(dom=document){
-    var typeAnalyzer={
-        "member"        :function(url){
-            return /member\.php/.test(url);
-        },
-        "member_illust" :function(url){
-            return /member_illust\.php/.test(url);
-        },
-        "search"        :function(url){
-            return /search\.php/.test(url);
-        },
-        "bookmark"      :function(url){
-            return /bookmark\.php/.test(url);
-        },
-        "illust_medium" :function(url){
-            return /member_illust\.php/.test(url)
-                && /illust_id/.test(url)
-                ;
-        }
-    };
-    for(var key in typeAnalyzer){
-        if(typeAnalyzer[key](dom.URL)){
-            return key;
-        }
-    }
-    return null
-};
+
 

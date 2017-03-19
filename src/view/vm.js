@@ -120,7 +120,7 @@ afterLoad(function(){
         },
         methods:{
             load(){
-                if(this.pxer.pageType==='medium'){
+                if(this.pxer.pageType==='works_medium'){
                     this.pxer.getThis();
                 }else{
                     this.state='ready'

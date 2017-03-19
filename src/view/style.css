@@ -748,6 +748,7 @@
     border: 1px solid #d6dee5;
     border-radius: 5px;
     margin-top: 10px;
+    margin-bottom: 10px;
     min-height: 40px;
     display: flex; }
   .pxer-app .pxer-nav {

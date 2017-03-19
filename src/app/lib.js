@@ -61,6 +61,27 @@ window.createScript =function(url){
         return elt;
     };
 };
+window.createResource =function(url){
+    let fx =url.match(/\.([^\.]+?)$/)[1];
+    let elt =document.createElement('link');
+    switch(fx){
+        case 'css':
+            elt.rel ='stylesheet';
+            break;
+        case 'ico':
+            elt.rel ='shortcut icon';
+            elt.type ='image/x-icon';
+            break;
+        default:
+            throw new Error(`unknown filename extension "${fx}"`)
+    }
+    return function(resolve,reject){
+        elt.href =url;
+        document.documentElement.appendChild(elt);
+        if(window['PXER_MODE']==='dev') console.log('Linked '+url);
+        resolve();
+    };
+};
 window.execPromise =function(taskList,call){
     var promise =Promise.resolve();
     if(Array.isArray(taskList)&&Array.isArray(taskList[0])){
@@ -68,12 +89,72 @@ window.execPromise =function(taskList,call){
             promise =promise.then(()=>Promise.all(array.map(item=>new Promise(call(item)))));
         }
     }else if(Array.isArray(taskList)){
-        promise =promise.then(()=>Promise.all(array.map(item=>new Promise(call(item)))));
+        for(let item of taskList){
+            promise =promise.then(()=>new Promise(call(item)));
+        }
     }else{
-        promise =promise.then(call(item));
+        promise =promise.then(()=>new Promise(call(taskList)));
     };
     return promise;
-}
+};
+
+/**
+ * 当前页面类型。可能的值
+ * - bookmark_user  自己/其他人关注的用户列表
+ * - bookmark_works 自己/其他人收藏的作品
+ * - member_info    自己/其他人的主页
+ * - works_medium   查看某个作品
+ * - works_manga    查看某个多张作品的多张页
+ * - works_big      查看某个作品的某张图片的大图
+ * - member_works   自己/其他人作品列表页
+ * - search         检索页
+ * - unknown        未知
+ * @param {string} url
+ * @return {string} - 页面类型
+ * */
+window.getPageType =function(url=document.URL){
+    var URLData =parseURL(url);
+    var type =null;
+    if(URLData.domain !=='www.pixiv.net')return 'unknown';
+    if(URLData.path==='/bookmark.php'){
+        if(!URLData.query||!URLData.query.type){
+            switch(URLData.query.type){
+                case 'user':
+                    type ='bookmark_user';
+                    break;
+                default:
+                    type ='unknown';
+            };
+        }else{
+            type ='bookmark_works';
+        }
+    }else if(URLData.path==='/member.php'){
+        type ='member_info';
+    }else if(URLData.path==='/member_illust.php'){
+        if(URLData.query&&URLData.query.mode){
+            switch(URLData.query.mode){
+                case 'medium':
+                    type ='works_medium';
+                    break;
+                case 'manga':
+                    type ='works_manga';
+                    break;
+                case 'manga_big':
+                    type ='works_big';
+                    break;
+                default:
+                    type ='unknown';
+            };
+        }else{
+            type ='member_works';
+        }
+    }else if(URLData.path==='/search.php'){
+        type ='search';
+    }else{
+        type ='unknown';
+    }
+    return type;
+};
 /*EventTarget扩展
 EventTarget.prototype['addOneEventListener'] =function(type,listener,useCapture){
     var fn;

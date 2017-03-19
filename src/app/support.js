@@ -3,22 +3,24 @@
  * */
 ~~~function(){
 // 环境检测
-window['PXER_SUPPORT']=true;
-window['PXER_LOAD_APP']=false;
+window['PXER_SUPPORT']  =true;
+window['PXER_LOAD_APP'] =false;
+const supportType =['bookmark_works','member_works','search','works_medium'];
 const URLData =parseURL(document.URL);
 if(URLData.domain ==='www.pixiv.net'){
-    console.log(URLData);
-    window['PXER_LOAD_APP'] =
-        URLData.path==='/bookmark.php'
-        || URLData.path==='/search.php'
-        || (URLData.path==='/member_illust.php' && URLData.query.mode==='medium')
-        || (URLData.path==='/member_illust.php' && !URLData.query.mode)
-    ;
+    if(supportType.indexOf(getPageType())!==-1){
+        window['PXER_SUPPORT']=true;
+        window['PXER_LOAD_APP']=true;
+    }else{
+        window['PXER_SUPPORT']=true;
+        window['PXER_LOAD_APP']=false;
+    }
 }else if(URLData.domain==='127.0.0.1'||URLData.domain==='localhost'){
     window['PXER_SUPPORT']=true;
     window['PXER_LOAD_APP']=true;
 }else{
     window['PXER_SUPPORT']=false;
+    window['PXER_LOAD_APP']=false;
     return;//退出整个程序
 };
 
@@ -57,63 +59,42 @@ const linkResource  =/**/[
 ];//*/[];
 
 
-// 过程化载入文件
-var Flow =Promise.resolve();
+    // 过程化载入文件
+    var Flow =Promise.resolve();
 
 
-// 加载pxer-app
-if(window['PXER_LOAD_APP']){
-    // 加载无关紧要的资源
-    for(let url of linkResource){
-        let fx =url.match(/\.([^\.]+?)$/)[1];
-        let elt =document.createElement('link');
-        elt.href =url;
-        switch(fx){
-            case 'css':
-                elt.rel ='stylesheet';
-                break;
-            case 'ico':
-                elt.rel ='shortcut icon';
-                elt.type ='image/x-icon';
-                break;
-            default:
-                throw new Error(`unknown filename extension "${fx}"`)
-        }
-        document.documentElement.appendChild(elt);
-    }
-    // 加载pxer-app class
-    Flow =Flow.then(()=>execPromise(appClass,createScript));
-    // 加载UI
-    Flow =Flow.then(()=>new Promise(function(resolve,reject){
-        if(window['PXER_MODE']==='dev')console.log('load pxer UI');
-        // CSS
-        for(let url of viewStyles){
-            var elt =document.createElement('link');
-            elt.rel='stylesheet';
-            elt.href=url;
-            document.documentElement.appendChild(elt)
-        }
-        // HTML模板
-        var xhr =new XMLHttpRequest();
-        xhr.open('GET',viewTpl);
-        xhr.onload=function(){
-            window['PXER_TEMPLATE']=xhr.responseText;
-            resolve();
-        };
-        xhr.onerror=reject;
-        xhr.ontimeout=reject;
-        xhr.send();
-    }));
-    // 加载UI JavaScript
-    Flow =Flow.then(()=>execPromise(viewScripts,createScript));
-};
-// 最后才会运行的JavaScript文件
-Flow =Flow.then(()=>execPromise(afterRun,createScript));
+    // 加载pxer-app
+    if(window['PXER_LOAD_APP']){
+        // 加载无关紧要的资源
+        Flow =Flow.then(()=>execPromise(linkResource,createResource));
+        // 加载pxer-app class
+        Flow =Flow.then(()=>execPromise(appClass,createScript));
+        // 加载UI
+        Flow =Flow.then(()=>new Promise(function(resolve,reject){
+            if(window['PXER_MODE']==='dev')console.log('load pxer UI');
+            // CSS
+            Flow =Flow.then(()=>execPromise(viewStyles,createResource));
+            // HTML模板
+            var xhr =new XMLHttpRequest();
+            xhr.open('GET',viewTpl);
+            xhr.onload=function(){
+                window['PXER_TEMPLATE']=xhr.responseText;
+                resolve();
+            };
+            xhr.onerror=reject;
+            xhr.ontimeout=reject;
+            xhr.send();
+        }));
+        // 加载UI JavaScript
+        Flow =Flow.then(()=>execPromise(viewScripts,createScript));
+    };
+    // 最后才会运行的JavaScript文件
+    Flow =Flow.then(()=>execPromise(afterRun,createScript));
 
 
-// 错误处理
-Flow =Flow.then(()=>console.log('Pxer loaded'));
-Flow =Flow.catch(console.error);
+    // 错误处理
+    Flow =Flow.then(()=>console.log('Pxer loaded'));
+    Flow =Flow.catch(console.error);
 
 
 

@@ -88,8 +88,8 @@ PxerPrinter.prototype['fillTaskInfo'] =function(worksList){
 
     this.taskInfo =`
 共计${works}个作品，${address}个下载地址。<br />
-单张图片作品占 ${(multiple/works*100).toFixed(1)}%<br />
-多张图片作品占 ${(single/works*100).toFixed(1)}%<br />
+单张图片作品占 ${(single/works*100).toFixed(1)}%<br />
+多张图片作品占 ${(multiple/works*100).toFixed(1)}%<br />
 `.trim();
 };
 PxerPrinter.prototype['print'] =function(){
