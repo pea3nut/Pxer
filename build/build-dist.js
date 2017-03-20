@@ -2,7 +2,7 @@ const Path =require('path');
 const Join =Path.resolve;
 const Fs =require('fs');
 const Fse = require('fs-extra');
-const PxerUtility =require('./pxer-utility.js');
+const PxerUtility =require(Join(__dirname,'./pxer-utility.js'));
 const Exec =require('child_process').exec;
 
 // 拷贝public文件夹
@@ -43,9 +43,9 @@ Fs.writeFileSync(
 console.log('Build ./dist/');
 
 // 执行*.build.js
-let builderList =PxerUtility.getAllFile('./').filter(filename=>filename.indexOf('.build.js')!==-1);
+let builderList =PxerUtility.getAllFile(__dirname).filter(filename=>filename.indexOf('.build.js')!==-1);
 for(let build of builderList){
-    Exec(`node ${build}`,__dirname ,function(err,msg){
+    Exec(`node ${build}` ,{cwd:__dirname} ,function(err,msg){
         if(err) console.error(err);
         else    console.log(new Date+'\n'+msg.toString());
     });

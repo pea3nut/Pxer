@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node ./build/wather.js",
+    "dev": "node ./build/watcher.js",
     "build": "node ./build/build-dist.js"
   },
   "repository": {

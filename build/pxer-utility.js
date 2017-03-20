@@ -13,19 +13,16 @@ module.exports.path2URL =function(path){
     return url.substr(0,url.length-1)+urlPath;
 };
 module.exports.getAllFile =function(path){
-    if(['/','\\'].indexOf(path[path.length-1])){
-        path =path+'/';
-    }
 
     var stack =Fs.readdirSync(path);
     var fileList =[];
 
     var fileName =null;
     while(fileName =stack.shift()){
-        if(Fs.statSync(path+fileName).isDirectory()){
-            stack.push(...Fs.readdirSync(path+fileName).map(item=>fileName+'/'+item))
+        if(Fs.statSync(Path.join(path,fileName)).isDirectory()){
+            stack.push(...Fs.readdirSync(path+fileName).map(item=>Path.join(fileName,item)))
         }else{
-            fileList.push(path+fileName)
+            fileList.push(Path.join(path,fileName));
         };
     }
 

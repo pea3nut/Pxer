@@ -13,7 +13,10 @@ const renderData ={
             '../dist/view/vm.js',
         ].map(path=>PxerUtility.path2URL(path)),
         afterRun    :PxerUtility.path2URL('../dist/run.js'),
-        linkResource:PxerUtility.getAllFile('../dist/public/').map(path=>PxerUtility.path2URL(path)),
+        linkResource:PxerUtility.getAllFile('../dist/public/')
+            .filter(path=>/\.(css|ico)$/.test(path))
+            .map(path=>PxerUtility.path2URL(path))
+        ,
     },
     dev   :{
         appClass    :PxerUtility.groupFile(
@@ -27,7 +30,10 @@ const renderData ={
             '../src/view/vm.js',
         ].map(path=>PxerUtility.path2URL(path)),
         afterRun    :PxerUtility.getAllFile('../src/run/').map(path=>PxerUtility.path2URL(path)),
-        linkResource:PxerUtility.getAllFile('../src/public/').map(path=>PxerUtility.path2URL(path)),
+        linkResource:PxerUtility.getAllFile('../src/public/')
+            .filter(path=>/\.(css|ico)$/.test(path))
+            .map(path=>PxerUtility.path2URL(path))
+        ,
     },
 };
 
