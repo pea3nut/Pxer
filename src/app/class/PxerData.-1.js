@@ -9,6 +9,7 @@ class PxerRequest{
     constructor({url ,html}={}){
         this.url=url;
         this.html =html;
+        this.completed =false;
     };
 }
 /**
@@ -44,11 +45,11 @@ class PxerWorksRequest extends PxerRequest{
  * @extends {PxerRequest}
  * */
 class PxerFailInfo{
-    constructor({url,type,xhr,task}={}){
+    constructor({url,type,task,index}={}){
         this.url  =url;
         this.type =type;
-        this.xhr  =xhr;
         this.task =task;
+        this.index =index;
         return denyNewAttr(this);
     }
 }
@@ -61,28 +62,28 @@ class PxerFailInfo{
  * */
 class PxerWorks{
     constructor({id ,type ,date ,server ,tagList ,viewCount ,ratedCount ,scoreCount ,fileFormat}={},strict=true){
-        /*!作品ID*/
+        /**作品ID*/
         this.id =id;
         /**
-         * 投稿日期，格式：[Y,m,d,h,m,s]
-         * @type {Array}
+         * 投稿日期，格式：Y/m/d/h/m/s
+         * @type {string}
          * */
         this.date =date;
         this.type =type;//[manga|ugoira|illust]
-        /*!作品存放的P站服务器*/
+        /**作品存放的P站服务器*/
         this.server =server;//i\d
         /**
          * 作品标签列表
          * @type {Array}
          * */
         this.tagList =tagList;
-        /*!作品被浏览的次数*/
+        /**作品被浏览的次数*/
         this.viewCount =viewCount;
-        /*!作品被评价的次数*/
+        /**作品被评价的次数*/
         this.ratedCount =ratedCount;
-        /*!作品的总分*/
+        /**作品的总分*/
         this.scoreCount =scoreCount;
-        /*!作品的图片文件扩展名*/
+        /**作品的图片文件扩展名*/
         this.fileFormat =fileFormat;
 
         if(strict)return denyNewAttr(this);
@@ -96,7 +97,7 @@ class PxerWorks{
 class PxerMultipleWorks extends PxerWorks{
     constructor(data={}){
         super(data,false);
-        /*!作品的图片张数*/
+        /**作品的图片张数*/
         this.multiple =data.multiple;
         return denyNewAttr(this);
     }
@@ -110,12 +111,17 @@ class PxerUgoiraWorks extends PxerWorks{
     constructor(data={}){
         super(data,false);
         this.fileFormat='zip';
-        /*!动图动画参数*/
+        /**动图动画参数*/
         this.frames =data.frames;
         return denyNewAttr(this);
     }
 };
 
+/**
+ * 对对象进行代理，拒绝新key赋值并抛出错误
+ * @param {Object} obj - 要代理的对象
+ * @return {Proxy}
+ * */
 function denyNewAttr(obj){
     return new Proxy(obj ,{
         get(obj ,prop){

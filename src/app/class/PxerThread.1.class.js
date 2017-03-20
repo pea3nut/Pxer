@@ -1,7 +1,11 @@
 class PxerThread extends PxerEvent{
-    constructor({id ,config ,task}={}){
+    /**
+     * @param id {string} 线程的ID，便于调试
+     * @param {Object} config 线程的配置信息
+     * */
+    constructor({id ,config}={}){
         super(['load','error','fail']);
-        /*!当前线程的ID*/
+        /**当前线程的ID*/
         this.id =id;
         /**
          * 当前线程的状态
@@ -12,26 +16,34 @@ class PxerThread extends PxerEvent{
          * - running
          * */
         this.state='free';
-        /*!线程执行的任务*/
-        this.task =task;
+        /**线程执行的任务*/
+        this.task =null;
 
+        /**
+         *
+         * */
         this.config =config ||{
-            /*!ajax超时重试时间*/
+            /**ajax超时重试时间*/
             timeout:8000,
-            /*!最多重试次数*/
+            /**最多重试次数*/
             retry:5,
         };
 
-        /*!运行时参数*/
+        /**运行时参数*/
         this.runtime ={};
 
-        /*!使用的xhr对象*/
+        /**使用的xhr对象*/
         this.xhr =null;
 
     };
 };
 
-
+/**
+ * 对抓取到的URL和HTML进行校验
+ * @param {string} url
+ * @param {string} html
+ * @return {string|true} 返回字符串表示失败
+ * */
 PxerThread.checkRequest =function(url ,html){
     if(!html) return 'empty';
     if(html.indexOf("_no-item _error") !==-1){
@@ -42,12 +54,15 @@ PxerThread.checkRequest =function(url ,html){
     return true;
 };
 
-
+/**终止线程的执行*/
 PxerThread.prototype['stop'] =function(){
     this.xhr.abort();
 };
 
-
+/**
+ * 初始化线程
+ * @param {PxerRequest} task
+ * */
 PxerThread.prototype['init'] =function(task){
     this.task=task;
 
@@ -71,7 +86,10 @@ PxerThread.prototype['init'] =function(task){
 
 };
 
-
+/**
+ * 使用PxerThread#xhr发送请求
+ * @param {string} url
+ * */
 PxerThread.prototype['sendRequest'] =function(url){
     this.state ='running';
     this.xhr.open('GET' ,url ,true);
@@ -94,10 +112,12 @@ PxerThread.prototype['sendRequest'] =function(url){
         this.xhr.send();
     };
 };
+/**运行线程*/
 PxerThread.prototype['run'] =function _self(){
     const URL =this.runtime.urlList.shift();
     if(!URL){
         this.state ='free';
+        this.task.completed =true;
         this.dispatch("load" ,this.task);
         return true;
     }
@@ -111,7 +131,6 @@ PxerThread.prototype['run'] =function _self(){
 
     var retry=0;
     XHR.addEventListener('timeout',()=>{
-        console.log(`thread timeout ${retry} - ${this.config.retry}`);
         if(++retry > this.config.retry){
             this.state ='timeout';
             this.dispatch('fail' ,new PxerFailInfo({
@@ -152,7 +171,7 @@ PxerThread.prototype['run'] =function _self(){
         }else{
             this.task.html =XHR.responseText;
         };
-        this.run();//递归
+        _self.call(this);//递归
         return true;
     });
     XHR.addEventListener("error" ,()=>{

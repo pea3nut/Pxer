@@ -1,6 +1,6 @@
 const Expect = chai.expect;
 const Assert = chai.assert;
-
+window['PXER_MODE']='dev';
 
 describe('PxerHtmlParser 解析类' ,function(){
     it('解析作品列表' ,function(){
@@ -373,7 +373,6 @@ describe('PxerThread 线程类' ,function(){
             Expect(data).to.be.instanceof(PxerWorksRequest);
             Expect(data.url.length).to.be.equal(3);
             data.url.forEach(url=>Expect(data.html[url]).to.be.a('string'));
-            console.log(data);
             done();
         });
         pt.run();
@@ -469,7 +468,6 @@ describe('PxerThreadManager 线程管理类' ,function(){
         ptm.on('load',function(data){
             Assert.isArray(data);
             Assert.lengthOf(data ,taskLength);
-            console.log(data);
             data.forEach(item=>Assert.instanceOf(item ,PxerWorksRequest));
             data.forEach(function(pwr){
                 pwr.url.forEach(url=>{
@@ -491,7 +489,7 @@ describe('PxerApp 主程序 作品列表页' ,function(){
     });
 
     pxer.pageType ='member_illust';
-    pxer.worksNum =3;
+    pxer.worksNum =10;
 
     it('创建任务列表' ,function(){
         console.groupCollapsed('PxerApp 主程序 作品列表页');
@@ -537,35 +535,34 @@ describe('PxerApp 主程序 作品列表页' ,function(){
         });
         pxer.executeWroksTask();
     });
-    it('失败重抓' ,function(done){
-        var pfi =new PxerFailInfo({
-            url:'http://www.pixiv.net/member_illust.php?mode=manga&illust_id=57506863',
+    it('模拟失败' ,function(){
+        console.log(pxer.taskList);
+        pxer.taskList[1].completed=false;
+        pxer.ptm.dispatch('fail' ,new PxerFailInfo({
             type:'timeout',
-            xhr:new XMLHttpRequest(),
-            task:new PxerWorksRequest({
-                "url": [
-                    "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=57506863",
-                    "http://www.pixiv.net/member_illust.php?mode=manga&illust_id=57506863",
-                    "http://www.pixiv.net/member_illust.php?mode=manga_big&page=0&illust_id=57506863"
-                ],
-                "html": {},
-                "type": "manga",
-                "isMultiple": true,
-                "id": "57506863"
-            }),
-        });
-        pxer.ptm.dispatch('fail' ,pfi);
-        Assert.lengthOf(pxer.failList,1);
-        pxer.switchFail2Task();
-        Assert.lengthOf(pxer.failList,0);
-        Assert.lengthOf(pxer.taskList,1);
+            task:pxer.taskList[1],
+        }));
+        pxer.taskList[3].completed=false;
+        pxer.ptm.dispatch('fail' ,new PxerFailInfo({
+            type:'timeout',
+            task:pxer.taskList[3],
+        }));
+        pxer.taskList[4].completed=false;
+        pxer.ptm.dispatch('fail' ,new PxerFailInfo({
+            type:'timeout',
+            task:pxer.taskList[4],
+        }));
+
+        Assert.lengthOf(pxer.failList,3);
+
+    });
+    it('失败重抓' ,function(done){
         pxer.one('finishWorksTask',function(resultSet){
             Assert.isArray(resultSet);
-            Assert.lengthOf(resultSet,1);
-            Assert.lengthOf(pxer.resultSet,pxer.worksNum+1);
+            Assert.lengthOf(resultSet,pxer.worksNum-1);
             done();
         });
-        pxer.executeWroksTask();
+        pxer.executeFailWroks(pxer.failList.slice(1));
     });
     it('拼装下载地址' ,function(){
         console.groupCollapsed('作品信息');
@@ -597,8 +594,8 @@ describe('PxerApp 主程序 再抓取' ,function(){
         url:'http://www.pixiv.net/search.php?word=VOCALOID&order=date_d&p=1',
     }));
     pxer.ptmConfig.thread=20;
-    pxer.ptmConfig.timeout=400;
-    pxer.ptmConfig.retry=1;
+    pxer.ptmConfig.timeout=500;
+    pxer.ptmConfig.retry=0;
 
     it('抓取解析页码' ,function(done){
         console.groupCollapsed('PxerApp 主程序 鲁棒性测试');
@@ -626,11 +623,11 @@ describe('PxerApp 主程序 再抓取' ,function(){
             Assert(pxer.resultSet.length+pxer.failList.length===pxer.worksNum,'作品数不相符！');
             done();
         });
+        console.log(pxer.taskList);
         pxer.executeWroksTask();
     });
     it('抓取作品 尝试二' ,function(done){
         if(!pxer.failList.length)done();
-        pxer.switchFail2Task();
         pxer.one('finishWorksTask',function(resultSet){
             Assert.isArray(resultSet);
             console.log('剩余：'+pxer.failList.length);
@@ -640,11 +637,10 @@ describe('PxerApp 主程序 再抓取' ,function(){
             Assert(pxer.resultSet.length+pxer.failList.length===pxer.worksNum,'作品数不相符！');
             done();
         });
-        pxer.executeWroksTask();
+        pxer.executeFailWroks();
     });
     it('抓取作品 尝试三' ,function(done){
         if(!pxer.failList.length)done();
-        pxer.switchFail2Task();
         pxer.one('finishWorksTask',function(resultSet){
             Assert.isArray(resultSet);
             console.log('剩余：'+pxer.failList.length);
@@ -654,13 +650,89 @@ describe('PxerApp 主程序 再抓取' ,function(){
             Assert(pxer.resultSet.length+pxer.failList.length===pxer.worksNum,'作品数不相符！');
             done();
         });
-        pxer.executeWroksTask();
+        pxer.executeFailWroks();
     });
     it('校验结果' ,function(){
         Assert.isArray(pxer.resultSet);
         Assert.isArray(pxer.failList);
         Assert(pxer.resultSet.length+pxer.failList.length===pxer.worksNum,'作品数不相符！');
     });
+});
+
+describe('PxerApp 主程序 taskOption' ,function(){
+    this.timeout(20000);
+
+    it('limit' ,function(done){
+        var pxer =new PxerApp();
+        pxer.on('error',function(err){
+            throw err;
+        });
+        pxer.ptmConfig.thread=2;
+        pxer.pageType ='member_illust';
+        pxer.worksNum =9;
+        pxer.taskOption.limit=4;
+        pxer.initPageTask();
+        pxer.taskList.forEach(function(task){
+            task.url =task.url.replace(
+                document.URL,
+                'http://www.pixiv.net/member_illust.php?id=10009740'
+            );
+            var count =0;
+            for(let char of task.url){
+                if(char==='?')count++;
+            }
+            if(count===2)task.url =task.url.replace(/\?([^\?]+)$/,'&$1');
+        });
+        pxer.one('finishPageTask',function(resultSet){
+            pxer.switchPage2Works();
+            pxer.executeWroksTask();
+            pxer.one('finishWorksTask',function(resultSet){
+                Assert.isArray(resultSet);
+                Assert.lengthOf(resultSet,pxer.taskOption.limit);
+                done();
+            });
+        });
+        pxer.executePageTask();
+    });
+    it('stopId' ,function(done){
+        var pxer =new PxerApp();
+        pxer.on('error',function(err){
+            throw err;
+        });
+        pxer.ptmConfig.thread=3;
+        pxer.pageType ='member_illust';
+        pxer.worksNum =9;
+        pxer.taskOption.stopId=57506727;
+        pxer.initPageTask();
+        pxer.taskList.forEach(function(task){
+            task.url =task.url.replace(
+                document.URL,
+                'http://www.pixiv.net/member_illust.php?id=10009740'
+            );
+            var count =0;
+            for(let char of task.url){
+                if(char==='?')count++;
+            }
+            if(count===2)task.url =task.url.replace(/\?([^\?]+)$/,'&$1');
+        });
+        pxer.one('finishPageTask',function(resultSet){
+            pxer.switchPage2Works();
+            pxer.executeWroksTask();
+            pxer.one('finishWorksTask',function(resultSet){
+                Assert.isArray(resultSet);
+                Assert.lengthOf(resultSet,6);
+                Assert.deepEqual(
+                    resultSet.map(item=>item.id),
+                    ["59070428", "57532250", "57532237", "57507348", "57506863", "57506780"]
+                );
+                done();
+            });
+        });
+        pxer.executePageTask();
+    });
+
+
+
 });
 
 //*/

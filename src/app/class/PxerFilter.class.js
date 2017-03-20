@@ -1,16 +1,31 @@
 'use strict';
 
 class PxerFilter{
+    /**
+     * @param {Object} config - 过滤参数
+     * @see PxerFilter.filterInfo
+     * @see PxerFilter.filterTag
+     * */
     constructor(config){
-        /*!全部的作品集合*/
-        this.worksList =[];
-        /*!过滤后得到的作品集合*/
+        /**
+         * 每次过滤后得到的累计的作品集合
+         * @type {PxerWorks[]}
+         * */
         this.passWorks =[];
 
-        /*!过滤配置信息*/
+        /**
+         * 过滤的配置信息
+         * @see PxerFilter.filterInfo
+         * @see PxerFilter.filterTag
+         * */
         this.config =Object.assign(PxerFilter.defaultConfig(),config);
     };
 
+    /**
+     * 对作品进行过滤
+     * @param {PxerWorks[]} worksList - 要过滤的作品数组
+     * @return {PxerWorks[]} - 过滤后的结果
+     * */
     filter(worksList){
         var resultSet =PxerFilter.filterInfo(PxerFilter.filterTag(worksList,this.config) ,this.config);
         this.passWorks.push(...resultSet);
@@ -18,6 +33,11 @@ class PxerFilter{
     };
 };
 
+/**
+ * 返回PxerFilter的默认配置参数
+ * @see PxerFilter.filterInfo
+ * @see PxerFilter.filterTag
+ * */
 PxerFilter.defaultConfig =function(){
     return{
         "score"     :0,
@@ -30,6 +50,14 @@ PxerFilter.defaultConfig =function(){
     };
 };
 
+/**
+ * 根据标签作品信息过滤作品
+ * @param {PxerWorks[]} worksList
+ * @param {number} score - 作品不小于的总分
+ * @param {number} avg   - 作品不小于的评价分
+ * @param {number} view  - 作品不小于的浏览数
+ * @return {PxerWorks[]}
+ * */
 PxerFilter.filterInfo =function(worksList ,{score=0,avg=0,view=0}){
     return worksList.filter(function(works){
         return works.scoreCount >= score
@@ -38,6 +66,15 @@ PxerFilter.filterInfo =function(worksList ,{score=0,avg=0,view=0}){
     });
 };
 
+/**
+ * 根据标签过滤作品
+ * @param {PxerWorks[]} worksList
+ * @param {string[]} no_tag_any    - 作品中不能含有里面的任意一个标签
+ * @param {string[]} no_tag_every  - 作品中不能同时含有里面的所有标签
+ * @param {string[]} has_tag_some  - 作品中必须含有有里面的任意一个标签
+ * @param {string[]} has_tag_every - 作品中必须同时含有里面的所有标签
+ * @return {PxerWorks[]}
+ * */
 PxerFilter.filterTag =function(worksList ,{has_tag_every,has_tag_some,no_tag_any,no_tag_every}){
     var passWorks =worksList;
 

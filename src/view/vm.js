@@ -14,25 +14,44 @@ afterLoad(function(){
             pxer:new PxerApp(),
             showAll:false,
             state:'loaded',//[loaded|ready|page|works|finish|re-ready|stop|error]
+            stateMap:{
+                loaded:'初始完毕',
+                ready :'就绪',
+                page  :'抓取页码中',
+                works :'抓取作品中',
+                finish:'完成',
+                're-ready':'再抓取就绪',
+                stop  :'用户手动停止',
+                error :'出错',
+            },
             pxerVersion:window['PXER_VERSION'],
             showPxerFailWindow:false,
             runTimeTimestamp:0,
             runTimeTimer:null,
-            checkedFailList:[],
+            checkedFaiWorkslList:[],
             taskInfo:'',
+            tryFailWroksList:[],
+            showTaskOption:false,
+            taskOption:{
+                limit:'',
+                stopId:'',
+            },
+            showLoadBtn:true,
+            errmsg:'',
         }},
         created(){
             window['PXER_VM'] =this;
+            this.pxer.on('error',(err)=>{
+                this.errmsg =err;
+            });
         },
         computed:{
             pageType(){
                 var map ={
-                    'member'        :'个人资料页',
-                    'member_illust' :'作品列表页',
-                    'search'        :'搜索页',
-                    'bookmark'      :'收藏页',
-                    'medium'        :'作品详情查看',
-                    'null'          :'未知',
+                    'member_works'     :'作品列表页',
+                    'search'           :'检索页',
+                    'bookmark_works'   :'收藏列表页',
+                    'unknown'          :'未知',
                 };
                 return map[this.pxer.pageType];
             },
@@ -41,20 +60,23 @@ afterLoad(function(){
                 return runState.indexOf(this.state)!==-1;
             },
             taskCount(){
-                return ~~(this.pxer.worksNum/20)+this.pxer.worksNum;
+                return Math.ceil(this.pxer.worksNum/20)+this.pxer.worksNum;
             },
             finishCount(){
                 if(this.state==='page'){
-                    return this.pxer.ptm.resultSet.length;
+                    return this.pxer.taskList.filter(pr=>pr.completed).length;
                 }else if(this.state==='works'){
-                    return this.pxer.ptm.resultSet.length+~~(this.pxer.worksNum/20)+this.pxer.resultSet.length;
+                    return (
+                        this.pxer.taskList.filter(pr=>pr.completed).length
+                        +~~(this.pxer.worksNum/20)
+                        +this.pxer.failList.length
+                    );
                 }else{
                     return -1;
                 };
             },
             forecastTime(){
-                if(this.isRunning){
-
+                if(this.isRunning&&this.finishCount){
                     return Math.ceil(
                         (this.runTimeTimestamp/this.finishCount)*this.taskCount
                         -this.runTimeTimestamp
@@ -122,6 +144,8 @@ afterLoad(function(){
             load(){
                 if(this.pxer.pageType==='works_medium'){
                     this.pxer.getThis();
+                    this.showLoadBtn=false;
+                    this.pxer.one('finishWorksTask',()=>this.showLoadBtn=true);
                 }else{
                     this.state='ready'
                 }
@@ -144,7 +168,8 @@ afterLoad(function(){
                     this.pxer.one('finishWorksTask',()=>{
                         this.state='finish';
                     });
-                    this.pxer.executeWroksTask();
+                    this.pxer.executeFailWroks(this.tryFailWroksList);
+                    this.tryFailWroksList=[];
                 }
             },
             stop(){
@@ -153,6 +178,10 @@ afterLoad(function(){
             },
             count(){
                 this.taskInfo =this.pxer.getWorksInfo()
+            },
+            useTaskOption(){
+                this.showTaskOption=false;
+                Object.assign(this.pxer.taskOption ,this.taskOption);
             },
             formatFailType(type){
                 return{
@@ -173,11 +202,8 @@ afterLoad(function(){
                 }[type];
             },
             tryCheckedPfi(){
-                this.pxer.switchFail2Task(this.checkedFailList);
-                this.checkedFailList.forEach(pfi=>this.pxer.failList.splice(
-                    this.pxer.failList.indexOf(pfi),1
-                ));
-                this.checkedFailList=[];
+                this.tryFailWroksList.push(...this.checkedFaiWorkslList);
+                this.checkedFaiWorkslList=[];
                 this.state='re-ready';
             },
             formatTime(s){

@@ -1,30 +1,16 @@
 'use strict';
 
 class PxerHtmlParser{
-    constructor(){};
-};
-
-/**
- * 根据任务对象类型智能选择解析
- * @param {PxerRequest} request - 抓取后的任务对象
- * @return {PxerWorksRequest[]|PxerWorks[]} - 解析得到的结果
- * */
-PxerHtmlParser.parse =function(request){
-    if(request instanceof PxerWorksRequest){
-        this.task =request;
-        return [this.parseWorks()];
-    }else if(request instanceof PxerPageRequest){
-        this.task =request;
-        return this.parsePage();
-    }else{
-        return false;
+    constructor(){
+        throw new Error('PxerHtmlParse could not construct');
     };
 };
+
 
 /**
  * 解析页码任务对象
  * @param {PxerPageRequest} task - 抓取后的页码任务对象
- * @return {PxerWorksRequest[]} - 解析得到的作品任务对象
+ * @return {PxerWorksRequest[]|false} - 解析得到的作品任务对象
  * */
 PxerHtmlParser.parsePage =function(task){
     if(!(task instanceof PxerPageRequest)){
@@ -128,7 +114,10 @@ PxerHtmlParser.parseWorks =function(task){
 
 
 
-
+/**
+ * @param {PxerWorksRequest} task
+ * @return {Array}
+ * */
 PxerHtmlParser.getUrlList =function(task){
     if(
         task.type ==="ugoira"
@@ -198,6 +187,8 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
 
     if(task.type ==='manga' &&!task.isMultiple){
         let src =dom.querySelector("a._work.manga img").src;
+        console.log(dom);
+        console.log(src);
         pw.server =src.match(/(i\d+)\.pixiv\.net/)[1];
         pw.date   =src.match(PxerHtmlParser.REGEXP['getDate'])[1];
     }
@@ -210,7 +201,7 @@ PxerHtmlParser.REGEXP ={
 };
 
 PxerHtmlParser.HTMLParser =function(aHTMLString){
-    var dom =document.implementation.createHTMLDocument("example");
+    var dom =document.implementation.createHTMLDocument('');
     dom.documentElement.innerHTML =aHTMLString;
     return dom.body;
 };

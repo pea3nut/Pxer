@@ -1,16 +1,27 @@
 class PxerPrinter{
     constructor(config){
-
+        
+        /**
+         * 计算得到的下载地址
+         * @type {string[]} 
+         * */
         this.address =[];
+        /**计算得到的任务信息*/
         this.taskInfo ='';
+        /**剥离的动图参数*/
         this.ugoiraFrames ={};
 
-        /*!输出配置信息*/
-        this.config =Object.assign(PxerPrinter.defaultConfig(),config);
+        /**配置信息*/
+        this.config =PxerPrinter.defaultConfig();
         config &&this.setConfig(config);
-        this.worksList =[];
 
     };
+
+    /**
+     * 设置配置信息
+     * @param {string|Object} key - 要设置的key或是一个将被遍历合并的对象
+     * @param {string} [value] - 要设置的value
+     * */
     setConfig(key ,value){
         if(arguments.length ===1 && typeof key ==='object'){
             let obj =key;
@@ -24,41 +35,40 @@ class PxerPrinter{
         }
         return this;
     };
-    addWorks(){
-        var argn =Array.from(arguments);
-        if(!argn.every(works=>works instanceof PxerWorks)){
-            console.error(arguments);
-            throw new Error('PxerPrinter.addWorks: argument illegal');
-        }
-        this.worksList.push(...arguments);
-        return this;
-    };
 };
 
-
+/**
+ * 根据作品列表将下载地址填充到PxerPrinter#address
+ * @param {PxerWorks[]} worksList
+ * @return {void}
+ * */
 PxerPrinter.prototype['fillAddress'] =function(worksList){
     for(let works of worksList){
-        let configKey =null;
-        if(works instanceof PxerUgoiraWorks){
-            configKey ='ugoira_zip';
-            if(this.config['ugoira_frames']==='yes'){
-                this.ugoiraFrames[works.id] =works.frames
-            }
-        }else{
-            configKey =works.type+(
-                works instanceof PxerMultipleWorks
-                ?'_multiple'
-                :'_single'
-            );
-        };
+        let configKey =PxerPrinter.getWorksKey(works);
+        if(configKey==='ugoira_zip' &&this.config['ugoira_frames']==='yes'){
+            this.ugoiraFrames[works.id] =works.frames
+        }
         if(!(configKey in this.config)) throw new Error(`PxerPrinter.fillAddress: ${configKey} in not in config`);
         if(this.config[configKey]==='no') continue;
         this.address.push(...PxerPrinter.countAddress(works,this.config[configKey]));
     }
 };
+
+/**
+ * 根据作品将可读的下载信息填充到PxerPrinter#taskInfo
+ * @param {PxerWorks[]} worksList
+ * @return {void}
+ * */
 PxerPrinter.prototype['fillTaskInfo'] =function(worksList){
-    var [manga,ugoira,illust,multiple,single,works,address] =new Array(20).fill(0);
+    var [manga,ugoira,illust,multiple,single,worksNum,address] =new Array(20).fill(0);
+
     for(let works of worksList){
+
+        let configKey =PxerPrinter.getWorksKey(works);
+        if(this.config[configKey]==='no') continue;
+
+        worksNum++;
+
         switch(works.type){
             case 'manga':
                 manga++;
@@ -78,40 +88,46 @@ PxerPrinter.prototype['fillTaskInfo'] =function(worksList){
         if(works instanceof PxerMultipleWorks){
             multiple++;
             address +=works.multiple;
-        }else if(!(works instanceof PxerUgoiraWorks)){
-            single++;
+        }else if(works instanceof PxerWorks){//动图
             address++;
+            single++;
+        }else{
+            console.error(works);
+            throw new Error(`PxerPrinter.fillTaskInfo: works instanceof illegal`);
         };
     }
 
-    works =worksList.length;
 
     this.taskInfo =`
-共计${works}个作品，${address}个下载地址。<br />
-单张图片作品占 ${(single/works*100).toFixed(1)}%<br />
-多张图片作品占 ${(multiple/works*100).toFixed(1)}%<br />
+共计${worksNum}个作品，${address}个下载地址。<br />
+单张图片作品占 ${(single/worksNum*100).toFixed(1)}%<br />
+多张图片作品占 ${(multiple/worksNum*100).toFixed(1)}%<br />
 `.trim();
 };
+/**
+ * 将结果输出
+ * 确保下载地址和任务信息已被填充
+ * */
 PxerPrinter.prototype['print'] =function(){
 
-    /*!判断输出动图参数*/
+    /**判断输出动图参数*/
     if(this.config['ugoira_frames'] ==="yes"){
         let win =window.open(document.URL ,'_blank');
         let str =[
             '<pre>',
-            '/*! 这个页面是动图压缩包的动画参数，目前Pxer还无法将动图压缩包打包成GIF，请寻找其他第三方软件 */',
+            '/** 这个页面是动图压缩包的动画参数，目前Pxer还无法将动图压缩包打包成GIF，请寻找其他第三方软件 */',
             JSON.stringify(this.ugoiraFrames ,null ,4),
             '</pre>',
         ];
         win.document.write(str.join('\n'));
     };
 
-    {/*!输出下载地址*/
+    {/**输出下载地址*/
         let win = window.open(document.URL ,'_blank');
         let str = [
             '<pre>' ,
-            '/*! 这个页面是抓取到的下载地址，你可以将它们复制到第三方下载工具如QQ旋风中下载 */' ,
-            '/*!' ,
+            '/** 这个页面是抓取到的下载地址，你可以将它们复制到第三方下载工具如QQ旋风中下载 */' ,
+            '/**' ,
             this.taskInfo.replace(/\<br \/\>/g,'') ,
             '*/' ,
             this.address.join('\n') ,
@@ -123,7 +139,26 @@ PxerPrinter.prototype['print'] =function(){
 
 };
 
-
+/**
+ * 根据作品类型，生成配置信息的key
+ * @param {PxerWorks} works
+ * @return {string}
+ * @see PxerPrinter.defaultConfig
+ * */
+PxerPrinter.getWorksKey =function(works){
+    var configKey =null;
+    if(works instanceof PxerUgoiraWorks){
+        configKey ='ugoira_zip';
+    }else{
+        configKey =works.type+(
+                works instanceof PxerMultipleWorks
+                    ?'_multiple'
+                    :'_single'
+            );
+    };
+    return configKey;
+};
+/**返回默认的配置对象*/
 PxerPrinter.defaultConfig =function(){
     return{
         "manga_single"    :"max",//[max|600p|no]

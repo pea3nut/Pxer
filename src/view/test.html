@@ -86,10 +86,18 @@
         this.getWorksInfo=()=>{};
         this.printWorks=()=>{};
         this.switchFail2Task=()=>{};
+        this.taskOption={
+            limit  :null,
+            stopId :null,
+        };
+        this.on=function(){
+            
+        }
     };
 
     setTimeout(Vue.nextTick,0,function(){
-        PXER_VM.showAll =false;
+        PXER_VM.showAll =true;
+        //PXER_VM.showTaskOption =true;
         PXER_VM.taskInfo='喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵喵';
         PXER_VM.state='finish';
     });
