@@ -45,11 +45,10 @@ class PxerWorksRequest extends PxerRequest{
  * @extends {PxerRequest}
  * */
 class PxerFailInfo{
-    constructor({url,type,task,index}={}){
+    constructor({url,type,task}={}){
         this.url  =url;
         this.type =type;
         this.task =task;
-        this.index =index;
         return denyNewAttr(this);
     }
 }

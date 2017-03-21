@@ -197,6 +197,12 @@ class PxerApp extends PxerEvent{
                 if(!pwr.completed)continue;//跳过未完成的任务
                 let pw =PxerHtmlParser.parseWorks(pwr);
                 if(!pw){
+                    pwr.completed=false;
+                    ptm.dispatch('fail',new PxerFailInfo({
+                        type :'parse',
+                        task :pwr,
+                        url  :pwr.url[0],
+                    }));
                     this.dispatch('error',window['PXER_ERROR']);
                     continue;
                 }

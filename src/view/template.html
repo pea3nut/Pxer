@@ -20,28 +20,32 @@
                     @click="stop"
                     v-show="isRunning"
             >Stop</button>
-            <template v-if="pxer.failList.length">
-                <button class="btn btn-outline-warning" @click="showPxerFailWindow=!showPxerFailWindow">Warn</button><span class="pnb-warn-number" v-text="pxer.failList.length>99?99:pxer.failList.length"></span>
+            <template v-if="showFailTaskList.length">
+                <button class="btn btn-outline-warning"
+                        @click="showPxerFailWindow=!showPxerFailWindow"
+                >Warn</button><span class="pnb-warn-number"
+                                    v-text="showFailTaskList.length>99?99:showFailTaskList.length"></span>
             </template>
         </div>
     </div>
 
-    <div class="pxer-fail" v-show="showAll ||(showPxerFailWindow &&pxer.failList.length)">
+    <div class="pxer-fail" v-show="showAll ||(showPxerFailWindow &&showFailTaskList.length)">
         <table class="table">
             <thead class="pft-head"><tr>
                 <td>图片ID</td>
-                <td>失败原因</td>
+                <td width="100">失败原因</td>
                 <td>解决方案</td>
                 <td width="170" class="text-right">
-                    <button class="btn btn-outline-secondary" @click="checkedFaiWorkslList =pxer.failList">全选</button>
+                    <button class="btn btn-outline-secondary"
+                            @click="checkedFailWorksList =pxer.failList">全选</button>
                     <button class="btn btn-outline-success" @click="tryCheckedPfi">重试选中</button>
                 </td>
             </tr></thead>
-            <tbody><tr v-for="pfi of pxer.failList">
+            <tbody><tr v-for="pfi of showFailTaskList">
                     <td><a :href="pfi.url">{{pfi.task.id}}</a></td>
                     <td v-text="formatFailType(pfi.type)"></td>
-                    <td v-text="formatFailSolution(pfi.type)"></td>
-                    <td class="text-right"><input type="checkbox" :value="pfi" v-model="checkedFaiWorkslList"></td>
+                    <td v-html="formatFailSolution(pfi.type)"></td>
+                    <td class="text-right"><input type="checkbox" :value="pfi" v-model="checkedFailWorksList"></td>
             </tr></tbody>
         </table>
     </div>

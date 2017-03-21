@@ -28,7 +28,7 @@ afterLoad(function(){
             showPxerFailWindow:false,
             runTimeTimestamp:0,
             runTimeTimer:null,
-            checkedFaiWorkslList:[],
+            checkedFailWorksList:[],
             taskInfo:'',
             tryFailWroksList:[],
             showTaskOption:false,
@@ -127,6 +127,13 @@ afterLoad(function(){
                     this.pxer.pfConfig.has_tag_every =value.split(' ');
                 },
             },
+            showFailTaskList(){
+                return this.pxer.failList
+                    .filter((pfi)=>{
+                        return this.tryFailWroksList.indexOf(pfi)===-1;
+                    })
+                ;
+            },
         },
         watch:{
             state(newValue,oldValue){
@@ -190,7 +197,8 @@ afterLoad(function(){
                     'r-18':'限制级作品（R-18）',
                     'r-18g':'怪诞作品（R-18G）',
                     'mypixiv':'仅好P友可见的作品',
-                }[type];
+                    'parse':'解析错误',
+                }[type]||type;
             },
             formatFailSolution(type){
                 return{
@@ -199,11 +207,12 @@ afterLoad(function(){
                     'r-18':'开启账号R-18选项',
                     'r-18g':'开启账号R-18G选项',
                     'mypixiv':'添加画师好友再尝试',
-                }[type];
+                    'parse':'再试一次，若问题依旧，请<a href="https://github.com/pea3nut/Pxer/issues/5" target="_blank">反馈</a>给花生',
+                }[type]||'要不。。。再试一次？';
             },
             tryCheckedPfi(){
-                this.tryFailWroksList.push(...this.checkedFaiWorkslList);
-                this.checkedFaiWorkslList=[];
+                this.tryFailWroksList.push(...this.checkedFailWorksList);
+                this.checkedFailWorksList=[];
                 this.state='re-ready';
             },
             formatTime(s){

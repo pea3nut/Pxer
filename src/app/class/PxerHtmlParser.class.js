@@ -91,21 +91,27 @@ PxerHtmlParser.parseWorks =function(task){
             dom :PxerHtmlParser.HTMLParser(task.html[url]),
             url,pw,task,
         };
-        switch (true){
-            case url.indexOf('mode=medium')!==-1:
-                PxerHtmlParser.parseMediumHtml(data);
-                break;
-            case url.indexOf('mode=big')!==-1:
-            case url.indexOf('mode=manga_big')!==-1:
-                PxerHtmlParser.parseMangaBigHtml(data);
-                break;
-            case url.indexOf('mode=manga&')!==-1:
-                PxerHtmlParser.parseMangaHtml(data);
-                break;
-            default:
-                return false;
-                window['PXER_ERROR'] =`PxerHtmlParser.parsePage: count not parse task url "${url}"`;
-        };
+        try{
+            switch (true){
+                case url.indexOf('mode=medium')!==-1:
+                    PxerHtmlParser.parseMediumHtml(data);
+                    break;
+                case url.indexOf('mode=big')!==-1:
+                case url.indexOf('mode=manga_big')!==-1:
+                    PxerHtmlParser.parseMangaBigHtml(data);
+                    break;
+                case url.indexOf('mode=manga&')!==-1:
+                    PxerHtmlParser.parseMangaHtml(data);
+                    break;
+                default:
+                    return false;
+                    window['PXER_ERROR'] =`PxerHtmlParser.parsePage: count not parse task url "${url}"`;
+            };
+        }catch(e){
+            window['PXER_ERROR'] =e.message;
+            if(window['PXER_MODE']==='dev')console.error(e);
+            return false;
+        }
     };
 
     return pw;
@@ -187,8 +193,6 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
 
     if(task.type ==='manga' &&!task.isMultiple){
         let src =dom.querySelector("a._work.manga img").src;
-        console.log(dom);
-        console.log(src);
         pw.server =src.match(/(i\d+)\.pixiv\.net/)[1];
         pw.date   =src.match(PxerHtmlParser.REGEXP['getDate'])[1];
     }

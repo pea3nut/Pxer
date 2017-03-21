@@ -91,7 +91,6 @@ PxerThreadManager.prototype['run'] =function(){
             next(this,thread);
         });
         thread.on('fail' ,(pfi)=>{
-            pfi.index =this.taskList.indexOf(pfi.task);
             this.dispatch('fail',pfi);
             next(this,thread);
         });

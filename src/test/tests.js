@@ -578,6 +578,7 @@ describe('PxerApp 主程序 作品列表页' ,function(){
         console.groupCollapsed('下载地址');
         console.log(pp.address.join('\n'));
         console.groupEnd();
+        console.groupEnd();
     });
 });
 
@@ -656,6 +657,7 @@ describe('PxerApp 主程序 再抓取' ,function(){
         Assert.isArray(pxer.resultSet);
         Assert.isArray(pxer.failList);
         Assert(pxer.resultSet.length+pxer.failList.length===pxer.worksNum,'作品数不相符！');
+        console.groupEnd();
     });
 });
 
