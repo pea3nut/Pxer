@@ -10,8 +10,11 @@ module.exports.path2URL =function(path){
     var url =module.exports.pxerURL;
     var target =Path.resolve(path);
     var root =Path.resolve(module.exports.rootPath);
-    var urlPath =target.replace(root ,'').replace(/\\/g,'/');
-    return url.substr(0,url.length-1)+urlPath;
+    return target
+        .replace(root ,'')
+        .replace(/\\/g,'/')
+        .replace(/^\//,'')
+    ;
 };
 module.exports.getAllFile =function(path){
 

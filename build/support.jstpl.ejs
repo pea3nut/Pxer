@@ -47,7 +47,7 @@ const linkResource  =/*<?-linkResource?>*/[];
             Flow =Flow.then(()=>execPromise(viewStyles,createResource));
             // HTML模板
             var xhr =new XMLHttpRequest();
-            xhr.open('GET',viewTpl);
+            xhr.open('GET',window['PXER_URL']+viewTpl);
             xhr.onload=function(){
                 window['PXER_TEMPLATE']=xhr.responseText;
                 resolve();

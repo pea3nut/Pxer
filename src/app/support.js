@@ -27,35 +27,35 @@ if(URLData.domain ==='www.pixiv.net'){
 // 要加载的文件
 const appClass      =/**/[
     [
-        "//127.0.0.1/pea3nut/pxer/pxer-app/src/app/class/PxerData.-1.js",
-        "//127.0.0.1/pea3nut/pxer/pxer-app/src/app/class/PxerEvent.-1.class.js"
+        "src/app/class/PxerData.-1.js",
+        "src/app/class/PxerEvent.-1.class.js"
     ],
     [
-        "//127.0.0.1/pea3nut/pxer/pxer-app/src/app/class/PxerFilter.class.js",
-        "//127.0.0.1/pea3nut/pxer/pxer-app/src/app/class/PxerHtmlParser.class.js",
-        "//127.0.0.1/pea3nut/pxer/pxer-app/src/app/class/PxerPrinter.class.js"
+        "src/app/class/PxerFilter.class.js",
+        "src/app/class/PxerHtmlParser.class.js",
+        "src/app/class/PxerPrinter.class.js"
     ],
     [
-        "//127.0.0.1/pea3nut/pxer/pxer-app/src/app/class/PxerThread.1.class.js"
+        "src/app/class/PxerThread.1.class.js"
     ],
     [
-        "//127.0.0.1/pea3nut/pxer/pxer-app/src/app/class/PxerThreadManager.2.class.js"
+        "src/app/class/PxerThreadManager.2.class.js"
     ],
     [
-        "//127.0.0.1/pea3nut/pxer/pxer-app/src/app/class/PxerApp.3.class.js"
+        "src/app/class/PxerApp.3.class.js"
     ]
 ];//*/[];
-const viewTpl       =/**/"//127.0.0.1/pea3nut/pxer/pxer-app/src/view/template.html";//*/'';
-const viewStyles    =/**/"//127.0.0.1/pea3nut/pxer/pxer-app/src/view/style.css";//*/[];
+const viewTpl       =/**/"src/view/template.html";//*/'';
+const viewStyles    =/**/"src/view/style.css";//*/[];
 const viewScripts   =/**/[
-    "//127.0.0.1/pea3nut/pxer/pxer-app/src/view/vue.dev.js",
-    "//127.0.0.1/pea3nut/pxer/pxer-app/src/view/vm.js"
+    "src/view/vue.dev.js",
+    "src/view/vm.js"
 ];//*/[];
 const afterRun      =/**/[
-    "//127.0.0.1/pea3nut/pxer/pxer-app/src/run/pxer-cli.js"
+    "src/run/pxer-cli.js"
 ];//*/[];
 const linkResource  =/**/[
-    "//127.0.0.1/pea3nut/pxer/pxer-app/src/public/favicon.ico"
+    "src/public/favicon.ico"
 ];//*/[];
 
 
@@ -76,7 +76,7 @@ const linkResource  =/**/[
             Flow =Flow.then(()=>execPromise(viewStyles,createResource));
             // HTML模板
             var xhr =new XMLHttpRequest();
-            xhr.open('GET',viewTpl);
+            xhr.open('GET',window['PXER_URL']+viewTpl);
             xhr.onload=function(){
                 window['PXER_TEMPLATE']=xhr.responseText;
                 resolve();

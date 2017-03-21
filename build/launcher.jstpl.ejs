@@ -8,7 +8,7 @@
         return new Promise(function(resolve ,reject){
             script.onload = resolve;
             script.onerror = reject;
-            script.src = libURL;
+            script.src = window['PXER_URL']+libURL;
             document.documentElement.appendChild(script);
         });
     }).then(function(){
@@ -16,7 +16,7 @@
         return new Promise(function(resolve ,reject){
             script.onload = resolve;
             script.onerror = reject;
-            script.src = supportURL;
+            script.src = window['PXER_URL']+supportURL;
             document.documentElement.appendChild(script);
         });
     });

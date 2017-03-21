@@ -48,6 +48,7 @@ window.parseURL =function(url=document.URL){
     return data;
 };
 window.createScript =function(url){
+    if(!/^(https?:)?\/\//.test(url))url =window['PXER_URL']+url;
     var elt =document.createElement('script');
     elt.charset='utf-8';
     return function(resolve,reject){
@@ -62,6 +63,7 @@ window.createScript =function(url){
     };
 };
 window.createResource =function(url){
+    if(!/^(https?:)?\/\//.test(url))url =window['PXER_URL']+url;
     let fx =url.match(/\.([^\.]+?)$/)[1];
     let elt =document.createElement('link');
     switch(fx){
