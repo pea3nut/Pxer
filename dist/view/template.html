@@ -1,12 +1,16 @@
 <div id="pxerApp" class="pxer-app">
+
     <div class="pxer-nav">
         <div class="pn-header">
             <a href="http://pxer.pea3nut.org/" target="_blank">Pxer 7</a>
         </div>
+        <div class="pn-message" v-text="errmsg" v-show="errmsg">
+            oops~ get some error
+        </div>
         <div class="pn-buttons">
             <button class="btn btn-outline-success"
                     @click="load"
-                    v-show="state==='loaded'"
+                    v-show="state==='loaded'&&showLoadBtn"
             >Load</button>
             <button class="btn btn-outline-primary"
                     @click="run"
@@ -16,31 +20,52 @@
                     @click="stop"
                     v-show="isRunning"
             >Stop</button>
-            <template v-if="pxer.failList.length">
-                <button class="btn btn-outline-warning" @click="showPxerFailWindow=!showPxerFailWindow">Warn</button><span class="pnb-warn-number" v-text="pxer.failList.length>99?99:pxer.failList.length"></span>
+            <template v-if="showFailTaskList.length">
+                <button class="btn btn-outline-warning"
+                        @click="showPxerFailWindow=!showPxerFailWindow"
+                >Warn</button><span class="pnb-warn-number"
+                                    v-text="showFailTaskList.length>99?99:showFailTaskList.length"></span>
             </template>
         </div>
     </div>
 
-    <div class="pxer-fail" v-show="showAll ||(showPxerFailWindow &&pxer.failList.length)">
+    <div class="pxer-fail" v-show="showAll ||(showPxerFailWindow &&showFailTaskList.length)">
         <table class="table">
             <thead class="pft-head"><tr>
                 <td>图片ID</td>
-                <td>失败原因</td>
+                <td width="100">失败原因</td>
                 <td>解决方案</td>
-                <td width="160" class="text-right">
-                    <button class="btn btn-outline-secondary" @click="tryCheckedPfi">重试选中</button>
-                    <button class="btn btn-outline-secondary" @click="checkedFailList =pxer.failList">全选</button>
+                <td width="170" class="text-right">
+                    <button class="btn btn-outline-secondary"
+                            @click="checkedFailWorksList =pxer.failList">全选</button>
+                    <button class="btn btn-outline-success" @click="tryCheckedPfi">重试选中</button>
                 </td>
             </tr></thead>
-            <tbody><tr v-for="pfi of pxer.failList">
+            <tbody><tr v-for="pfi of showFailTaskList">
                     <td><a :href="pfi.url">{{pfi.task.id}}</a></td>
                     <td v-text="formatFailType(pfi.type)"></td>
-                    <td v-text="formatFailSolution(pfi.type)"></td>
-                    <td class="text-right"><input type="checkbox" :value="pfi" v-model="checkedFailList"></td>
+                    <td v-html="formatFailSolution(pfi.type)"></td>
+                    <td class="text-right"><input type="checkbox" :value="pfi" v-model="checkedFailWorksList"></td>
             </tr></tbody>
         </table>
     </div>
+
+
+    <div class="pxer-task-option form-inline" v-show="showAll ||(showTaskOption&&state==='ready')">
+        <div class="form-group">
+            <label class="pcf-title">仅抓取前x副：</label>
+            <input type="number" class="form-control" v-model="taskOption.limit" />
+        </div>
+        <div class="form-group">
+            <label class="pcf-title">仅抓取id为x之前的：</label>
+            <input type="number" class="form-control" v-model="taskOption.stopId" />
+        </div>
+        <div class="form-group ptp-buttons">
+            <button class="btn btn-outline-success" @click="useTaskOption">Use it</button>
+            <button class="btn btn-outline-danger" @click="showPxerFailWindow=false">Cancel</button>
+        </div>
+    </div>
+
 
     <div class="pxer-info" v-show="showAll ||isRunning||['ready','re-ready'].indexOf(state)!==-1">
         <div class="pi-item">
@@ -52,7 +77,7 @@
                 </tr>
                 <tr>
                     <td>当前状态：</td>
-                    <td v-text="state"></td>
+                    <td v-text="stateMap[state]"></td>
                 </tr>
                 <tr>
                     <td>已运行时间：</td>
@@ -81,8 +106,15 @@
                     <td v-text="pageType"></td>
                 </tr>
                 <tr>
-                    <td>作品数量：</td>
+                    <td>下载数量：</td>
                     <td v-text="pxer.worksNum"></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-right"><button
+                            :disabled="state!=='ready'"
+                            @click="showTaskOption=!showTaskOption"
+                            class="btn btn-outline-info"
+                    >Option</button></td>
                 </tr>
             </table>
         </div>
@@ -104,6 +136,8 @@
             </table>
         </div>
     </div>
+
+
 
 
 

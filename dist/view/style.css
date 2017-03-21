@@ -748,6 +748,7 @@
     border: 1px solid #d6dee5;
     border-radius: 5px;
     margin-top: 10px;
+    margin-bottom: 10px;
     min-height: 40px;
     display: flex; }
   .pxer-app .pxer-nav {
@@ -797,15 +798,27 @@
         top: -0.75em;
         left: 0.45em;
         font-size: 16px; }
-      .pxer-app .pxer-info .pi-item > table tr:nth-child(1) td {
-        padding-top: 1em; }
-      .pxer-app .pxer-info .pi-item > table tr td:nth-child(1) {
-        text-align: right; }
-      .pxer-app .pxer-info .pi-item > table tbody td {
+      .pxer-app .pxer-info .pi-item > table td {
         vertical-align: middle !important;
-        padding: 5px; }
+        height: 45px;
+        padding-top: 0;
+        padding-bottom: 0; }
+      .pxer-app .pxer-info .pi-item > table tr:nth-child(1) td {
+        box-sizing: content-box;
+        padding-top: 3px; }
+        .pxer-app .pxer-info .pi-item > table tr:nth-child(1) td * {
+          box-sizing: border-box; }
       .pxer-app .pxer-info .pi-item input[type='text'] {
         width: 5em; }
+  .pxer-app .pxer-task-option {
+    padding: 5px 0; }
+    .pxer-app .pxer-task-option > * {
+      margin-left: 12px; }
+    .pxer-app .pxer-task-option .ptp-buttons {
+      margin-left: auto;
+      margin-right: 12px; }
+      .pxer-app .pxer-task-option .ptp-buttons button {
+        margin-left: 10px; }
   .pxer-app .pxer-print > * {
     flex-grow: 1;
     margin: 12px; }

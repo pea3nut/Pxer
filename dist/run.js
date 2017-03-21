@@ -1,3 +1,3 @@
-afterLoad(function(){
+"use strict";
 
-});
+afterLoad(function () {});
