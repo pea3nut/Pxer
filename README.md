@@ -18,7 +18,7 @@
 ## 快速链接
 
 - 导航：[官网：pxer.pea3nut.org](http://pxer.pea3nut.org/)
-- 安装：通过诸如Greasemonkey的浏览器扩展安装Pxer[稳定版](http://pxer.pea3nut.org/pxer-app/pxer-master.user.js)或[开发版](http://pxer.pea3nut.org/pxer-app/pxer-dev.user.js)
+- 安装：通过诸如Greasemonkey的浏览器扩展安装Pxer[开发版（推荐）](http://pxer-app.pea3nut.org/pxer-dev.user.js)或[稳定版](http://pxer-app.pea3nut.org/pxer-master.user.js)
 
 > 稳定版支持市面上所有主流浏览器，而开发版则拥有更新的功能及更高的性能！
 
