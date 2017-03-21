@@ -123,6 +123,7 @@ class PxerUgoiraWorks extends PxerWorks{
  * @return {Proxy}
  * */
 function denyNewAttr(obj){
+    if(typeof Proxy==='undefined')return obj;
     return new Proxy(obj ,{
         get(obj ,prop){
             if(!(prop in obj) && typeof prop !=='symbol' && !/^\_|to[A-Z]/.test(prop)){

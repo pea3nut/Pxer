@@ -50,6 +50,8 @@ var masterSave ='../dist/support.js';
 console.log('build '+Path.resolve(masterSave));
 Fs.writeFileSync(
     masterSave,
-    PxerUtility.automaticDoc(__filename)+
-    PxerUtility.reader(readerTpl,renderData['master'])
+    PxerUtility.babelTransform(
+        PxerUtility.automaticDoc(__filename)+
+        PxerUtility.reader(readerTpl,renderData['master'])
+    )
 );

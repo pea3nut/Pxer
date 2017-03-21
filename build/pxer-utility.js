@@ -1,5 +1,6 @@
 const Path =require('path');
 const Fs =require('fs');
+const Babel = require('babel-core');
 
 module.exports.pxerURL ='//127.0.0.1/pea3nut/pxer/pxer-app/';
 module.exports.rootPath ='../';
@@ -80,4 +81,25 @@ module.exports.reader =function(tpl,data){
     }
     // 渲染
     return Ejs.render(tpl,tplData);
+};
+
+module.exports.babelCopy =function(origin,target){
+    Fs.writeFileSync(
+        target,
+        Babel.transformFileSync(origin ,{
+            presets: [
+                "es2015",
+                "stage-2"
+            ]
+        }).code
+    );
+};
+module.exports.babelTransform =function(string){
+    if(Buffer.isBuffer(string)) string =string.toString();
+    return Babel.transform(string ,{
+        presets: [
+            "es2015",
+            "stage-2"
+        ]
+    }).code;
 };

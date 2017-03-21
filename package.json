@@ -23,9 +23,14 @@
   },
   "homepage": "https://github.com/pea3nut/Pxer#readme",
   "devDependencies": {
+    "babel-core": "^6.24.0",
+    "babel-preset-es2015": "^6.24.0",
+    "babel-preset-stage-2": "^6.22.0",
     "chokidar": "^1.6.1",
     "ejs": "^2.5.6",
     "fs-extra": "^2.1.2",
     "node-sass": "^4.5.0"
+  },
+  "dependencies": {
   }
 }

@@ -13,21 +13,27 @@ Fse.copySync(
 );
 
 // 拷贝lib.js
-Fse.copySync(
+PxerUtility.babelCopy(
     Join(__dirname,'../src/app/lib.js'),
     Join(__dirname,'../dist/lib.js')
 );
 
+
 // 拷贝View
 Fse.copySync(Join(__dirname,'../src/view/template.html') ,Join(__dirname,'../dist/view/template.html'));
 Fse.copySync(Join(__dirname,'../src/view/style.css')     ,Join(__dirname,'../dist/view/style.css'));
-Fse.copySync(Join(__dirname,'../src/view/vm.js')         ,Join(__dirname,'../dist/view/vm.js'));
+PxerUtility.babelCopy(
+    Join(__dirname,'../src/view/vm.js'),
+    Join(__dirname,'../dist/view/vm.js')
+);
 
 // 合并run/为run.js
 Fs.writeFileSync(
     Join(__dirname,'../dist/run.js'),
-    Buffer.concat(
-        PxerUtility.getAllFile(Join(__dirname,'../src/run/')).map(path=>Fs.readFileSync(path))
+    PxerUtility.babelTransform(
+        Buffer.concat(
+            PxerUtility.getAllFile(Join(__dirname,'../src/run/')).map(path=>Fs.readFileSync(path))
+        )
     )
 );
 
@@ -38,7 +44,9 @@ for(let array of PxerUtility.groupFile(PxerUtility.getAllFile(Join(__dirname,'..
 };
 Fs.writeFileSync(
     Join(__dirname,'../dist/pxer-core.js'),
-    Buffer.concat(fileList.map(path=>Fs.readFileSync(path)))
+    PxerUtility.babelTransform(
+        Buffer.concat(fileList.map(path=>Fs.readFileSync(path)))
+    )
 );
 console.log('Build ./dist/');
 

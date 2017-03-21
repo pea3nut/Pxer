@@ -8,7 +8,7 @@ class PxerEvent{
         this._pe_oneEvent ={};
 
 
-        if(!shortName) return this;
+        if(!shortName||typeof Proxy==='undefined') return this
         else return new Proxy(this ,{
             get(target ,property){
                 if(property in target){
