@@ -2,7 +2,7 @@ const Path =require('path');
 const Fs =require('fs');
 const Babel = require('babel-core');
 
-module.exports.pxerURL ='//127.0.0.1/pea3nut/pxer/pxer-app/';
+module.exports.pxerURL ='http://pxer-app.pea3nut.org/';
 module.exports.rootPath ='../';
 module.exports.pxerVersion ='7.0.0';
 

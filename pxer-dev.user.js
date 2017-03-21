@@ -15,7 +15,7 @@
 // ==/UserScript==
 javascript:void((function() {
     // 环境变量
-    window['PXER_URL'] =/**/"//127.0.0.1/pea3nut/pxer/pxer-app/";//*/'';
+    window['PXER_URL'] =/**/"http://pxer-app.pea3nut.org/";//*/'';
     window['PXER_MODE'] ='dev';
 
     // 引入入口文件
