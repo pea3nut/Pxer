@@ -13,6 +13,8 @@
 
 不仅人人可用，且代码经过精心注释可供参考~
 
+> 文档尚未完善
+
 <img src="/src/public/pxer-ui-gif.gif?raw=true" />
 
 ## 快速链接
@@ -36,7 +38,7 @@ Pxer最大作用是将pixiv.net网站（类似于花瓣网）中的图片作品�
 
 1. 在[Pixiv网站](http://www.pixiv.net)登陆注册一个账号
 2. 打开“[机器猫 - 哆啦A梦](http://www.pixiv.net/search.php?s_mode=s_tag&word=%E3%83%89%E3%83%A9%E3%81%88%E3%82%82%E3%82%93%20000user)”的图片检索页面
-3. 在浏览器运行[pxer.user.js](http://pxer.pea3nut.org/pxer-app/pxer-dev.user.js)代码（将代码文件复制到控制台运行或存成书签点击运行）
+3. 在浏览器运行[pxer.user.js](http://pxer-app.pea3nut.org/pxer-dev.user.js)代码（将代码文件复制到控制台运行或存成书签点击运行）
 4. 操作页面中Pxer UI界面
 
 ## 阅读源码

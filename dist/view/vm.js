@@ -50,6 +50,9 @@ afterLoad(function () {
                     this.pxer.on('error', function (err) {
                         _this.errmsg = err;
                     });
+                    this.pxer.on('finishWorksTask', function () {
+                        window.blinkTitle();
+                    });
                 },
 
                 computed: {

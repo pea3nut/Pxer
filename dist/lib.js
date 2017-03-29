@@ -15,22 +15,21 @@ window.setDefalut = function (obj, key, val) {
     return true;
 };
 window.blinkTitle = function (addMsg, spaceMsg) {
-    var _this = this;
-
     var addMsg = addMsg || '[完成] ';
     var spaceMsg = spaceMsg || '[　　] ';
     var timer = setInterval(function () {
-        if (_this.title.indexOf(addMsg) !== -1) {
-            _this.title = _this.title.replace(addMsg, spaceMsg);
-        } else if (_this.title.indexOf(spaceMsg) !== -1) {
-            _this.title = _this.title.replace(spaceMsg, addMsg);
+        if (document.title.indexOf(addMsg) !== -1) {
+            document.title = document.title.replace(addMsg, spaceMsg);
+        } else if (document.title.indexOf(spaceMsg) !== -1) {
+            document.title = document.title.replace(spaceMsg, addMsg);
         } else {
-            _this.title = addMsg + _this.title;
+            document.title = addMsg + document.title;
         };
-    }, 300);
-    this.addOneEventListener('mousemove', function () {
+    }, 500);
+    window.addEventListener('mousemove', function _self() {
+        window.addEventListener('mousemove', _self);
         clearInterval(timer);
-        _this.title = _this.title.replace(spaceMsg, "").replace(addMsg, "");
+        document.title = document.title.replace(spaceMsg, "").replace(addMsg, "");
     });
 };
 window.parseURL = function () {
@@ -196,6 +195,7 @@ window.execPromise = function (taskList, call) {
  * - works_big      查看某个作品的某张图片的大图
  * - member_works   自己/其他人作品列表页
  * - search         检索页
+ * - index          首页
  * - unknown        未知
  * @param {string} url
  * @return {string} - 页面类型
@@ -207,7 +207,7 @@ window.getPageType = function () {
     var type = null;
     if (URLData.domain !== 'www.pixiv.net') return 'unknown';
     if (URLData.path === '/bookmark.php') {
-        if (!URLData.query || !URLData.query.type) {
+        if (URLData.query && URLData.query.type) {
             switch (URLData.query.type) {
                 case 'user':
                     type = 'bookmark_user';
@@ -240,6 +240,8 @@ window.getPageType = function () {
         }
     } else if (URLData.path === '/search.php') {
         type = 'search';
+    } else if (URLData.path === '/') {
+        type = 'index';
     } else {
         type = 'unknown';
     }

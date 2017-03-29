@@ -634,8 +634,8 @@ PxerHtmlParser.parseWorks = function (task) {
                     window['PXER_ERROR'] = 'PxerHtmlParser.parsePage: count not parse task url "' + url + '"';
             };
         } catch (e) {
-            window['PXER_ERROR'] = e.message;
-            if (window['PXER_MODE'] === 'dev') console.error(e);
+            window['PXER_ERROR'] = task.id + ':' + e.message;
+            if (window['PXER_MODE'] === 'dev') console.error(task, e);
             return false;
         }
     };
@@ -1206,6 +1206,7 @@ PxerThread.prototype['run'] = function _self() {
         // 判断是否真的请求成功
         var msg = PxerThread.checkRequest(URL, XHR.responseText);
         if (msg !== true) {
+            _this6.state = 'fail';
             _this6.dispatch('fail', {
                 task: _this6.task,
                 url: URL,
@@ -1387,7 +1388,7 @@ PxerThreadManager.prototype['run'] = function () {
             thread.init(ptm.taskList[ptm.pointer++]);
             thread.run();
         } else if (ptm.threads.every(function (thread) {
-            return ['free', 'timeout'].indexOf(thread.state) !== -1;
+            return ['free', 'fail', 'error'].indexOf(thread.state) !== -1;
         })) {
             ptm.dispatch('load', ptm.taskList);
         };
