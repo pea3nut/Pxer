@@ -119,7 +119,7 @@ window.getPageType =function(url=document.URL){
     var type =null;
     if(URLData.domain !=='www.pixiv.net')return 'unknown';
     if(URLData.path==='/bookmark.php'){
-        if(!URLData.query||!URLData.query.type){
+        if(!URLData.query||URLData.query.type){
             switch(URLData.query.type){
                 case 'user':
                     type ='bookmark_user';
