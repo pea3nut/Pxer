@@ -4,7 +4,7 @@ const Babel = require('babel-core');
 
 module.exports.pxerURL ='//127.0.0.1/pea3nut/pxer/pxer-app/';
 module.exports.rootPath ='../';
-module.exports.pxerVersion ='7.0.0';
+module.exports.pxerVersion ='7.0.1';
 
 module.exports.path2URL =function(path){
     var url =module.exports.pxerURL;
