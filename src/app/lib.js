@@ -111,6 +111,7 @@ window.execPromise =function(taskList,call){
  * - works_big      查看某个作品的某张图片的大图
  * - member_works   自己/其他人作品列表页
  * - search         检索页
+ * - index          首页
  * - unknown        未知
  * @param {string} url
  * @return {string} - 页面类型
@@ -153,6 +154,8 @@ window.getPageType =function(url=document.URL){
         }
     }else if(URLData.path==='/search.php'){
         type ='search';
+    }else if(URLData.path==='/'){
+        type ='index';
     }else{
         type ='unknown';
     }

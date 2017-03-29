@@ -108,8 +108,8 @@ PxerHtmlParser.parseWorks =function(task){
                     window['PXER_ERROR'] =`PxerHtmlParser.parsePage: count not parse task url "${url}"`;
             };
         }catch(e){
-            window['PXER_ERROR'] =e.message;
-            if(window['PXER_MODE']==='dev')console.error(e);
+            window['PXER_ERROR'] =`${task.id}:${e.message}`;
+            if(window['PXER_MODE']==='dev')console.error(task ,e);
             return false;
         }
     };

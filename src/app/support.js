@@ -58,6 +58,26 @@ const linkResource  =/**/[
     "src/public/favicon.ico"
 ];//*/[];
 
+    // 捕获载入过程的错误
+    var errorCatcher = function(error){
+        if(error.filename && error.filename.indexOf(window['PXER_URL']) !== -1){
+            if(window['PXER_MODE'] === 'dev'){
+                alert('Pxer开发版载入出错，请尝试使用稳定版');
+            }else{
+                prompt(
+                    'Pxer载入出错，请在这个地址中汇报Bug' ,
+                    'https://github.com/pea3nut/Pxer/issues/5'
+                );
+            }
+        }
+        ;
+    };
+    var cancelErrorCatcher = function(){
+        window.removeEventListener('error' ,errorCatcher);
+    };
+    window.addEventListener('error' ,errorCatcher);
+    window.addEventListener('error' ,cancelErrorCatcher);
+
 
     // 过程化载入文件
     var Flow =Promise.resolve();
@@ -92,8 +112,9 @@ const linkResource  =/**/[
     Flow =Flow.then(()=>execPromise(afterRun,createScript));
 
 
-    // 错误处理
+    // 一些收尾工作
     Flow =Flow.then(()=>console.log('Pxer loaded'));
+    Flow =Flow.then(cancelErrorCatcher);
     Flow =Flow.catch(console.error);
 
 
