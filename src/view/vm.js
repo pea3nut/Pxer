@@ -44,6 +44,9 @@ afterLoad(function(){
             this.pxer.on('error',(err)=>{
                 this.errmsg =err;
             });
+            this.pxer.on('finishWorksTask',function(){
+                window.blinkTitle();
+            });
         },
         computed:{
             pageType(){

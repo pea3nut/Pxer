@@ -157,6 +157,7 @@ PxerThread.prototype['run'] =function _self(){
         // 判断是否真的请求成功
         var msg =PxerThread.checkRequest(URL ,XHR.responseText);
         if(msg !==true){
+            this.state ='fail';
             this.dispatch('fail' ,{
                 task :this.task,
                 url  :URL,
