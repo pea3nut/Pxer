@@ -105,7 +105,7 @@ PxerThreadManager.prototype['run'] =function(){
         if(ptm.middleware.every(fn=>fn(ptm.taskList[ptm.pointer]))){
             thread.init(ptm.taskList[ptm.pointer++]);
             thread.run();
-        }else if(ptm.threads.every(thread=>['free','timeout'].indexOf(thread.state)!==-1)){
+        }else if(ptm.threads.every(thread=>['free','fail','error'].indexOf(thread.state)!==-1)){
             ptm.dispatch('load' ,ptm.taskList);
         };
     }

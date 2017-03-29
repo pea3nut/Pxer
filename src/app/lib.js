@@ -17,17 +17,18 @@ window.blinkTitle =function(addMsg ,spaceMsg){
     var addMsg =addMsg ||'[完成] ';
     var spaceMsg =spaceMsg ||'[　　] ';
     var timer =setInterval(()=>{
-        if(this.title.indexOf(addMsg) !==-1){
-            this.title =this.title.replace(addMsg ,spaceMsg);
-        }else if(this.title.indexOf(spaceMsg) !==-1){
-            this.title =this.title.replace(spaceMsg ,addMsg);
+        if(document.title.indexOf(addMsg) !==-1){
+            document.title =document.title.replace(addMsg ,spaceMsg);
+        }else if(document.title.indexOf(spaceMsg) !==-1){
+            document.title =document.title.replace(spaceMsg ,addMsg);
         }else{
-            this.title =addMsg+this.title;
+            document.title =addMsg+document.title;
         };
-    },300);
-    this.addOneEventListener('mousemove' ,()=>{
+    },500);
+    window.addEventListener('mousemove' ,function _self(){
+        window.addEventListener('mousemove' ,_self);
         clearInterval(timer);
-        this.title =this.title.replace(spaceMsg ,"").replace(addMsg ,"");
+        document.title =document.title.replace(spaceMsg ,"").replace(addMsg ,"");
     });
 };
 window.parseURL =function(url=document.URL){
@@ -119,7 +120,7 @@ window.getPageType =function(url=document.URL){
     var type =null;
     if(URLData.domain !=='www.pixiv.net')return 'unknown';
     if(URLData.path==='/bookmark.php'){
-        if(!URLData.query||URLData.query.type){
+        if(URLData.query &&URLData.query.type){
             switch(URLData.query.type){
                 case 'user':
                     type ='bookmark_user';
