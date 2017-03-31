@@ -1,10 +1,10 @@
 .pxer-app {
   /*!
- * Bootstrap v4.0.0-alpha.6 (https://getbootstrap.com)
- * Copyright 2011-2017 The Bootstrap Authors
- * Copyright 2011-2017 Twitter, Inc.
- * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
- */
+   * Bootstrap v4.0.0-alpha.6 (https://getbootstrap.com)
+   * Copyright 2011-2017 The Bootstrap Authors
+   * Copyright 2011-2017 Twitter, Inc.
+   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+   */
   max-width: 970px;
   width: 100%;
   margin: 0 auto;
@@ -17,7 +17,6 @@
   .pxer-app *::before,
   .pxer-app *::after {
     box-sizing: inherit; }
-
 @-ms-viewport {
   width: device-width; }
   .pxer-app html {
@@ -493,8 +492,7 @@
     .pxer-app .btn-primary.disabled, .pxer-app .btn-primary:disabled {
       background-color: #0275d8;
       border-color: #0275d8; }
-    .pxer-app .btn-primary:active, .pxer-app .btn-primary.active,
-    .show > .pxer-app .btn-primary.dropdown-toggle {
+    .pxer-app .btn-primary:active, .pxer-app .btn-primary.active, .show > .pxer-app .btn-primary.dropdown-toggle {
       color: #fff;
       background-color: #025aa5;
       background-image: none;
@@ -512,8 +510,7 @@
     .pxer-app .btn-secondary.disabled, .pxer-app .btn-secondary:disabled {
       background-color: #fff;
       border-color: #ccc; }
-    .pxer-app .btn-secondary:active, .pxer-app .btn-secondary.active,
-    .show > .pxer-app .btn-secondary.dropdown-toggle {
+    .pxer-app .btn-secondary:active, .pxer-app .btn-secondary.active, .show > .pxer-app .btn-secondary.dropdown-toggle {
       color: #292b2c;
       background-color: #e6e6e6;
       background-image: none;
@@ -531,8 +528,7 @@
     .pxer-app .btn-info.disabled, .pxer-app .btn-info:disabled {
       background-color: #5bc0de;
       border-color: #5bc0de; }
-    .pxer-app .btn-info:active, .pxer-app .btn-info.active,
-    .show > .pxer-app .btn-info.dropdown-toggle {
+    .pxer-app .btn-info:active, .pxer-app .btn-info.active, .show > .pxer-app .btn-info.dropdown-toggle {
       color: #fff;
       background-color: #31b0d5;
       background-image: none;
@@ -550,8 +546,7 @@
     .pxer-app .btn-success.disabled, .pxer-app .btn-success:disabled {
       background-color: #5cb85c;
       border-color: #5cb85c; }
-    .pxer-app .btn-success:active, .pxer-app .btn-success.active,
-    .show > .pxer-app .btn-success.dropdown-toggle {
+    .pxer-app .btn-success:active, .pxer-app .btn-success.active, .show > .pxer-app .btn-success.dropdown-toggle {
       color: #fff;
       background-color: #449d44;
       background-image: none;
@@ -569,8 +564,7 @@
     .pxer-app .btn-warning.disabled, .pxer-app .btn-warning:disabled {
       background-color: #f0ad4e;
       border-color: #f0ad4e; }
-    .pxer-app .btn-warning:active, .pxer-app .btn-warning.active,
-    .show > .pxer-app .btn-warning.dropdown-toggle {
+    .pxer-app .btn-warning:active, .pxer-app .btn-warning.active, .show > .pxer-app .btn-warning.dropdown-toggle {
       color: #fff;
       background-color: #ec971f;
       background-image: none;
@@ -588,8 +582,7 @@
     .pxer-app .btn-danger.disabled, .pxer-app .btn-danger:disabled {
       background-color: #d9534f;
       border-color: #d9534f; }
-    .pxer-app .btn-danger:active, .pxer-app .btn-danger.active,
-    .show > .pxer-app .btn-danger.dropdown-toggle {
+    .pxer-app .btn-danger:active, .pxer-app .btn-danger.active, .show > .pxer-app .btn-danger.dropdown-toggle {
       color: #fff;
       background-color: #c9302c;
       background-image: none;
@@ -608,8 +601,7 @@
     .pxer-app .btn-outline-primary.disabled, .pxer-app .btn-outline-primary:disabled {
       color: #0275d8;
       background-color: transparent; }
-    .pxer-app .btn-outline-primary:active, .pxer-app .btn-outline-primary.active,
-    .show > .pxer-app .btn-outline-primary.dropdown-toggle {
+    .pxer-app .btn-outline-primary:active, .pxer-app .btn-outline-primary.active, .show > .pxer-app .btn-outline-primary.dropdown-toggle {
       color: #fff;
       background-color: #0275d8;
       border-color: #0275d8; }
@@ -627,8 +619,7 @@
     .pxer-app .btn-outline-secondary.disabled, .pxer-app .btn-outline-secondary:disabled {
       color: #ccc;
       background-color: transparent; }
-    .pxer-app .btn-outline-secondary:active, .pxer-app .btn-outline-secondary.active,
-    .show > .pxer-app .btn-outline-secondary.dropdown-toggle {
+    .pxer-app .btn-outline-secondary:active, .pxer-app .btn-outline-secondary.active, .show > .pxer-app .btn-outline-secondary.dropdown-toggle {
       color: #fff;
       background-color: #ccc;
       border-color: #ccc; }
@@ -646,8 +637,7 @@
     .pxer-app .btn-outline-info.disabled, .pxer-app .btn-outline-info:disabled {
       color: #5bc0de;
       background-color: transparent; }
-    .pxer-app .btn-outline-info:active, .pxer-app .btn-outline-info.active,
-    .show > .pxer-app .btn-outline-info.dropdown-toggle {
+    .pxer-app .btn-outline-info:active, .pxer-app .btn-outline-info.active, .show > .pxer-app .btn-outline-info.dropdown-toggle {
       color: #fff;
       background-color: #5bc0de;
       border-color: #5bc0de; }
@@ -665,8 +655,7 @@
     .pxer-app .btn-outline-success.disabled, .pxer-app .btn-outline-success:disabled {
       color: #5cb85c;
       background-color: transparent; }
-    .pxer-app .btn-outline-success:active, .pxer-app .btn-outline-success.active,
-    .show > .pxer-app .btn-outline-success.dropdown-toggle {
+    .pxer-app .btn-outline-success:active, .pxer-app .btn-outline-success.active, .show > .pxer-app .btn-outline-success.dropdown-toggle {
       color: #fff;
       background-color: #5cb85c;
       border-color: #5cb85c; }
@@ -684,8 +673,7 @@
     .pxer-app .btn-outline-warning.disabled, .pxer-app .btn-outline-warning:disabled {
       color: #f0ad4e;
       background-color: transparent; }
-    .pxer-app .btn-outline-warning:active, .pxer-app .btn-outline-warning.active,
-    .show > .pxer-app .btn-outline-warning.dropdown-toggle {
+    .pxer-app .btn-outline-warning:active, .pxer-app .btn-outline-warning.active, .show > .pxer-app .btn-outline-warning.dropdown-toggle {
       color: #fff;
       background-color: #f0ad4e;
       border-color: #f0ad4e; }
@@ -703,8 +691,7 @@
     .pxer-app .btn-outline-danger.disabled, .pxer-app .btn-outline-danger:disabled {
       color: #d9534f;
       background-color: transparent; }
-    .pxer-app .btn-outline-danger:active, .pxer-app .btn-outline-danger.active,
-    .show > .pxer-app .btn-outline-danger.dropdown-toggle {
+    .pxer-app .btn-outline-danger:active, .pxer-app .btn-outline-danger.active, .show > .pxer-app .btn-outline-danger.dropdown-toggle {
       color: #fff;
       background-color: #d9534f;
       border-color: #d9534f; }
@@ -837,6 +824,11 @@
         border-radius: 1px; }
   .pxer-app .pxer-print .pp-filter {
     width: 55%; }
+  .pxer-app input.form-control, .pxer-app select.form-control {
+    height: 24px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    line-height: 1em; }
   .pxer-app .pxer-class-fieldset {
     border: 1px solid #ccc;
     position: relative;
@@ -851,3 +843,5 @@
       font-size: 16px; }
   .pxer-app .text-right {
     text-align: right; }
+
+/*# sourceMappingURL=style.css.map */

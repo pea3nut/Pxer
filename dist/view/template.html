@@ -62,7 +62,6 @@
         </div>
         <div class="form-group ptp-buttons">
             <button class="btn btn-outline-success" @click="useTaskOption">Use it</button>
-            <button class="btn btn-outline-danger" @click="showPxerFailWindow=false">Cancel</button>
         </div>
     </div>
 
@@ -107,7 +106,7 @@
                 </tr>
                 <tr>
                     <td>下载数量：</td>
-                    <td v-text="pxer.worksNum"></td>
+                    <td v-text="worksNum"></td>
                 </tr>
                 <tr>
                     <td colspan="2" class="text-right"><button

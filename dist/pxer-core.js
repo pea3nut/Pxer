@@ -126,7 +126,7 @@ var PxerWorks = function PxerWorks() {
         id = _ref5.id,
         type = _ref5.type,
         date = _ref5.date,
-        server = _ref5.server,
+        domain = _ref5.domain,
         tagList = _ref5.tagList,
         viewCount = _ref5.viewCount,
         ratedCount = _ref5.ratedCount,
@@ -145,8 +145,8 @@ var PxerWorks = function PxerWorks() {
      * */
     this.date = date;
     this.type = type; //[manga|ugoira|illust]
-    /**作品存放的P站服务器*/
-    this.server = server; //i\d
+    /**作品存放的域名*/
+    this.domain = domain;
     /**
      * 作品标签列表
      * @type {Array}
@@ -675,7 +675,8 @@ PxerHtmlParser.parseMangaBigHtml = function (_ref9) {
         pw = _ref9.pw;
 
     var src = dom.getElementsByTagName('img')[0].src;
-    pw.server = src.match(/(i\d+)\.pixiv\.net/)[1];
+    var URLObj = parseURL(src);
+    pw.domain = URLObj.domain;
     pw.date = src.match(PxerHtmlParser.REGEXP['getDate'])[1];
     pw.fileFormat = src.match(/\.(jpg|gif|png)$/)[1];
 };
@@ -701,23 +702,27 @@ PxerHtmlParser.parseMediumHtml = function (_ref10) {
         })[0].innerHTML;
         var exp = /"src":"([^"<>]*?600x600\.zip)"[^<>]*?"frames":(\[.*?\])/mi;
         var arr = script.match(exp);
+        var src = arr[1].replace(/\\\//g, '\/');
+        var URLObj = parseURL(src);
 
-        pw.server = arr[1].replace(/\\\//g, '\/').match(/(i\d+)\.pixiv\.net/)[1];
-        pw.date = arr[1].replace(/\\\//g, '\/').match(PxerHtmlParser.REGEXP['getDate'])[1];
+        pw.domain = URLObj.domain;
+        pw.date = src.match(PxerHtmlParser.REGEXP['getDate'])[1];
         pw.frames = JSON.parse(arr[2]);
     };
 
     if (task.type === 'illust' && !task.isMultiple) {
-        var src = dom.querySelector(".ui-modal-close-box img.original-image").getAttribute("data-src");
-        pw.server = src.match(/(i\d+)\.pixiv\.net/)[1];
-        pw.date = src.match(PxerHtmlParser.REGEXP['getDate'])[1];
-        pw.fileFormat = src.match(/\.(jpg|gif|png)$/)[1];
+        var _src = dom.querySelector(".ui-modal-close-box img.original-image").getAttribute("data-src");
+        var _URLObj = parseURL(_src);
+        pw.domain = _URLObj.domain;
+        pw.date = _src.match(PxerHtmlParser.REGEXP['getDate'])[1];
+        pw.fileFormat = _src.match(/\.(jpg|gif|png)$/)[1];
     }
 
     if (task.type === 'manga' && !task.isMultiple) {
-        var _src = dom.querySelector("a._work.manga img").src;
-        pw.server = _src.match(/(i\d+)\.pixiv\.net/)[1];
-        pw.date = _src.match(PxerHtmlParser.REGEXP['getDate'])[1];
+        var _src2 = dom.querySelector("a._work.manga img").src;
+        var _URLObj2 = parseURL(_src2);
+        pw.domain = _URLObj2.domain;
+        pw.date = _src2.match(PxerHtmlParser.REGEXP['getDate'])[1];
     }
 };
 
@@ -951,8 +956,8 @@ PxerPrinter.getUgoira = function (works) {
     var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'max';
 
     var tpl = {
-        "max": "http://#server#.pixiv.net/img-zip-ugoira/img/#date#/#id#_ugoira1920x1080.zip",
-        "600p": "http://#server#.pixiv.net/img-zip-ugoira/img/#date#/#id#_ugoira600x600.zip"
+        "max": "http://#domain#/img-zip-ugoira/img/#date#/#id#_ugoira1920x1080.zip",
+        "600p": "http://#domain#/img-zip-ugoira/img/#date#/#id#_ugoira600x600.zip"
     };
 
     var address = tpl[type];
@@ -974,9 +979,9 @@ PxerPrinter.getMultiple = function (works) {
     var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'max';
 
     var tpl = {
-        "max": "http://#server#.pixiv.net/img-original/img/#date#/#id#_p#index#.#fileFormat#",
-        "1200p": "http://#server#.pixiv.net/c/1200x1200/img-master/img/#date#/#id#_p#index#_master1200.jpg",
-        "cover_600p": "http://#server#.pixiv.net/c/600x600/img-master/img/#date#/#id#_p0_master1200.jpg"
+        "max": "http://#domain#/img-original/img/#date#/#id#_p#index#.#fileFormat#",
+        "1200p": "http://#domain#/c/1200x1200/img-master/img/#date#/#id#_p#index#_master1200.jpg",
+        "cover_600p": "http://#domain#/c/600x600/img-master/img/#date#/#id#_p0_master1200.jpg"
     };
 
     var address = tpl[type];
@@ -1004,8 +1009,8 @@ PxerPrinter.getWorks = function (works) {
     var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'max';
 
     var tpl = {
-        "max": "http://#server#.pixiv.net/img-original/img/#date#/#id#_p0.#fileFormat#",
-        "600p": "http://#server#.pixiv.net/c/600x600/img-master/img/#date#/#id#_p0_master1200.jpg"
+        "max": "http://#domain#/img-original/img/#date#/#id#_p0.#fileFormat#",
+        "600p": "http://#domain#/c/600x600/img-master/img/#date#/#id#_p0_master1200.jpg"
     };
 
     var address = tpl[type];
@@ -1181,7 +1186,7 @@ PxerThread.prototype['run'] = function _self() {
     var retry = 0;
     XHR.addEventListener('timeout', function () {
         if (++retry > _this6.config.retry) {
-            _this6.state = 'timeout';
+            _this6.state = 'fail';
             _this6.dispatch('fail', new PxerFailInfo({
                 task: _this6.task,
                 url: URL,

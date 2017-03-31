@@ -69,8 +69,11 @@ afterLoad(function () {
                         var runState = ['page', 'works'];
                         return runState.indexOf(this.state) !== -1;
                     },
+                    worksNum: function worksNum() {
+                        return this.pxer.taskOption.limit || this.pxer.worksNum;
+                    },
                     taskCount: function taskCount() {
-                        return Math.ceil(this.pxer.worksNum / 20) + this.pxer.worksNum;
+                        return Math.ceil(this.worksNum / 20) + +this.worksNum;
                     },
                     finishCount: function finishCount() {
                         if (this.state === 'page') {
@@ -80,7 +83,7 @@ afterLoad(function () {
                         } else if (this.state === 'works') {
                             return this.pxer.taskList.filter(function (pr) {
                                 return pr.completed;
-                            }).length + ~~(this.pxer.worksNum / 20) + this.pxer.failList.length;
+                            }).length + ~~(this.worksNum / 20) + this.pxer.failList.length;
                         } else {
                             return -1;
                         };
