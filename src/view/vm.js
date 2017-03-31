@@ -62,8 +62,11 @@ afterLoad(function(){
                 var runState =['page','works'];
                 return runState.indexOf(this.state)!==-1;
             },
+            worksNum(){
+                return this.pxer.taskOption.limit ||this.pxer.worksNum;
+            },
             taskCount(){
-                return Math.ceil(this.pxer.worksNum/20)+this.pxer.worksNum;
+                return Math.ceil(this.worksNum/20)+ +this.worksNum;
             },
             finishCount(){
                 if(this.state==='page'){
@@ -71,7 +74,7 @@ afterLoad(function(){
                 }else if(this.state==='works'){
                     return (
                         this.pxer.taskList.filter(pr=>pr.completed).length
-                        +~~(this.pxer.worksNum/20)
+                        +~~(this.worksNum/20)
                         +this.pxer.failList.length
                     );
                 }else{

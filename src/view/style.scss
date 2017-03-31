@@ -139,6 +139,10 @@
 
     input.form-control,select.form-control{
         @extend .form-control-sm;
+        height:24px;
+        padding-top:1px;
+        padding-bottom:1px;
+        line-height: 1em;
     }
     .btn{
         @extend .btn-sm;

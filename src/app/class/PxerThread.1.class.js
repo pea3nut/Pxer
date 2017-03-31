@@ -132,7 +132,7 @@ PxerThread.prototype['run'] =function _self(){
     var retry=0;
     XHR.addEventListener('timeout',()=>{
         if(++retry > this.config.retry){
-            this.state ='timeout';
+            this.state ='fail';
             this.dispatch('fail' ,new PxerFailInfo({
                 task :this.task,
                 url  :URL,
