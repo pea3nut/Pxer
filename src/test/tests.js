@@ -34,7 +34,7 @@ describe('PxerHtmlParser 解析类' ,function(){
         Expect(pw).to.be.an.instanceof(PxerUgoiraWorks);
         Expect(pw.id).to.be.equal('57532237');
         Expect(pw.type).to.be.equal('ugoira');
-        Expect(pw.server).to.be.equal('i2');
+        Assert.typeOf(pw.domain,'string');
         Expect(pw.fileFormat).to.be.equal('zip');
         Expect(pw.date).to.be.equal('2016/06/22/15/00/43');
         Expect(pw.tagList).to.be.deep.equal(['test']);
@@ -63,7 +63,7 @@ describe('PxerHtmlParser 解析类' ,function(){
         Assert.instanceOf(  pw         ,PxerWorks);
         Assert.equal(       pw.id      ,'57507348');
         Assert.equal(       pw.type    ,'illust');
-        Assert.equal(       pw.server  ,'i1');
+        Assert.typeOf(      pw.domain  ,'string');
         Assert.equal(       pw.fileFormat ,'jpg');
         Assert.equal(       pw.date    ,'2016/06/20/22/22/26');
         Assert.deepEqual(   pw.tagList ,['test']);
@@ -95,7 +95,7 @@ describe('PxerHtmlParser 解析类' ,function(){
         Assert.instanceOf(  pw         ,PxerWorks);
         Assert.equal(       pw.id      ,'57506727');
         Assert.equal(       pw.type    ,'manga');
-        Assert.equal(       pw.server  ,'i4');
+        Assert.typeOf(      pw.domain  ,'string');
         Assert.equal(       pw.fileFormat ,'png');
         Assert.equal(       pw.date    ,'2016/06/20/21/56/11');
         Assert.deepEqual(   pw.tagList ,['test']);
@@ -129,7 +129,7 @@ describe('PxerHtmlParser 解析类' ,function(){
         Assert.instanceOf(  pw         ,PxerMultipleWorks);
         Assert.equal(       pw.id      ,'57506780');
         Assert.equal(       pw.type    ,'illust');
-        Assert.equal(       pw.server  ,'i1');
+        Assert.typeOf(      pw.domain  ,'string');
         Assert.equal(       pw.fileFormat ,'jpg');
         Assert.equal(       pw.date    ,'2016/06/20/21/58/41');
         Assert.equal(       pw.multiple,2);
@@ -164,7 +164,7 @@ describe('PxerHtmlParser 解析类' ,function(){
         Assert.instanceOf(  pw         ,PxerMultipleWorks);
         Assert.equal(       pw.id      ,'57506863');
         Assert.equal(       pw.type    ,'manga');
-        Assert.equal(       pw.server  ,'i4');
+        Assert.typeOf(      pw.domain  ,'string');
         Assert.equal(       pw.fileFormat ,'jpg');
         Assert.equal(       pw.date    ,'2016/06/20/22/02/06');
         Assert.equal(       pw.multiple,2);
@@ -213,17 +213,17 @@ describe('PxerFilter 作品过滤类' ,function(){
 
 describe('PxerPrinter 格式化输出类' ,function(){
     var pw =[
-        new PxerUgoiraWorks({"id":"57532237","type":"ugoira","date":"2016/06/22/15/00/43","server":"i2","tagList":["test"],"viewCount":141,"ratedCount":0,"scoreCount":0,"fileFormat":"zip","frames":[{"file":"000000.jpg","delay":200},{"file":"000001.jpg","delay":200}]}),
-        new PxerWorks({"id":"57507348","type":"illust","date":"2016/06/20/22/22/26","server":"i1","tagList":["test"],"viewCount":113,"ratedCount":0,"scoreCount":0,"fileFormat":"jpg"}),
-        new PxerWorks({"id":"57506727","type":"manga","date":"2016/06/20/21/56/11","server":"i4","tagList":["test"],"viewCount":122,"ratedCount":0,"scoreCount":0,"fileFormat":"png"}),
-        new PxerMultipleWorks({"id":"57506780","type":"illust","date":"2016/06/20/21/58/41","server":"i1","tagList":["test"],"viewCount":110,"ratedCount":0,"scoreCount":0,"fileFormat":"jpg","multiple":2}),
-        new PxerMultipleWorks({"id":"57506863","type":"manga","date":"2016/06/20/22/02/06","server":"i4","tagList":[],"viewCount":111,"ratedCount":0,"scoreCount":0,"fileFormat":"jpg","multiple":2}),
+        new PxerUgoiraWorks({"id":"57532237","type":"ugoira","date":"2016/06/22/15/00/43","domain":"i2.pixiv.net","tagList":["test"],"viewCount":141,"ratedCount":0,"scoreCount":0,"fileFormat":"zip","frames":[{"file":"000000.jpg","delay":200},{"file":"000001.jpg","delay":200}]}),
+        new PxerWorks({"id":"57507348","type":"illust","date":"2016/06/20/22/22/26","domain":"i.pximg.net","tagList":["test"],"viewCount":113,"ratedCount":0,"scoreCount":0,"fileFormat":"jpg"}),
+        new PxerWorks({"id":"57506727","type":"manga","date":"2016/06/20/21/56/11","domain":"i.pximg.net","tagList":["test"],"viewCount":122,"ratedCount":0,"scoreCount":0,"fileFormat":"png"}),
+        new PxerMultipleWorks({"id":"57506780","type":"illust","date":"2016/06/20/21/58/41","domain":"i.pximg.net","tagList":["test"],"viewCount":110,"ratedCount":0,"scoreCount":0,"fileFormat":"jpg","multiple":2}),
+        new PxerMultipleWorks({"id":"57506863","type":"manga","date":"2016/06/20/22/02/06","domain":"i.pximg.net","tagList":[],"viewCount":111,"ratedCount":0,"scoreCount":0,"fileFormat":"jpg","multiple":2}),
     ];
     it('输出全部下载地址', function() {
         var pp =new PxerPrinter({ugoira_zip:'max',ugoira_frames:'yes'});
         pp.fillAddress(pw);
         Assert.isArray(pp.address);
-        Assert.deepEqual(pp.address ,["http://i2.pixiv.net/img-zip-ugoira/img/2016/06/22/15/00/43/57532237_ugoira1920x1080.zip","http://i1.pixiv.net/img-original/img/2016/06/20/22/22/26/57507348_p0.jpg","http://i4.pixiv.net/img-original/img/2016/06/20/21/56/11/57506727_p0.png","http://i1.pixiv.net/img-original/img/2016/06/20/21/58/41/57506780_p0.jpg","http://i1.pixiv.net/img-original/img/2016/06/20/21/58/41/57506780_p1.jpg","http://i4.pixiv.net/img-original/img/2016/06/20/22/02/06/57506863_p0.jpg","http://i4.pixiv.net/img-original/img/2016/06/20/22/02/06/57506863_p1.jpg"]);
+        Assert.deepEqual(pp.address ,["http://i2.pixiv.net/img-zip-ugoira/img/2016/06/22/15/00/43/57532237_ugoira1920x1080.zip","http://i.pximg.net/img-original/img/2016/06/20/22/22/26/57507348_p0.jpg","http://i.pximg.net/img-original/img/2016/06/20/21/56/11/57506727_p0.png","http://i.pximg.net/img-original/img/2016/06/20/21/58/41/57506780_p0.jpg","http://i.pximg.net/img-original/img/2016/06/20/21/58/41/57506780_p1.jpg","http://i.pximg.net/img-original/img/2016/06/20/22/02/06/57506863_p0.jpg","http://i.pximg.net/img-original/img/2016/06/20/22/02/06/57506863_p1.jpg"]);
     });
     it('选择性输出下载地址', function() {
         var pp =new PxerPrinter({
@@ -237,7 +237,7 @@ describe('PxerPrinter 格式化输出类' ,function(){
         pp.fillAddress(pw);
         Assert.isArray(pp.address);
         Assert.lengthOf(pp.address ,6);
-        Assert.deepEqual(pp.address ,["http://i2.pixiv.net/img-zip-ugoira/img/2016/06/22/15/00/43/57532237_ugoira600x600.zip", "http://i4.pixiv.net/c/600x600/img-master/img/2016/06/20/21/56/11/57506727_p0_master1200.jpg", "http://i1.pixiv.net/c/600x600/img-master/img/2016/06/20/21/58/41/57506780_p0_master1200.jpg", "http://i1.pixiv.net/c/600x600/img-master/img/2016/06/20/21/58/41/57506780_p0_master1200.jpg", "http://i4.pixiv.net/c/1200x1200/img-master/img/2016/06/20/22/02/06/57506863_p0_master1200.jpg", "http://i4.pixiv.net/c/1200x1200/img-master/img/2016/06/20/22/02/06/57506863_p1_master1200.jpg"]);
+        Assert.deepEqual(pp.address ,["http://i2.pixiv.net/img-zip-ugoira/img/2016/06/22/15/00/43/57532237_ugoira600x600.zip","http://i.pximg.net/c/600x600/img-master/img/2016/06/20/21/56/11/57506727_p0_master1200.jpg","http://i.pximg.net/c/600x600/img-master/img/2016/06/20/21/58/41/57506780_p0_master1200.jpg","http://i.pximg.net/c/600x600/img-master/img/2016/06/20/21/58/41/57506780_p0_master1200.jpg","http://i.pximg.net/c/1200x1200/img-master/img/2016/06/20/22/02/06/57506863_p0_master1200.jpg","http://i.pximg.net/c/1200x1200/img-master/img/2016/06/20/22/02/06/57506863_p1_master1200.jpg"]);
         Assert.deepEqual(pp.ugoiraFrames ,{"57532237":[{"file":"000000.jpg","delay":200},{"file":"000001.jpg","delay":200}]})
     });
 });

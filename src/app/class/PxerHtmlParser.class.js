@@ -158,7 +158,8 @@ PxerHtmlParser.parseMangaHtml =function({task,dom,url,pw}){
 };
 PxerHtmlParser.parseMangaBigHtml =function({task,dom,url,pw}){
     var src =dom.getElementsByTagName('img')[0].src;
-    pw.server     =src.match(/(i\d+)\.pixiv\.net/)[1];
+    var URLObj =parseURL(src);
+    pw.domain     =URLObj.domain;
     pw.date       =src.match(PxerHtmlParser.REGEXP['getDate'])[1];
     pw.fileFormat =src.match(/\.(jpg|gif|png)$/)[1];
 };
@@ -177,23 +178,27 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
             ;
         let exp =/"src":"([^"<>]*?600x600\.zip)"[^<>]*?"frames":(\[.*?\])/mi;
         let arr =script.match(exp);
+        let src =arr[1].replace(/\\\//g ,'\/');
+        let URLObj =parseURL(src);
 
-        pw.server =arr[1].replace(/\\\//g ,'\/').match(/(i\d+)\.pixiv\.net/)[1];
-        pw.date   =arr[1].replace(/\\\//g ,'\/').match(PxerHtmlParser.REGEXP['getDate'])[1];
+        pw.domain =URLObj.domain;
+        pw.date   =src.match(PxerHtmlParser.REGEXP['getDate'])[1];
         pw.frames =JSON.parse(arr[2]);
 
     };
 
     if(task.type ==='illust' &&!task.isMultiple){
         let src =dom.querySelector(".ui-modal-close-box img.original-image").getAttribute("data-src");
-        pw.server     =src.match(/(i\d+)\.pixiv\.net/)[1];
+        let URLObj =parseURL(src);
+        pw.domain     =URLObj.domain;
         pw.date       =src.match(PxerHtmlParser.REGEXP['getDate'])[1];
         pw.fileFormat =src.match(/\.(jpg|gif|png)$/)[1];
     }
 
     if(task.type ==='manga' &&!task.isMultiple){
         let src =dom.querySelector("a._work.manga img").src;
-        pw.server =src.match(/(i\d+)\.pixiv\.net/)[1];
+        let URLObj =parseURL(src);
+        pw.domain =URLObj.domain;
         pw.date   =src.match(PxerHtmlParser.REGEXP['getDate'])[1];
     }
 

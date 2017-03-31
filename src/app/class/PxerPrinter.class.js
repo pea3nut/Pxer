@@ -183,8 +183,8 @@ PxerPrinter.defaultConfig =function(){
  * */
 PxerPrinter.getUgoira =function(works ,type='max'){
     const tpl ={
-        "max"   :"http://#server#.pixiv.net/img-zip-ugoira/img/#date#/#id#_ugoira1920x1080.zip",
-        "600p"  :"http://#server#.pixiv.net/img-zip-ugoira/img/#date#/#id#_ugoira600x600.zip",
+        "max"   :"http://#domain#/img-zip-ugoira/img/#date#/#id#_ugoira1920x1080.zip",
+        "600p"  :"http://#domain#/img-zip-ugoira/img/#date#/#id#_ugoira600x600.zip",
     };
 
     var address =tpl[type];
@@ -205,9 +205,9 @@ PxerPrinter.getUgoira =function(works ,type='max'){
  * */
 PxerPrinter.getMultiple =function(works ,type='max'){
     const tpl ={
-        "max"        :"http://#server#.pixiv.net/img-original/img/#date#/#id#_p#index#.#fileFormat#",
-        "1200p"      :"http://#server#.pixiv.net/c/1200x1200/img-master/img/#date#/#id#_p#index#_master1200.jpg",
-        "cover_600p" :"http://#server#.pixiv.net/c/600x600/img-master/img/#date#/#id#_p0_master1200.jpg",
+        "max"        :"http://#domain#/img-original/img/#date#/#id#_p#index#.#fileFormat#",
+        "1200p"      :"http://#domain#/c/1200x1200/img-master/img/#date#/#id#_p#index#_master1200.jpg",
+        "cover_600p" :"http://#domain#/c/600x600/img-master/img/#date#/#id#_p0_master1200.jpg",
     };
 
     var address =tpl[type];
@@ -234,8 +234,8 @@ PxerPrinter.getMultiple =function(works ,type='max'){
  * */
 PxerPrinter.getWorks =function (works ,type='max'){
     const tpl ={
-        "max"   :"http://#server#.pixiv.net/img-original/img/#date#/#id#_p0.#fileFormat#",
-        "600p"  :"http://#server#.pixiv.net/c/600x600/img-master/img/#date#/#id#_p0_master1200.jpg",
+        "max"   :"http://#domain#/img-original/img/#date#/#id#_p0.#fileFormat#",
+        "600p"  :"http://#domain#/c/600x600/img-master/img/#date#/#id#_p0_master1200.jpg",
     };
 
     var address =tpl[type];

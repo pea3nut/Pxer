@@ -60,7 +60,7 @@ class PxerFailInfo{
  * @constructor
  * */
 class PxerWorks{
-    constructor({id ,type ,date ,server ,tagList ,viewCount ,ratedCount ,scoreCount ,fileFormat}={},strict=true){
+    constructor({id ,type ,date ,domain ,tagList ,viewCount ,ratedCount ,scoreCount ,fileFormat}={},strict=true){
         /**作品ID*/
         this.id =id;
         /**
@@ -69,8 +69,8 @@ class PxerWorks{
          * */
         this.date =date;
         this.type =type;//[manga|ugoira|illust]
-        /**作品存放的P站服务器*/
-        this.server =server;//i\d
+        /**作品存放的域名*/
+        this.domain =domain;
         /**
          * 作品标签列表
          * @type {Array}
