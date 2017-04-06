@@ -1,11 +1,12 @@
 afterLoad(function(){
     // 寻找插入点
     var elt =document.createElement('div');
+    elt.innerHTML = PXER_TEMPLATE
     var insetElt=(
         document.getElementById('wrapper')
         || document.body
     );
-    insetElt.insertBefore(elt,insetElt.firstChild);
+    insetElt.insertBefore(elt, insetElt.firstChild);
 
     // 运行Vue实例
     new Vue({render:ce=>ce({
