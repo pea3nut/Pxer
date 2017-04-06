@@ -1,5 +1,9 @@
+/**
+ * 继承自printer，我要研究一下Pxer的event控制然后继续写
+ */
 class PxerSaver extends PxerPrinter {
   constructor(ppConfig) {
+    //只能下载图片
     super({
         "manga_single": ppConfig.manga_single,
         "manga_multiple": ppConfig.manga_multiple,
@@ -9,5 +13,5 @@ class PxerSaver extends PxerPrinter {
         "ugoira_frames": "no",
     })
   }
-  
+
 }

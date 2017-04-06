@@ -254,7 +254,7 @@ class PxerApp extends PxerEvent{
         pp.print();
     };
     /**
-     * 保存抓取到的作品
+     * 保存抓取到的图片
      * @return {string}
      * */
     saveWorks(){
