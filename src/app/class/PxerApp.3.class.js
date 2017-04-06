@@ -258,19 +258,12 @@ class PxerApp extends PxerEvent{
      * @return {string}
      * */
     saveWorks(){
-        var pp = new PxerPrinter({
-            "manga_single": this.ppConfig.manga_single,
-            "manga_multiple": this.ppConfig.manga_multiple,
-            "illust_single": this.ppConfig.illust_single,
-            "illust_multiple": this.ppConfig.illust_multiple,
-            "ugoira_zip": "no",
-            "ugoira_frames": "no",
-        });
+        var ps =new PxerSaver(this.ppConfig);
         var pf =new PxerFilter(this.pfConfig);
         var works =pf.filter(this.resultSet);
-        pp.fillTaskInfo(works);
-        pp.fillAddress(works);
-        //pp.address
+        ps.fillTaskInfo(works);
+        ps.fillAddress(works);
+
     };
 };
 
