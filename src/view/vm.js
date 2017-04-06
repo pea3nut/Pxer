@@ -38,6 +38,23 @@ afterLoad(function(){
             },
             showLoadBtn:true,
             errmsg:'',
+            userLang:'cn',//localStorage?
+            lang:{
+                nav:{
+                    load:{
+                        cn:'Load',
+                    },
+                    run:{
+                        cn:'Run',
+                    },
+                    stop:{
+                        cn:'Stop',
+                    },
+                    warn:{
+                        cn:'Warn',
+                    },
+                },
+            },
         }},
         created(){
             window['PXER_VM'] =this;
