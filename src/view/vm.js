@@ -9,7 +9,7 @@ afterLoad(function() {
     insetElt.insertBefore(elt, insetElt.firstChild);
 
     // 运行Vue实例
-    let simon = new Vue({
+    window['PXER_VM'] = new Vue({
         el: '#pxerApp',
         data: {
             pxer: new PxerApp(),
@@ -232,14 +232,13 @@ afterLoad(function() {
                 return `${~~(s/60)}:${(s%60>=10)?s%60:'0'+s%60}`
             },
         },
-        created:()=>{
-          window['PXER_VM'] = this;
-          this.pxer.on('error', (err) => {
-              this.errmsg = err;
-          });
-          this.pxer.on('finishWorksTask', function() {
-              window.blinkTitle();
-          });
+        created: () => {
+            this.pxer.on('error', (err) => {
+                this.errmsg = err;
+            });
+            this.pxer.on('finishWorksTask', function() {
+                window.blinkTitle();
+            });
         }
     })
 
