@@ -253,6 +253,25 @@ class PxerApp extends PxerEvent{
         pp.fillAddress(works);
         pp.print();
     };
+    /**
+     * 保存抓取到的作品
+     * @return {string}
+     * */
+    saveWorks(){
+        var pp = new PxerPrinter({
+            "manga_single": this.ppConfig.manga_single,
+            "manga_multiple": this.ppConfig.manga_multiple,
+            "illust_single": this.ppConfig.illust_single,
+            "illust_multiple": this.ppConfig.illust_multiple,
+            "ugoira_zip": "no",
+            "ugoira_frames": "no",
+        });
+        var pf =new PxerFilter(this.pfConfig);
+        var works =pf.filter(this.resultSet);
+        pp.fillTaskInfo(works);
+        pp.fillAddress(works);
+        //pp.address
+    };
 };
 
 /**直接抓取本页面的作品*/
