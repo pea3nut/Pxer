@@ -13,7 +13,7 @@ class PxerSaver extends PxerPrinter {
      * @return {undefined}
      */
     start() {
-      
+
     }
 
 }
