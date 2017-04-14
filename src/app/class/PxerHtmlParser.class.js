@@ -169,7 +169,6 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
     pw.tagList      =[...dom.querySelectorAll(".tag a.text")].map(elt=>elt.innerHTML);
     pw.viewCount    =+dom.querySelector(".view-count").innerHTML;
     pw.ratedCount   =+dom.querySelector(".rated-count").innerHTML;
-    pw.scoreCount   =+dom.querySelector(".score-count").innerHTML;
 
     if(task.type ==='ugoira'){
         let script =[...dom.querySelectorAll("script")]

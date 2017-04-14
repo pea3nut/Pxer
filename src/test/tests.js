@@ -41,7 +41,6 @@ describe('PxerHtmlParser 解析类' ,function(){
         Expect(pw.frames).to.be.deep.equal([{"file":"000000.jpg","delay":200},{"file":"000001.jpg","delay":200}]);
         Expect(pw.viewCount>130).to.be.ok;
         Expect(pw.ratedCount).to.be.a('number');
-        Expect(pw.scoreCount).to.be.a('number');
 
         
     });
@@ -69,7 +68,6 @@ describe('PxerHtmlParser 解析类' ,function(){
         Assert.deepEqual(   pw.tagList ,['test']);
         Assert.typeOf(      pw.viewCount  ,'number');
         Assert.typeOf(      pw.ratedCount ,'number');
-        Assert.typeOf(      pw.scoreCount ,'number');
 
 
         
@@ -101,7 +99,6 @@ describe('PxerHtmlParser 解析类' ,function(){
         Assert.deepEqual(   pw.tagList ,['test']);
         Assert.typeOf(      pw.viewCount  ,'number');
         Assert.typeOf(      pw.ratedCount ,'number');
-        Assert.typeOf(      pw.scoreCount ,'number');
 
 
         
@@ -136,7 +133,6 @@ describe('PxerHtmlParser 解析类' ,function(){
         Assert.deepEqual(   pw.tagList ,['test']);
         Assert.typeOf(      pw.viewCount  ,'number');
         Assert.typeOf(      pw.ratedCount ,'number');
-        Assert.typeOf(      pw.scoreCount ,'number');
 
 
 
@@ -171,7 +167,6 @@ describe('PxerHtmlParser 解析类' ,function(){
         Assert.deepEqual(   pw.tagList ,[]);
         Assert.typeOf(      pw.viewCount  ,'number');
         Assert.typeOf(      pw.ratedCount ,'number');
-        Assert.typeOf(      pw.scoreCount ,'number');
 
 
         
@@ -183,18 +178,17 @@ describe('PxerHtmlParser 解析类' ,function(){
 
 describe('PxerFilter 作品过滤类' ,function(){
     var pw =[
-        new PxerUgoiraWorks({"id":"57532237","type":"ugoira","tagList":["test1"],"viewCount":141,"ratedCount":0,"scoreCount":0,"fileFormat":"zip","frames":[{"file":"000000.jpg","delay":200},{"file":"000001.jpg","delay":200}]}),
-        new PxerWorks({"id":"57507348","type":"illust","tagList":["test1","test2"],"viewCount":141,"ratedCount":5,"scoreCount":50,"fileFormat":"jpg"}),
-        new PxerWorks({"id":"57506727","type":"manga","tagList":["test3"],"viewCount":141,"ratedCount":20,"scoreCount":100,"fileFormat":"png"}),
-        new PxerMultipleWorks({"id":"57506780","type":"illust","tagList":["test2"],"viewCount":100,"ratedCount":0,"scoreCount":0,"fileFormat":"jpg","multiple":2}),
-        new PxerMultipleWorks({"id":"57506863","type":"manga","tagList":[],"viewCount":99,"ratedCount":0,"scoreCount":0,"fileFormat":"jpg","multiple":2}),
+        new PxerUgoiraWorks({"id":"57532237","type":"ugoira","tagList":["test1"],"viewCount":141,"ratedCount":0,"fileFormat":"zip","frames":[{"file":"000000.jpg","delay":200},{"file":"000001.jpg","delay":200}]}),
+        new PxerWorks({"id":"57507348","type":"illust","tagList":["test1","test2"],"viewCount":141,"ratedCount":5,"fileFormat":"jpg"}),
+        new PxerWorks({"id":"57506727","type":"manga","tagList":["test3"],"viewCount":141,"ratedCount":20,"fileFormat":"png"}),
+        new PxerMultipleWorks({"id":"57506780","type":"illust","tagList":["test2"],"viewCount":100,"ratedCount":0,"fileFormat":"jpg","multiple":2}),
+        new PxerMultipleWorks({"id":"57506863","type":"manga","tagList":[],"viewCount":99,"ratedCount":0,"fileFormat":"jpg","multiple":2}),
     ];
     it('按信息过滤', function() {
-        Assert.lengthOf(PxerFilter.filterInfo(pw,{score:50}) ,2);
-        Assert.lengthOf(PxerFilter.filterInfo(pw,{score:999}) ,0);
-        Assert.lengthOf(PxerFilter.filterInfo(pw,{avg:10}) ,1);
-        Assert.equal(PxerFilter.filterInfo(pw,{avg:10})[0] ,pw[1]);
-        Assert.lengthOf(PxerFilter.filterInfo(pw,{view:100}) ,4);
+        Assert.lengthOf(PxerFilter.filterInfo(pw,{rated:5}) ,2);
+        Assert.lengthOf(PxerFilter.filterInfo(pw,{rated:999}) ,0);
+        Assert.lengthOf(PxerFilter.filterInfo(pw,{rated_pro:0.1}) ,1);
+        Assert.equal(PxerFilter.filterInfo(pw,{rated_pro:0.1})[0] ,pw[2]);
     });
     it('按标签过滤', function() {
         Assert.lengthOf(PxerFilter.filterTag(pw,{no_tag_any:['test1']}),3);
@@ -205,7 +199,7 @@ describe('PxerFilter 作品过滤类' ,function(){
     it('混合过滤', function() {
         var pf =new PxerFilter({
             has_tag_some:['test1','test2'],
-            score:50,
+            rated:5,
         });
         Assert.equal(pf.filter(pw)[0] ,pw[1]);
     });
@@ -213,11 +207,11 @@ describe('PxerFilter 作品过滤类' ,function(){
 
 describe('PxerPrinter 格式化输出类' ,function(){
     var pw =[
-        new PxerUgoiraWorks({"id":"57532237","type":"ugoira","date":"2016/06/22/15/00/43","domain":"i2.pixiv.net","tagList":["test"],"viewCount":141,"ratedCount":0,"scoreCount":0,"fileFormat":"zip","frames":[{"file":"000000.jpg","delay":200},{"file":"000001.jpg","delay":200}]}),
-        new PxerWorks({"id":"57507348","type":"illust","date":"2016/06/20/22/22/26","domain":"i.pximg.net","tagList":["test"],"viewCount":113,"ratedCount":0,"scoreCount":0,"fileFormat":"jpg"}),
-        new PxerWorks({"id":"57506727","type":"manga","date":"2016/06/20/21/56/11","domain":"i.pximg.net","tagList":["test"],"viewCount":122,"ratedCount":0,"scoreCount":0,"fileFormat":"png"}),
-        new PxerMultipleWorks({"id":"57506780","type":"illust","date":"2016/06/20/21/58/41","domain":"i.pximg.net","tagList":["test"],"viewCount":110,"ratedCount":0,"scoreCount":0,"fileFormat":"jpg","multiple":2}),
-        new PxerMultipleWorks({"id":"57506863","type":"manga","date":"2016/06/20/22/02/06","domain":"i.pximg.net","tagList":[],"viewCount":111,"ratedCount":0,"scoreCount":0,"fileFormat":"jpg","multiple":2}),
+        new PxerUgoiraWorks({"id":"57532237","type":"ugoira","date":"2016/06/22/15/00/43","domain":"i2.pixiv.net","tagList":["test"],"viewCount":141,"ratedCount":0,"fileFormat":"zip","frames":[{"file":"000000.jpg","delay":200},{"file":"000001.jpg","delay":200}]}),
+        new PxerWorks({"id":"57507348","type":"illust","date":"2016/06/20/22/22/26","domain":"i.pximg.net","tagList":["test"],"viewCount":113,"ratedCount":0,"fileFormat":"jpg"}),
+        new PxerWorks({"id":"57506727","type":"manga","date":"2016/06/20/21/56/11","domain":"i.pximg.net","tagList":["test"],"viewCount":122,"ratedCount":0,"fileFormat":"png"}),
+        new PxerMultipleWorks({"id":"57506780","type":"illust","date":"2016/06/20/21/58/41","domain":"i.pximg.net","tagList":["test"],"viewCount":110,"ratedCount":0,"fileFormat":"jpg","multiple":2}),
+        new PxerMultipleWorks({"id":"57506863","type":"manga","date":"2016/06/20/22/02/06","domain":"i.pximg.net","tagList":[],"viewCount":111,"ratedCount":0,"fileFormat":"jpg","multiple":2}),
     ];
     it('输出全部下载地址', function() {
         var pp =new PxerPrinter({ugoira_zip:'max',ugoira_frames:'yes'});
@@ -595,7 +589,7 @@ describe('PxerApp 主程序 再抓取' ,function(){
         url:'http://www.pixiv.net/search.php?word=VOCALOID&order=date_d&p=1',
     }));
     pxer.ptmConfig.thread=20;
-    pxer.ptmConfig.timeout=500;
+    pxer.ptmConfig.timeout=1000;
     pxer.ptmConfig.retry=0;
 
     it('抓取解析页码' ,function(done){

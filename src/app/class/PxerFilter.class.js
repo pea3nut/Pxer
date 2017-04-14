@@ -40,9 +40,9 @@ class PxerFilter{
  * */
 PxerFilter.defaultConfig =function(){
     return{
-        "score"     :0,
-        "avg"       :0,
-        "view"      :0,
+        "rated"     :0,//赞的数量
+        "rated_pro" :0,//点赞率
+        "view"      :0,//浏览数
         "has_tag_every" :[],
         "has_tag_some"  :[],
         "no_tag_any"    :[],
@@ -53,16 +53,16 @@ PxerFilter.defaultConfig =function(){
 /**
  * 根据标签作品信息过滤作品
  * @param {PxerWorks[]} worksList
- * @param {number} score - 作品不小于的总分
- * @param {number} avg   - 作品不小于的评价分
- * @param {number} view  - 作品不小于的浏览数
+ * @param {number} rated      - 作品不小于的赞的数量
+ * @param {number} rated_pro  - 作品不小于的点赞率，小于0的数字
+ * @param {number} view       - 作品不小于的浏览数
  * @return {PxerWorks[]}
  * */
-PxerFilter.filterInfo =function(worksList ,{score=0,avg=0,view=0}){
+PxerFilter.filterInfo =function(worksList ,{rated=0,rated_pro=0,view=0}){
     return worksList.filter(function(works){
-        return works.scoreCount >= score
+        return works.ratedCount >= rated
         && works.viewCount >= view
-        && (works.ratedCount&&(works.scoreCount/works.ratedCount)) >= avg
+        && (works.ratedCount/works.viewCount) >= rated_pro
     });
 };
 
