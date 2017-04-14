@@ -130,7 +130,6 @@ var PxerWorks = function PxerWorks() {
         tagList = _ref5.tagList,
         viewCount = _ref5.viewCount,
         ratedCount = _ref5.ratedCount,
-        scoreCount = _ref5.scoreCount,
         fileFormat = _ref5.fileFormat;
 
     var strict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
@@ -154,10 +153,8 @@ var PxerWorks = function PxerWorks() {
     this.tagList = tagList;
     /**作品被浏览的次数*/
     this.viewCount = viewCount;
-    /**作品被评价的次数*/
+    /**作品被赞的次数*/
     this.ratedCount = ratedCount;
-    /**作品的总分*/
-    this.scoreCount = scoreCount;
     /**作品的图片文件扩展名*/
     this.fileFormat = fileFormat;
 
@@ -424,9 +421,9 @@ var PxerFilter = function () {
  * */
 PxerFilter.defaultConfig = function () {
     return {
-        "score": 0,
-        "avg": 0,
-        "view": 0,
+        "rated": 0, //赞的数量
+        "rated_pro": 0, //点赞率
+        "view": 0, //浏览数
         "has_tag_every": [],
         "has_tag_some": [],
         "no_tag_any": [],
@@ -437,21 +434,21 @@ PxerFilter.defaultConfig = function () {
 /**
  * 根据标签作品信息过滤作品
  * @param {PxerWorks[]} worksList
- * @param {number} score - 作品不小于的总分
- * @param {number} avg   - 作品不小于的评价分
- * @param {number} view  - 作品不小于的浏览数
+ * @param {number} rated      - 作品不小于的赞的数量
+ * @param {number} rated_pro  - 作品不小于的点赞率，小于0的数字
+ * @param {number} view       - 作品不小于的浏览数
  * @return {PxerWorks[]}
  * */
 PxerFilter.filterInfo = function (worksList, _ref6) {
-    var _ref6$score = _ref6.score,
-        score = _ref6$score === undefined ? 0 : _ref6$score,
-        _ref6$avg = _ref6.avg,
-        avg = _ref6$avg === undefined ? 0 : _ref6$avg,
+    var _ref6$rated = _ref6.rated,
+        rated = _ref6$rated === undefined ? 0 : _ref6$rated,
+        _ref6$rated_pro = _ref6.rated_pro,
+        rated_pro = _ref6$rated_pro === undefined ? 0 : _ref6$rated_pro,
         _ref6$view = _ref6.view,
         view = _ref6$view === undefined ? 0 : _ref6$view;
 
     return worksList.filter(function (works) {
-        return works.scoreCount >= score && works.viewCount >= view && (works.ratedCount && works.scoreCount / works.ratedCount) >= avg;
+        return works.ratedCount >= rated && works.viewCount >= view && works.ratedCount / works.viewCount >= rated_pro;
     });
 };
 
@@ -693,7 +690,6 @@ PxerHtmlParser.parseMediumHtml = function (_ref10) {
     });
     pw.viewCount = +dom.querySelector(".view-count").innerHTML;
     pw.ratedCount = +dom.querySelector(".rated-count").innerHTML;
-    pw.scoreCount = +dom.querySelector(".score-count").innerHTML;
 
     if (task.type === 'ugoira') {
         var script = [].concat(_toConsumableArray(dom.querySelectorAll("script"))).filter(function (tag) {
