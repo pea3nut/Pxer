@@ -60,7 +60,7 @@ class PxerFailInfo{
  * @constructor
  * */
 class PxerWorks{
-    constructor({id ,type ,date ,domain ,tagList ,viewCount ,ratedCount ,scoreCount ,fileFormat}={},strict=true){
+    constructor({id ,type ,date ,domain ,tagList ,viewCount ,ratedCount ,fileFormat}={},strict=true){
         /**作品ID*/
         this.id =id;
         /**
@@ -78,10 +78,8 @@ class PxerWorks{
         this.tagList =tagList;
         /**作品被浏览的次数*/
         this.viewCount =viewCount;
-        /**作品被评价的次数*/
+        /**作品被赞的次数*/
         this.ratedCount =ratedCount;
-        /**作品的总分*/
-        this.scoreCount =scoreCount;
         /**作品的图片文件扩展名*/
         this.fileFormat =fileFormat;
 
