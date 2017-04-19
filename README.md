@@ -9,7 +9,7 @@
 </p>
 
 
-纯客户端JavaScript编写的[pixiv.net](http://www.pixiv.net)爬虫，上线一周内被使用上万次！
+纯客户端JavaScript编写的[pixiv.net](https://www.pixiv.net)爬虫，上线一周内被使用上万次！
 
 不仅人人可用，且代码经过精心注释可供参考~
 
@@ -39,8 +39,8 @@ Pxer最大作用是将pixiv.net网站（类似于花瓣网）中的图片作品�
 
 你可以通过下面流程快速体验Pxer的强大功能：
 
-1. 在[Pixiv网站](http://www.pixiv.net)登陆注册一个账号
-2. 打开“[机器猫 - 哆啦A梦](http://www.pixiv.net/search.php?s_mode=s_tag&word=%E3%83%89%E3%83%A9%E3%81%88%E3%82%82%E3%82%93%20000user)”的图片检索页面
+1. 在[Pixiv网站](https://www.pixiv.net)登陆注册一个账号
+2. 打开“[机器猫 - 哆啦A梦](https://www.pixiv.net/search.php?s_mode=s_tag&word=%E3%83%89%E3%83%A9%E3%81%88%E3%82%82%E3%82%93%20000user)”的图片检索页面
 3. 在浏览器运行[pxer.user.js](http://pxer-app.pea3nut.org/pxer-master.user.js)代码（将代码文件复制到控制台运行或存成书签点击运行）
 4. 操作页面中PxerUI界面
 

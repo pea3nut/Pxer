@@ -132,17 +132,17 @@ PxerHtmlParser.getUrlList =function(task){
             && !task.isMultiple
         )
     ){
-        return ["http://www.pixiv.net/member_illust.php?mode=medium&illust_id="+task.id];
+        return ["https://www.pixiv.net/member_illust.php?mode=medium&illust_id="+task.id];
     }else if(task.isMultiple){
         return [
-            "http://www.pixiv.net/member_illust.php?mode=medium&illust_id="+task.id,
-            "http://www.pixiv.net/member_illust.php?mode=manga&illust_id="+task.id,
-            "http://www.pixiv.net/member_illust.php?mode=manga_big&page=0&illust_id="+task.id
+            "https://www.pixiv.net/member_illust.php?mode=medium&illust_id="+task.id,
+            "https://www.pixiv.net/member_illust.php?mode=manga&illust_id="+task.id,
+            "https://www.pixiv.net/member_illust.php?mode=manga_big&page=0&illust_id="+task.id
         ];
     }else if(task.type ==="manga" && !task.isMultiple){
         return [
-            "http://www.pixiv.net/member_illust.php?mode=medium&illust_id="+task.id,
-            "http://www.pixiv.net/member_illust.php?mode=big&illust_id="+task.id,
+            "https://www.pixiv.net/member_illust.php?mode=medium&illust_id="+task.id,
+            "https://www.pixiv.net/member_illust.php?mode=big&illust_id="+task.id,
         ];
     }else{
         console.warn('miss task '+task.id);

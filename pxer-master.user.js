@@ -9,7 +9,7 @@
 // @description   可能是目前最好用的P站收图工具
 // @grant         none
 // @noframes
-// @include       http://www.pixiv.net*
+// @include       https://www.pixiv.net*
 // ==/UserScript==
 javascript:void((function() {
     // 环境变量
