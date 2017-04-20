@@ -4,7 +4,7 @@
 ~function(){
     var libURL =/**/"src/app/lib.js";//*/'';
     var supportURL =/**/"src/app/support.js";//*/'';
-    window['PXER_VERSION'] =/**/"7.0.3";//*/'';
+    window['PXER_VERSION'] =/**/"7.0.4";//*/'';
 
     Promise.resolve().then(function(){
         var script = document.createElement('script');
