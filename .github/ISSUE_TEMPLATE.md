@@ -7,8 +7,8 @@
 ## 使用的系统、浏览器、Pxer版本
 
 - Windows 7
-- Firefox ESR 47.4.0
-- Pxer开发版
+- Firefox 延长支持版 47.4.0
+- Pxer开发版 6.0.2
 
 ## Bug发生时的地址
 
