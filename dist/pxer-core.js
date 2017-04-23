@@ -646,11 +646,11 @@ PxerHtmlParser.parseWorks = function (task) {
  * */
 PxerHtmlParser.getUrlList = function (task) {
     if (task.type === "ugoira" || task.type === "illust" && !task.isMultiple) {
-        return ["http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + task.id];
+        return ["https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + task.id];
     } else if (task.isMultiple) {
-        return ["http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + task.id, "http://www.pixiv.net/member_illust.php?mode=manga&illust_id=" + task.id, "http://www.pixiv.net/member_illust.php?mode=manga_big&page=0&illust_id=" + task.id];
+        return ["https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + task.id, "https://www.pixiv.net/member_illust.php?mode=manga&illust_id=" + task.id, "https://www.pixiv.net/member_illust.php?mode=manga_big&page=0&illust_id=" + task.id];
     } else if (task.type === "manga" && !task.isMultiple) {
-        return ["http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + task.id, "http://www.pixiv.net/member_illust.php?mode=big&illust_id=" + task.id];
+        return ["https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + task.id, "https://www.pixiv.net/member_illust.php?mode=big&illust_id=" + task.id];
     } else {
         console.warn('miss task ' + task.id);
         return [];
@@ -952,8 +952,8 @@ PxerPrinter.getUgoira = function (works) {
     var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'max';
 
     var tpl = {
-        "max": "http://#domain#/img-zip-ugoira/img/#date#/#id#_ugoira1920x1080.zip",
-        "600p": "http://#domain#/img-zip-ugoira/img/#date#/#id#_ugoira600x600.zip"
+        "max": "https://#domain#/img-zip-ugoira/img/#date#/#id#_ugoira1920x1080.zip",
+        "600p": "https://#domain#/img-zip-ugoira/img/#date#/#id#_ugoira600x600.zip"
     };
 
     var address = tpl[type];
@@ -975,9 +975,9 @@ PxerPrinter.getMultiple = function (works) {
     var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'max';
 
     var tpl = {
-        "max": "http://#domain#/img-original/img/#date#/#id#_p#index#.#fileFormat#",
-        "1200p": "http://#domain#/c/1200x1200/img-master/img/#date#/#id#_p#index#_master1200.jpg",
-        "cover_600p": "http://#domain#/c/600x600/img-master/img/#date#/#id#_p0_master1200.jpg"
+        "max": "https://#domain#/img-original/img/#date#/#id#_p#index#.#fileFormat#",
+        "1200p": "https://#domain#/c/1200x1200/img-master/img/#date#/#id#_p#index#_master1200.jpg",
+        "cover_600p": "https://#domain#/c/600x600/img-master/img/#date#/#id#_p0_master1200.jpg"
     };
 
     var address = tpl[type];
@@ -1005,8 +1005,8 @@ PxerPrinter.getWorks = function (works) {
     var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'max';
 
     var tpl = {
-        "max": "http://#domain#/img-original/img/#date#/#id#_p0.#fileFormat#",
-        "600p": "http://#domain#/c/600x600/img-master/img/#date#/#id#_p0_master1200.jpg"
+        "max": "https://#domain#/img-original/img/#date#/#id#_p0.#fileFormat#",
+        "600p": "https://#domain#/c/600x600/img-master/img/#date#/#id#_p0_master1200.jpg"
     };
 
     var address = tpl[type];
@@ -1225,7 +1225,8 @@ PxerThread.prototype['run'] = function _self() {
         _self.call(_this6); //递归
         return true;
     });
-    XHR.addEventListener("error", function () {
+    XHR.addEventListener("error", function (argn) {
+        throw argn;
         _this6.state = 'error';
         _this6.dispatch('error', {
             task: _this6.task,

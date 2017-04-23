@@ -9,11 +9,12 @@
 // @description   可能是目前最好用的P站收图工具
 // @grant         none
 // @noframes
+// @include       https://www.pixiv.net*
 // @include       http://www.pixiv.net*
 // ==/UserScript==
 javascript:void((function() {
     // 环境变量
-    window['PXER_URL'] =/**/"http://pxer-app.pea3nut.org/";//*/'';
+    window['PXER_URL'] =/**/"https://pxer-app.pea3nut.org/";//*/'';
     window['PXER_MODE'] ='master';
 
     // 引入入口文件
