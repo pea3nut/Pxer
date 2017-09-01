@@ -707,7 +707,7 @@ PxerHtmlParser.parseMediumHtml = function (_ref10) {
     };
 
     if (task.type === 'illust' && !task.isMultiple) {
-        var _src = dom.querySelector(".ui-modal-close-box img.original-image").getAttribute("data-src");
+        var _src = PxerHtmlParser.getImageUrl(dom.querySelector(".ui-modal-close-box img.original-image"));
         var _URLObj = parseURL(_src);
         pw.domain = _URLObj.domain;
         pw.date = _src.match(PxerHtmlParser.REGEXP['getDate'])[1];
@@ -715,7 +715,7 @@ PxerHtmlParser.parseMediumHtml = function (_ref10) {
     }
 
     if (task.type === 'manga' && !task.isMultiple) {
-        var _src2 = dom.querySelector("a._work.manga img").src;
+        var _src2 = PxerHtmlParser.getImageUrl(dom.querySelector("a._work.manga img"));
         var _URLObj2 = parseURL(_src2);
         pw.domain = _URLObj2.domain;
         pw.date = _src2.match(PxerHtmlParser.REGEXP['getDate'])[1];
@@ -730,6 +730,11 @@ PxerHtmlParser.HTMLParser = function (aHTMLString) {
     var dom = document.implementation.createHTMLDocument('');
     dom.documentElement.innerHTML = aHTMLString;
     return dom.body;
+};
+
+/**@param {Element} img*/
+PxerHtmlParser.getImageUrl = function (img) {
+    return img.getAttribute('src') || img.getAttribute('data-src');
 };
 
 var PxerPrinter = function () {
@@ -1225,8 +1230,7 @@ PxerThread.prototype['run'] = function _self() {
         _self.call(_this6); //递归
         return true;
     });
-    XHR.addEventListener("error", function (argn) {
-        throw argn;
+    XHR.addEventListener("error", function () {
         _this6.state = 'error';
         _this6.dispatch('error', {
             task: _this6.task,
@@ -1507,7 +1511,9 @@ var PxerApp = function (_PxerEvent3) {
                 return false;
             };
 
-            var pageNum = Math.ceil(this.taskOption.limit ? this.taskOption.limit : this.worksNum) / 20;
+            var onePageWorksNumber = this.pageType === 'search' ? 40 : 20;
+
+            var pageNum = Math.ceil(this.taskOption.limit ? this.taskOption.limit : this.worksNum) / onePageWorksNumber;
 
             var separator = /\?/.test(document.URL) ? "&" : "?";
             for (var i = 0; i < pageNum; i++) {
