@@ -187,7 +187,9 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
     };
 
     if(task.type ==='illust' &&!task.isMultiple){
-        let src =dom.querySelector(".ui-modal-close-box img.original-image").getAttribute("data-src");
+        let src =PxerHtmlParser.getImageUrl(
+            dom.querySelector(".ui-modal-close-box img.original-image")
+        );
         let URLObj =parseURL(src);
         pw.domain     =URLObj.domain;
         pw.date       =src.match(PxerHtmlParser.REGEXP['getDate'])[1];
@@ -195,7 +197,9 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
     }
 
     if(task.type ==='manga' &&!task.isMultiple){
-        let src =dom.querySelector("a._work.manga img").src;
+        let src =PxerHtmlParser.getImageUrl(
+            dom.querySelector("a._work.manga img")
+        );
         let URLObj =parseURL(src);
         pw.domain =URLObj.domain;
         pw.date   =src.match(PxerHtmlParser.REGEXP['getDate'])[1];
@@ -214,4 +218,7 @@ PxerHtmlParser.HTMLParser =function(aHTMLString){
     return dom.body;
 };
 
-
+/**@param {Element} img*/
+PxerHtmlParser.getImageUrl =function(img){
+    return img.getAttribute('src')||img.getAttribute('data-src');
+};
