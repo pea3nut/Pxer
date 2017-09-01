@@ -100,11 +100,13 @@ class PxerApp extends PxerEvent{
             return false;
         };
 
+        let onePageWorksNumber =this.pageType==='search'?40:20;
+
         var pageNum =Math.ceil(
             this.taskOption.limit
             ? this.taskOption.limit
             : this.worksNum
-        )/20;
+        )/onePageWorksNumber;
 
         var separator =/\?/.test(document.URL)?"&":"?";
         for(var i=0 ;i<pageNum ;i++){
