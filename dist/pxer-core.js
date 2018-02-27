@@ -533,7 +533,9 @@ PxerHtmlParser.parsePage = function (task) {
     var dom = PxerHtmlParser.HTMLParser(task.html);
     var elts = null;
     if (URLData.path === '/search.php') {
-        elts = dom.querySelectorAll('.column-search-result a.work._work');
+        elts = Array.from(document.querySelectorAll('#js-react-search-mid a')).filter(function (a) {
+            return getPageType(a.href) === "works_medium" && a.title;
+        });
     } else {
         elts = dom.querySelectorAll('a.work._work');
     }
@@ -707,7 +709,7 @@ PxerHtmlParser.parseMediumHtml = function (_ref10) {
     };
 
     if (task.type === 'illust' && !task.isMultiple) {
-        var _src = PxerHtmlParser.getImageUrl(dom.querySelector(".ui-modal-close-box img.original-image"));
+        var _src = PxerHtmlParser.getImageUrl(dom.querySelector(".works_display img"));
         var _URLObj = parseURL(_src);
         pw.domain = _URLObj.domain;
         pw.date = _src.match(PxerHtmlParser.REGEXP['getDate'])[1];
@@ -909,6 +911,10 @@ PxerPrinter.prototype['print'] = function () {
     /**判断输出动图参数*/
     if (this.config['ugoira_frames'] === "yes") {
         var win = window.open(document.URL, '_blank');
+        if (!win) {
+            alert('Pxer:\n浏览器拦截了弹出窗口，请检查浏览器提示，设置允许此站点的弹出式窗口。');
+            return;
+        };
         var str = ['<pre>', '/** 这个页面是动图压缩包的动画参数，目前Pxer还无法将动图压缩包打包成GIF，请寻找其他第三方软件 */', JSON.stringify(this.ugoiraFrames, null, 4), '</pre>'];
         win.document.write(str.join('\n'));
     };
@@ -916,6 +922,10 @@ PxerPrinter.prototype['print'] = function () {
     {
         /**输出下载地址*/
         var _win = window.open(document.URL, '_blank');
+        if (!_win) {
+            alert('Pxer:\n浏览器拦截了弹出窗口，请检查浏览器提示，设置允许此站点的弹出式窗口。');
+            return;
+        };
         var _str = ['<pre>', '/** 这个页面是抓取到的下载地址，你可以将它们复制到第三方下载工具如QQ旋风中下载 */', '/**', this.taskInfo.replace(/\<br \/\>/g, ''), '*/', this.address.join('\n'), '</pre>'];
         _win.document.write(_str.join('\n'));
     }
@@ -944,7 +954,8 @@ PxerPrinter.defaultConfig = function () {
         "illust_single": "max", //[max|600p|no]
         "illust_multiple": "max", //[max|1200p|cover_600p|no]
         "ugoira_zip": "no", //[max|600p|no]
-        "ugoira_frames": "no" };
+        "ugoira_frames": "no" //[yes|no]
+    };
 };
 
 /**
@@ -1773,7 +1784,7 @@ PxerApp.prototype['getThis'] = function () {
 
     // 生成任务对象
     var pwr = new PxerWorksRequest({
-        isMultiple: !!document.querySelector('.multiple ._icon-files'),
+        isMultiple: !!document.querySelector('._work.multiple'),
         id: document.URL.match(/illust_id=(\d+)/)[1]
     }); //[manga|ugoira|illust]
     if (!pwr.isMultiple) {
