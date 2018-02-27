@@ -26,7 +26,9 @@ PxerHtmlParser.parsePage =function(task){
     var dom =PxerHtmlParser.HTMLParser(task.html);
     var elts =null;
     if(URLData.path==='/search.php'){
-        elts =dom.querySelectorAll('.column-search-result a.work._work');
+        elts =Array.from(document.querySelectorAll('#js-react-search-mid a'))
+            .filter(a=>getPageType(a.href)==="works_medium"&&a.title)
+        ;
     }else{
         elts =dom.querySelectorAll('a.work._work');
     }
@@ -188,7 +190,7 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
 
     if(task.type ==='illust' &&!task.isMultiple){
         let src =PxerHtmlParser.getImageUrl(
-            dom.querySelector(".ui-modal-close-box img.original-image")
+            dom.querySelector(".works_display img")
         );
         let URLObj =parseURL(src);
         pw.domain     =URLObj.domain;
