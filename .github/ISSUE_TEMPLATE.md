@@ -4,6 +4,11 @@
     如果是其他用途，请清空此文本框。
 -->
 
+<!--
+    标题请附带哪个页面+Pxer状态的简述
+    如：搜索页Pxer报src.match(...) is null
+-->
+
 ## 使用的系统、浏览器、Pxer版本
 
 - Windows 7
@@ -13,6 +18,8 @@
 ## Bug发生时的地址
 
 https://www.pixiv.net/member_illust.php?id=10009740
+
+<!-- 这里贴的地址，作品数要越少越好，不要直接贴个几十万的搜索页地址 -->
 
 ## Bug发生时Pxer的状态
 
