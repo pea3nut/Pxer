@@ -2,7 +2,7 @@
 
 <p align="left">
 	<img alt="" src="https://img.shields.io/badge/JavaScript-ES6-green.svg" />
-	<img alt="" src="https://img.shields.io/badge/install-Greasemonkey-green.svg" />
+	<img alt="" src="https://img.shields.io/badge/install-Tampermonkey-green.svg" />
 	<img alt="" src="https://img.shields.io/badge/Test-mocha-blue.svg" />
 	<img alt="" src="https://img.shields.io/badge/jQuery-No-red.svg" />
 	<img alt="MIT" src="https://img.shields.io/npm/l/express.svg" />
@@ -23,7 +23,7 @@
 - 教程：[起步：Pxer](http://pxer.pea3nut.org/md/start)
 - 教程：[安装教程](http://pxer.pea3nut.org/md/install)
 - 教程：[使用手册](http://pxer.pea3nut.org/md/use)
-- 安装：通过诸如Greasemonkey的浏览器扩展安装Pxer [开发版（推荐）](https://pxer-app.pea3nut.org/pxer-dev.user.js) / [稳定版](https://pxer-app.pea3nut.org/pxer-master.user.js)
+- 安装：通过[Tampermonkey浏览器扩展](http://tampermonkey.net/)安装Pxer [开发版（推荐）](https://pxer-app.pea3nut.org/pxer-dev.user.js) / [稳定版](https://pxer-app.pea3nut.org/pxer-master.user.js)
 
 > 稳定版几乎支持市面上所有主流浏览器，而开发版则拥有更新的功能及更高的性能！
 
