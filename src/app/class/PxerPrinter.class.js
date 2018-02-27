@@ -113,6 +113,10 @@ PxerPrinter.prototype['print'] =function(){
     /**判断输出动图参数*/
     if(this.config['ugoira_frames'] ==="yes"){
         let win =window.open(document.URL ,'_blank');
+        if(!win){
+            alert('Pxer:\n浏览器拦截了弹出窗口，请检查浏览器提示，设置允许此站点的弹出式窗口。');
+            return;
+        };
         let str =[
             '<pre>',
             '/** 这个页面是动图压缩包的动画参数，目前Pxer还无法将动图压缩包打包成GIF，请寻找其他第三方软件 */',
@@ -124,6 +128,10 @@ PxerPrinter.prototype['print'] =function(){
 
     {/**输出下载地址*/
         let win = window.open(document.URL ,'_blank');
+        if(!win){
+            alert('Pxer:\n浏览器拦截了弹出窗口，请检查浏览器提示，设置允许此站点的弹出式窗口。');
+            return;
+        };
         let str = [
             '<pre>' ,
             '/** 这个页面是抓取到的下载地址，你可以将它们复制到第三方下载工具如QQ旋风中下载 */' ,
