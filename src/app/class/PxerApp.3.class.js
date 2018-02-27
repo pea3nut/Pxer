@@ -261,7 +261,7 @@ class PxerApp extends PxerEvent{
 PxerApp.prototype['getThis'] =function(){
     // 生成任务对象
     var pwr =new PxerWorksRequest({
-        isMultiple  :!!document.querySelector('.multiple ._icon-files'),
+        isMultiple  :!!document.querySelector('._work.multiple'),
         id          :document.URL.match(/illust_id=(\d+)/)[1],
     });//[manga|ugoira|illust]
     if(!pwr.isMultiple){
