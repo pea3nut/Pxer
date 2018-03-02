@@ -39,7 +39,12 @@ Fs.writeFileSync(
 
 // 合并app/class为pxer-core
 var fileList =[];
-for(let array of PxerUtility.groupFile(PxerUtility.getAllFile(Join(__dirname,'../src/app/class/')))){
+for(let array of PxerUtility.groupFile(
+        PxerUtility
+            .getAllFile(Join(__dirname,'../src/app/class/'))
+            .filter(fileName=>/\.js$/.test(fileName))
+    )
+){
     fileList.push(...array);
 };
 Fs.writeFileSync(

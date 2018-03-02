@@ -24,14 +24,15 @@ PxerHtmlParser.parsePage =function(task){
 
     var URLData =parseURL(task.url);
     var dom =PxerHtmlParser.HTMLParser(task.html);
-    var elts =null;
-    if(URLData.path==='/search.php'){
-        elts =Array.from(document.querySelectorAll('#js-react-search-mid a'))
-            .filter(a=>getPageType(a.href)==="works_medium"&&a.title)
-        ;
-    }else{
-        elts =dom.querySelectorAll('a.work._work');
-    }
+
+
+    // react render mode
+    if(Patch.existIllustData(task.html)){
+        return Patch.getIllustDataList(task.html).map(Patch.rid2pwr);
+    };
+
+    // old method
+    var elts =dom.querySelectorAll('a.work._work');
     if(elts.length ===0){
         window['PXER_ERROR'] ='PxerHtmlParser.parsePage: a.work._work empty';
         return false;

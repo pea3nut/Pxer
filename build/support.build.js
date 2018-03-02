@@ -22,6 +22,7 @@ const renderData ={
         appClass    :PxerUtility.groupFile(
             PxerUtility.getAllFile('../src/app/class/')
                 .map(path=>PxerUtility.path2URL(path))
+                .filter(fileName=>/\.js$/.test(fileName))
         ),
         viewTpl     :PxerUtility.path2URL('../src/view/template.html'),
         viewStyles  :PxerUtility.path2URL('../src/view/style.css'),

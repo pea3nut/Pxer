@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "lib": ["esnext","dom"],
+    "module": "es6",
+    "strict": true
+  }
+}
