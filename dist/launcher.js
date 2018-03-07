@@ -6,7 +6,7 @@
 ~function () {
     var libURL = /**/"dist/lib.js"; //*/'';
     var supportURL = /**/"dist/support.js"; //*/'';
-    window['PXER_VERSION'] = /**/"7.0.7"; //*/'';
+    window['PXER_VERSION'] = /**/"7.0.8"; //*/'';
 
     Promise.resolve().then(function () {
         var script = document.createElement('script');

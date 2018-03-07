@@ -743,7 +743,7 @@ PxerHtmlParser.parseMediumHtml = function (_ref10) {
     };
 
     if (task.type === 'illust' && !task.isMultiple) {
-        var _src = PxerHtmlParser.getImageUrl(dom.querySelector(".works_display img"));
+        var _src = PxerHtmlParser.getImageUrl(dom.querySelector("._illust_modal img"));
         var _URLObj = parseURL(_src);
         pw.domain = _URLObj.domain;
         pw.date = _src.match(PxerHtmlParser.REGEXP['getDate'])[1];
