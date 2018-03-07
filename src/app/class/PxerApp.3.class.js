@@ -255,6 +255,18 @@ class PxerApp extends PxerEvent{
         pp.fillAddress(works);
         pp.print();
     };
+    /**
+     * 保存抓取到的图片
+     * @return {string}
+     * */
+    saveWorks(){
+        var ps =new PxerSaver(this.ppConfig);
+        var pf =new PxerFilter(this.pfConfig);
+        var works =pf.filter(this.resultSet);
+        ps.fillTaskInfo(works);
+        ps.fillAddress(works);
+
+    };
 };
 
 /**直接抓取本页面的作品*/

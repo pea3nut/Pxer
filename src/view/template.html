@@ -11,19 +11,19 @@
             <button class="btn btn-outline-success"
                     @click="load"
                     v-show="state==='loaded'&&showLoadBtn"
-            >Load</button>
+            >{{lang.nav.load[userLang]}}</button>
             <button class="btn btn-outline-primary"
                     @click="run"
                     v-show="state==='ready' || (state==='re-ready'&&pxer.taskList.length)"
-            >Run</button>
+            >{{lang.nav.run[userLang]}}</button>
             <button class="btn btn-outline-danger"
                     @click="stop"
                     v-show="isRunning"
-            >Stop</button>
+            >{{lang.nav.stop[userLang]}}</button>
             <template v-if="showFailTaskList.length">
                 <button class="btn btn-outline-warning"
                         @click="showPxerFailWindow=!showPxerFailWindow"
-                >Warn</button><span class="pnb-warn-number"
+                >{{lang.nav.warn[userLang]}}</button><span class="pnb-warn-number"
                                     v-text="showFailTaskList.length>99?99:showFailTaskList.length"></span>
             </template>
         </div>
