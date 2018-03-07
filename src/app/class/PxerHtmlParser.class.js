@@ -191,7 +191,7 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
 
     if(task.type ==='illust' &&!task.isMultiple){
         let src =PxerHtmlParser.getImageUrl(
-            dom.querySelector(".works_display img")
+            dom.querySelector("._illust_modal img")
         );
         let URLObj =parseURL(src);
         pw.domain     =URLObj.domain;
