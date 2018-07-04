@@ -261,7 +261,7 @@ class PxerApp extends PxerEvent{
 PxerApp.prototype['getThis'] =function(){
     // 生成任务对象
     var initdata;
-    eval("initdata="+document.head.innerHTML.match(/{token:(.*)}/)[0]+";");
+    eval("initdata=" +document.head.innerHTML.match(/{token:(.*)}/)[0] +";");
     var id = document.URL.match(/illust_id=(\d+)/)[1];
     var type = initdata.preload.illust[id].illustType;
     var pageCount = initdata.preload.illust[id].pageCount;
@@ -269,12 +269,11 @@ PxerApp.prototype['getThis'] =function(){
         isMultiple  :pageCount>1,
         id          :id,
     });//[manga|ugoira|illust]
-    if(type==2){
-        pwr.type ='ugoira';
-    } else if (!pwr.isMultiple){
-        pwr.type = 'illust';
-    } else{
-        pwr.type ='manga';
+    switch (type) {
+        case 2: pwr.type ='ugoira'; break;
+        case 1: pwr.type ='illust'; break;
+        case 0: pwr.type ='manga';  break;
+        default:throw new Error("Unknown work type. id:" +id);
     }
     pwr.url =PxerHtmlParser.getUrlList(pwr);
     // 添加执行

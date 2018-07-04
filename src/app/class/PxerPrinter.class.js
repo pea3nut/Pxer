@@ -109,7 +109,7 @@ PxerPrinter.prototype['fillTaskInfo'] =function(worksList){
 PxerPrinter.prototype['print'] =function(){
 
     /**判断输出动图参数*/
-    if((this.config['ugoira_frames'] ==="yes")&&(JSON.stringify(this.ugoiraFrames)!=="{}")){
+    if((this.config['ugoira_frames'] ==="yes")&&(Object.keys(this.ugoiraFrames).length !==0)){
         let win =window.open(document.URL ,'_blank');
         if(!win){
             alert('Pxer:\n浏览器拦截了弹出窗口，请检查浏览器提示，设置允许此站点的弹出式窗口。');
@@ -171,8 +171,8 @@ PxerPrinter.defaultConfig =function(){
         "manga_multiple"  :"max",//[max|1200p|cover_600p|no]
         "illust_single"   :"max",//[max|600p|no]
         "illust_multiple" :"max",//[max|1200p|cover_600p|no]
-        "ugoira_zip"      :"max",//[max|600p|no]
-        "ugoira_frames"   :"yes",//[yes|no]
+        "ugoira_zip"      :"no",//[max|600p|no]
+        "ugoira_frames"   :"no",//[yes|no]
     };
 };
 
