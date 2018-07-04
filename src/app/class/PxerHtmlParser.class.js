@@ -147,9 +147,7 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
     pw.id           =task.id;
     pw.type         =task.type;
     
-    var initdata;
-    eval("initdata=" +dom.head.innerHTML.match(/{token:(.*)}/)[0] +";");
-    var illustData = initdata.preload.illust[task.id];
+    var illustData = JSON.parse(dom.head.innerHTML.match(/{"illustId":(.+?)(\{.+\})+?\}/)[0]);
 
     pw.tagList = illustData.tags.tags.map(e=>e.tag);
     pw.viewCount = illustData.viewCount;

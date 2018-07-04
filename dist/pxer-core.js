@@ -535,63 +535,63 @@ PxerHtmlParser.parsePage = function (task) {
     // old method
     var taskList = [];
 
-    var elts = dom.body.querySelectorAll('a.work._work');
-
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
-
-    try {
-        for (var _iterator = elts[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var elt = _step.value;
-
-            var task = new PxerWorksRequest({
-                html: {},
-                type: elt.matches('.ugoku-illust') ? 'ugoira' : elt.matches(".multiple") ? 'manga' : "illust",
-
-                isMultiple: elt.matches(".multiple"),
-                id: elt.getAttribute('href').match(/illust_id=(\d+)/)[1]
-            });
-
-            task.url = PxerHtmlParser.getUrlList(task);
-
-            taskList.push(task);
-        }
-    } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-    } finally {
-        try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-                _iterator.return();
-            }
-        } finally {
-            if (_didIteratorError) {
-                throw _iteratorError;
-            }
-        }
-    }
-
-    ;
-
     var searchResult = dom.body.querySelector("input#js-mount-point-search-result-list");
     if (searchResult) {
         var searchData = JSON.parse(searchResult.getAttribute('data-items'));
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+            for (var _iterator = searchData[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                var searchItem = _step.value;
+
+                var task = new PxerWorksRequest({
+                    html: {},
+                    type: searchItem.illustType == 2 ? 'ugoira' : searchItem.illustType == 1 ? 'manga' : 'illust',
+
+                    isMultiple: searchItem.pageCount > 1,
+                    id: searchItem.illustId
+                });
+                task.url = PxerHtmlParser.getUrlList(task);
+
+                taskList.push(task);
+            }
+        } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                    _iterator.return();
+                }
+            } finally {
+                if (_didIteratorError) {
+                    throw _iteratorError;
+                }
+            }
+        }
+
+        ;
+    } else {
+        var elts = dom.body.querySelectorAll('a.work._work');
+
         var _iteratorNormalCompletion2 = true;
         var _didIteratorError2 = false;
         var _iteratorError2 = undefined;
 
         try {
-            for (var _iterator2 = searchData[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                var searchItem = _step2.value;
+            for (var _iterator2 = elts[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                var elt = _step2.value;
 
                 var task = new PxerWorksRequest({
                     html: {},
-                    type: searchItem.illustType == 2 ? 'ugoira' : searchItem.pageCount > 1 ? 'manga' : 'illust',
+                    type: elt.matches('.ugoku-illust') ? 'ugoira' : elt.matches(".manga") ? 'manga' : "illust",
 
-                    isMultiple: searchItem.pageCount > 1,
-                    id: searchItem.illustId
+                    isMultiple: elt.matches(".multiple"),
+                    id: elt.getAttribute('href').match(/illust_id=(\d+)/)[1]
                 });
+
                 task.url = PxerHtmlParser.getUrlList(task);
 
                 taskList.push(task);
@@ -642,7 +642,7 @@ PxerHtmlParser.parseWorks = function (task) {
     var pw;
     if (task.type === 'ugoira') {
         pw = new PxerUgoiraWorks();
-    } else if (task.type === "manga") {
+    } else if (task.isMultiple) {
         pw = new PxerMultipleWorks();
     } else {
         pw = new PxerWorks();
@@ -681,36 +681,7 @@ PxerHtmlParser.parseWorks = function (task) {
  * */
 PxerHtmlParser.getUrlList = function (task) {
 
-    //if ((task.type ==="ugoira")||(task.type ==="illust")) {
     return ["https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + task.id];
-    //}else{
-    //    return ["https://www.pixiv.net/member_illust.php?mode=manga&illust_id="+task.id];
-    //}
-    /*
-    if(
-        task.type ==="ugoira"
-        ||(
-            task.type ==="illust"
-            && !task.isMultiple
-        )
-    ){
-        return ["https://www.pixiv.net/member_illust.php?mode=medium&illust_id="+task.id];
-    }else if(task.isMultiple){
-        return [
-            "https://www.pixiv.net/member_illust.php?mode=medium&illust_id="+task.id,
-            "https://www.pixiv.net/member_illust.php?mode=manga&illust_id="+task.id,
-            "https://www.pixiv.net/member_illust.php?mode=manga_big&page=0&illust_id="+task.id
-        ];
-    }else if(task.type ==="manga" && !task.isMultiple){
-        return [
-            "https://www.pixiv.net/member_illust.php?mode=medium&illust_id="+task.id,
-            "https://www.pixiv.net/member_illust.php?mode=big&illust_id="+task.id,
-        ];
-    }else{
-        console.warn('miss task '+task.id);
-        return [];
-    };
-    */
 };
 
 PxerHtmlParser.parseMangaHtml = function (_ref8) {
@@ -730,16 +701,14 @@ PxerHtmlParser.parseMediumHtml = function (_ref9) {
     pw.id = task.id;
     pw.type = task.type;
 
-    var initdata;
-    eval("initdata=" + dom.head.innerHTML.match(/{token:(.*)}/)[0] + ";");
-    var illustData = initdata.preload.illust[task.id];
+    var illustData = JSON.parse(dom.head.innerHTML.match(/{"illustId":(.+?)(\{.+\})+?\}/)[0]);
 
     pw.tagList = illustData.tags.tags.map(function (e) {
         return e.tag;
     });
     pw.viewCount = illustData.viewCount;
     pw.ratedCount = illustData.bookmarkCount;
-    if (pw.type === "manga") {
+    if (pw instanceof PxerMultipleWorks) {
         pw.multiple = illustData.pageCount;
     }
 
@@ -755,48 +724,14 @@ PxerHtmlParser.parseMediumHtml = function (_ref9) {
         pw.domain = URLObj.domain;
         pw.date = src.match(PxerHtmlParser.REGEXP['getDate'])[1];
         pw.frames = meta['frames'];
-    } else /*if(pw.type ==="illust")*/{
-            var _src = illustData.urls.original;
-            var _URLObj = parseURL(_src);
+    } else {
+        var _src = illustData.urls.original;
+        var _URLObj = parseURL(_src);
 
-            pw.domain = _URLObj.domain;
-            pw.date = _src.match(PxerHtmlParser.REGEXP['getDate'])[1];
-            pw.fileFormat = _src.match(/\.(jpg|gif|png)$/)[1];
-        };
-
-    /*
-    pw.tagList      =[...dom.querySelectorAll(".tag a.text")].map(elt=>elt.innerHTML);
-    pw.viewCount    =+dom.querySelector(".view-count").innerHTML;
-    pw.ratedCount   =+dom.querySelector(".rated-count").innerHTML;
-      if(task.type ==='ugoira'){
-        let script =[...dom.querySelectorAll("script")]
-                .filter(tag=>/zip/.test(tag.innerHTML))[0]
-                .innerHTML
-            ;
-        let exp =/"src":"([^"<>]*?600x600\.zip)"[^<>]*?"frames":(\[.*?\])/mi;
-        let arr =script.match(exp);
-        let src =arr[1].replace(/\\\//g ,'\/');
-        let URLObj =parseURL(src);
-         pw.domain =URLObj.domain;
-      };
-     if(task.type ==='illust' &&!task.isMultiple){
-        let src =PxerHtmlParser.getImageUrl(
-            dom.querySelector("._illust_modal img")
-        );
-        let URLObj =parseURL(src);
-        pw.domain     =URLObj.domain;
-        pw.date       =src.match(PxerHtmlParser.REGEXP['getDate'])[1];
-        pw.fileFormat =src.match(/\.(jpg|gif|png)$/)[1];
-    }
-     if(task.type ==='manga' &&!task.isMultiple){
-        let src =PxerHtmlParser.getImageUrl(
-            dom.querySelector("img[srcset]")
-        );
-        let URLObj =parseURL(src);
-        pw.domain =URLObj.domain;
-        pw.date   =src.match(PxerHtmlParser.REGEXP['getDate'])[1];
-    }
-    */
+        pw.domain = _URLObj.domain;
+        pw.date = _src.match(PxerHtmlParser.REGEXP['getDate'])[1];
+        pw.fileFormat = _src.match(/\.(jpg|gif|png)$/)[1];
+    };
 };
 
 PxerHtmlParser.REGEXP = {
@@ -982,7 +917,7 @@ PxerPrinter.prototype['fillTaskInfo'] = function (worksList) {
 PxerPrinter.prototype['print'] = function () {
 
     /**判断输出动图参数*/
-    if (this.config['ugoira_frames'] === "yes" && JSON.stringify(this.ugoiraFrames) !== "{}") {
+    if (this.config['ugoira_frames'] === "yes" && Object.keys(this.ugoiraFrames).length !== 0) {
         var win = window.open(document.URL, '_blank');
         if (!win) {
             alert('Pxer:\n浏览器拦截了弹出窗口，请检查浏览器提示，设置允许此站点的弹出式窗口。');
@@ -1026,8 +961,8 @@ PxerPrinter.defaultConfig = function () {
         "manga_multiple": "max", //[max|1200p|cover_600p|no]
         "illust_single": "max", //[max|600p|no]
         "illust_multiple": "max", //[max|1200p|cover_600p|no]
-        "ugoira_zip": "max", //[max|600p|no]
-        "ugoira_frames": "yes" //[yes|no]
+        "ugoira_zip": "no", //[max|600p|no]
+        "ugoira_frames": "no" //[yes|no]
     };
 };
 
@@ -1856,21 +1791,24 @@ PxerApp.prototype['getThis'] = function () {
     var _this12 = this;
 
     // 生成任务对象
-    var initdata;
-    eval("initdata=" + document.head.innerHTML.match(/{token:(.*)}/)[0] + ";");
+    var initdata = JSON.parse(document.head.innerHTML.match(/{"illustId":(.+?)(\{.+\})+?\}/)[0]);
+
     var id = document.URL.match(/illust_id=(\d+)/)[1];
-    var type = initdata.preload.illust[id].illustType;
-    var pageCount = initdata.preload.illust[id].pageCount;
+    var type = initdata.illustType;
+    var pageCount = initdata.pageCount;
     var pwr = new PxerWorksRequest({
         isMultiple: pageCount > 1,
         id: id
     }); //[manga|ugoira|illust]
-    if (type == 2) {
-        pwr.type = 'ugoira';
-    } else if (!pwr.isMultiple) {
-        pwr.type = 'illust';
-    } else {
-        pwr.type = 'manga';
+    switch (type) {
+        case 2:
+            pwr.type = 'ugoira';break;
+        case 1:
+            pwr.type = 'illust';break;
+        case 0:
+            pwr.type = 'manga';break;
+        default:
+            throw new Error("Unknown work type. id:" + id);
     }
     pwr.url = PxerHtmlParser.getUrlList(pwr);
     // 添加执行
