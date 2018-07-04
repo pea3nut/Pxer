@@ -547,7 +547,7 @@ PxerHtmlParser.parsePage = function (task) {
 
             var task = new PxerWorksRequest({
                 html: {},
-                type: elt.matches('.ugoku-illust') ? 'ugoira' : elt.matches(".manga") ? 'manga' : "illust",
+                type: elt.matches('.ugoku-illust') ? 'ugoira' : elt.matches(".multiple") ? 'manga' : "illust",
 
                 isMultiple: elt.matches(".multiple"),
                 id: elt.getAttribute('href').match(/illust_id=(\d+)/)[1]
