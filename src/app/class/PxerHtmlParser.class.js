@@ -25,43 +25,52 @@ PxerHtmlParser.parsePage =function(task){
     var URLData =parseURL(task.url);
     var dom =PxerHtmlParser.HTMLParser(task.html);
 
-
-    // react render mode
-    if(Patch.existIllustData(task.html)){
-        return Patch.getIllustDataList(task.html).map(Patch.rid2pwr);
-    };
-
     // old method
-    var elts =dom.querySelectorAll('a.work._work');
-    if(elts.length ===0){
-        window['PXER_ERROR'] ='PxerHtmlParser.parsePage: a.work._work empty';
+    var taskList =[];
+    
+    var elts =dom.body.querySelectorAll('a.work._work');
+    
+    for(let elt of elts){
+        var task =new PxerWorksRequest({
+           html        :{},
+           type        :elt.matches('.ugoku-illust')?'ugoira'
+               :elt.matches(".manga")?'manga'
+               :"illust"
+           ,
+           isMultiple  :elt.matches(".multiple"),
+           id          :elt.getAttribute('href').match(/illust_id=(\d+)/)[1]
+       });
+
+       task.url =PxerHtmlParser.getUrlList(task);
+
+       taskList.push(task);
+    };
+    
+    var searchResult =dom.body.querySelector("input#js-mount-point-search-result-list");
+    if (searchResult) {
+        var searchData = JSON.parse(searchResult.getAttribute('data-items'));
+        for (var searchItem of searchData) {
+            var task =new PxerWorksRequest({
+                html    :{},
+                type    :searchItem.illustType==2?'ugoira'
+                    :searchItem.pageCount>1?'manga'
+                    :'illust'
+                    ,
+                isMultiple  :searchItem.pageCount>1,
+                id  :searchItem.illustId
+            });
+            task.url =PxerHtmlParser.getUrlList(task);
+            
+            taskList.push(task);
+        };
+    }
+
+    if ((elts.length ===0)&&(!searchResult)) {
+        window['PXER_ERROR'] ='PxerHtmlParser.parsePage: result empty';
         return false;
     }
 
-
-
-    var taskList =[];
-    for(let elt of elts){
-        let task =new PxerWorksRequest({
-            html        :{},
-            type        :elt.matches('.ugoku-illust')?'ugoira'
-                :elt.matches(".manga")?'manga'
-                :"illust"
-            ,
-            isMultiple  :elt.matches(".multiple"),
-            id          :elt.getAttribute('href').match(/illust_id=(\d+)/)[1]
-        });
-
-        task.url =PxerHtmlParser.getUrlList(task);
-
-        taskList.push(task);
-    };
-
-
     return taskList;
-
-
-
 
 };
 
@@ -83,7 +92,7 @@ PxerHtmlParser.parseWorks =function(task){
     var pw;
     if(task.type ==='ugoira'){
         pw =new PxerUgoiraWorks();
-    }else if(task.isMultiple){
+    }else if(task.type ==="manga"){
         pw =new PxerMultipleWorks();
     }else{
         pw =new PxerWorks();
@@ -99,11 +108,7 @@ PxerHtmlParser.parseWorks =function(task){
                 case url.indexOf('mode=medium')!==-1:
                     PxerHtmlParser.parseMediumHtml(data);
                     break;
-                case url.indexOf('mode=big')!==-1:
-                case url.indexOf('mode=manga_big')!==-1:
-                    PxerHtmlParser.parseMangaBigHtml(data);
-                    break;
-                case url.indexOf('mode=manga&')!==-1:
+                case url.indexOf('mode=manga')!==-1:
                     PxerHtmlParser.parseMangaHtml(data);
                     break;
                 default:
@@ -128,6 +133,13 @@ PxerHtmlParser.parseWorks =function(task){
  * @return {Array}
  * */
 PxerHtmlParser.getUrlList =function(task){
+
+    //if ((task.type ==="ugoira")||(task.type ==="illust")) {
+        return ["https://www.pixiv.net/member_illust.php?mode=medium&illust_id="+task.id];
+    //}else{
+    //    return ["https://www.pixiv.net/member_illust.php?mode=manga&illust_id="+task.id];
+    //}
+    /*
     if(
         task.type ==="ugoira"
         ||(
@@ -151,27 +163,56 @@ PxerHtmlParser.getUrlList =function(task){
         console.warn('miss task '+task.id);
         return [];
     };
+    */
 };
 
 PxerHtmlParser.parseMangaHtml =function({task,dom,url,pw}){
     pw.multiple =+(
-        dom.querySelector('.page .total')
-        || dom.querySelector('.position .total')
+        dom.body.querySelector('img[data-src]')
     ).innerHTML;
-};
-PxerHtmlParser.parseMangaBigHtml =function({task,dom,url,pw}){
-    var src =dom.getElementsByTagName('img')[0].src;
-    var URLObj =parseURL(src);
-    pw.domain     =URLObj.domain;
-    pw.date       =src.match(PxerHtmlParser.REGEXP['getDate'])[1];
-    pw.fileFormat =src.match(/\.(jpg|gif|png)$/)[1];
 };
 PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
     pw.id           =task.id;
     pw.type         =task.type;
+    
+    var initdata;
+    eval("initdata=" +dom.head.innerHTML.match(/{token:(.*)}/)[0]+";");
+    var illustData = initdata.preload.illust[task.id];
+
+    pw.tagList = illustData.tags.tags.map(e=>e.tag);
+    pw.viewCount = illustData.viewCount;
+    pw.ratedCount = illustData.bookmarkCount;
+    if (pw.type ==="manga") {
+        pw.multiple = illustData.pageCount;
+    }
+    
+    
+    if (pw.type ==="ugoira"){
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "https://www.pixiv.net/ajax/illust/"+ task.id + "/ugoira_meta", false);
+            xhr.send();
+            var meta = JSON.parse(xhr.responseText);
+            let src = meta['body']['originalSrc'];
+            console.log("Catch ugoira src="+src);
+            let URLObj = parseURL(src);
+
+            pw.domain = URLObj.domain;
+            pw.date   =src.match(PxerHtmlParser.REGEXP['getDate'])[1];
+            pw.frames =meta['frames'];
+    } else /*if(pw.type ==="illust")*/{
+            let src = illustData.urls.original;
+            let URLObj = parseURL(src);
+
+            pw.domain = URLObj.domain;
+            pw.date = src.match(PxerHtmlParser.REGEXP['getDate'])[1];
+            pw.fileFormat =src.match(/\.(jpg|gif|png)$/)[1];    
+    };
+
+    /*
     pw.tagList      =[...dom.querySelectorAll(".tag a.text")].map(elt=>elt.innerHTML);
     pw.viewCount    =+dom.querySelector(".view-count").innerHTML;
     pw.ratedCount   =+dom.querySelector(".rated-count").innerHTML;
+
 
     if(task.type ==='ugoira'){
         let script =[...dom.querySelectorAll("script")]
@@ -184,8 +225,7 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
         let URLObj =parseURL(src);
 
         pw.domain =URLObj.domain;
-        pw.date   =src.match(PxerHtmlParser.REGEXP['getDate'])[1];
-        pw.frames =JSON.parse(arr[2]);
+
 
     };
 
@@ -201,12 +241,13 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
 
     if(task.type ==='manga' &&!task.isMultiple){
         let src =PxerHtmlParser.getImageUrl(
-            dom.querySelector("a._work.manga img")
+            dom.querySelector("img[srcset]")
         );
         let URLObj =parseURL(src);
         pw.domain =URLObj.domain;
         pw.date   =src.match(PxerHtmlParser.REGEXP['getDate'])[1];
     }
+    */
 
 };
 
@@ -218,7 +259,7 @@ PxerHtmlParser.REGEXP ={
 PxerHtmlParser.HTMLParser =function(aHTMLString){
     var dom =document.implementation.createHTMLDocument('');
     dom.documentElement.innerHTML =aHTMLString;
-    return dom.body;
+    return dom;
 };
 
 /**@param {Element} img*/

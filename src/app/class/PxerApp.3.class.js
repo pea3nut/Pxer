@@ -260,15 +260,20 @@ class PxerApp extends PxerEvent{
 /**直接抓取本页面的作品*/
 PxerApp.prototype['getThis'] =function(){
     // 生成任务对象
+    var initdata;
+    eval("initdata="+document.head.innerHTML.match(/{token:(.*)}/)[0]+";");
+    var id = document.URL.match(/illust_id=(\d+)/)[1];
+    var type = initdata.preload.illust[id].illustType;
+    var pageCount = initdata.preload.illust[id].pageCount;
     var pwr =new PxerWorksRequest({
-        isMultiple  :!!document.querySelector('._work.multiple'),
-        id          :document.URL.match(/illust_id=(\d+)/)[1],
+        isMultiple  :pageCount>1,
+        id          :id,
     });//[manga|ugoira|illust]
-    if(!pwr.isMultiple){
-        pwr.type =document.querySelector('.wrapper .original-image')?'illust':'manga';
-    }else if(document.documentElement.innerHTML.indexOf('600x600.zip')!==-1){
+    if(type==2){
         pwr.type ='ugoira';
-    }else{
+    } else if (!pwr.isMultiple){
+        pwr.type = 'illust';
+    } else{
         pwr.type ='manga';
     }
     pwr.url =PxerHtmlParser.getUrlList(pwr);
