@@ -1,3 +1,7 @@
+### [寻求Contributor，为Pxer续一秒！](https://github.com/pea3nut/Pxer/issues/64)
+
+---
+
 # Pxer
 
 <p align="left">
