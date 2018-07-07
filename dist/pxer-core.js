@@ -614,7 +614,7 @@ PxerHtmlParser.parsePage = function (task) {
         ;
     }
 
-    if (elts.length === 0 && !searchResult) {
+    if (!searchResult && elts.length === 0) {
         window['PXER_ERROR'] = 'PxerHtmlParser.parsePage: result empty';
         return false;
     }
