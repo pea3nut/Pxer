@@ -614,7 +614,7 @@ PxerHtmlParser.parsePage = function (task) {
         ;
     }
 
-    if (elts.length === 0 && !searchResult) {
+    if (!searchResult && elts.length === 0) {
         window['PXER_ERROR'] = 'PxerHtmlParser.parsePage: result empty';
         return false;
     }
@@ -676,6 +676,28 @@ PxerHtmlParser.parseWorks = function (task) {
 };
 
 /**
+ * @param str s
+ * @return truncatedstring
+ */
+PxerHtmlParser.truncateJSON = function (s) {
+    var par = 0;
+    var len = 0;
+    var inString = false;
+    while (par !== 0 || len === 0 || inString) {
+        switch (s[len]) {
+            case '{':
+                inString || par++;break;
+            case '}':
+                inString || par--;break;
+            case '"':
+                inString = !inString;break;
+        }
+        len++;
+    }
+    return s.substr(0, len);
+};
+
+/**
  * @param {PxerWorksRequest} task
  * @return {Array}
  * */
@@ -701,7 +723,8 @@ PxerHtmlParser.parseMediumHtml = function (_ref9) {
     pw.id = task.id;
     pw.type = task.type;
 
-    var illustData = JSON.parse(dom.head.innerHTML.match(/{"illustId":(.+?)(\{.+\})+?\}/)[0]);
+    var illustData = dom.head.innerHTML.substr(dom.head.innerHTML.indexOf("{\"illustId\":\"" + pw.id + "\""));
+    illustData = JSON.parse(this.truncateJSON(illustData));
 
     pw.tagList = illustData.tags.tags.map(function (e) {
         return e.tag;
@@ -1791,11 +1814,14 @@ PxerApp.prototype['getThis'] = function () {
     var _this12 = this;
 
     // 生成任务对象
-    var initdata = JSON.parse(document.head.innerHTML.match(/{"illustId":(.+?)(\{.+\})+?\}/)[0]);
 
     var id = document.URL.match(/illust_id=(\d+)/)[1];
-    var type = initdata.illustType;
-    var pageCount = initdata.pageCount;
+
+    var initData = document.head.innerHTML.substr(document.head.innerHTML.indexOf("{\"illustId\":\"" + id + "\""));
+    initData = JSON.parse(PxerHtmlParser.truncateJSON(initData));
+
+    var type = initData.illustType;
+    var pageCount = initData.pageCount;
     var pwr = new PxerWorksRequest({
         isMultiple: pageCount > 1,
         id: id
