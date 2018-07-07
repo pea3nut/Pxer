@@ -5,7 +5,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 afterLoad(function () {
     // 寻找插入点
     var elt = document.createElement('div');
-    var insetElt = document.getElementById('wrapper') || document.body;
+    var insetElt = document.getElementById('wrapper') || document.getElementById('root').childNodes[1] //skip <header>
+    || document.body;
     insetElt.insertBefore(elt, insetElt.firstChild);
 
     // 运行Vue实例

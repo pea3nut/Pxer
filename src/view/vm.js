@@ -3,6 +3,7 @@ afterLoad(function(){
     var elt =document.createElement('div');
     var insetElt=(
         document.getElementById('wrapper')
+        || document.getElementById('root').childNodes[1] //skip <header>
         || document.body
     );
     insetElt.insertBefore(elt,insetElt.firstChild);
