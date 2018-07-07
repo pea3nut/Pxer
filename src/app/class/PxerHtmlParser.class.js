@@ -127,6 +127,24 @@ PxerHtmlParser.parseWorks =function(task){
 };
 
 
+/**
+ * @param {String} s 一个尾部包含额外信息的JSON字符串 
+ * @return {String} - s包含的JSON信息
+ */
+PxerHtmlParser.truncateJSON =function(s){
+    var par =0;
+    var len =0;
+    var inString =false;
+    while (par !== 0 || len === 0 || inString) {
+        switch (s[len]) {
+            case '{': inString || par++; break;
+            case '}': inString || par--; break;
+            case '"': inString =! inString; break;
+        }
+        len++;
+    }
+    return s.substr(0, len);
+}
 
 /**
  * @param {PxerWorksRequest} task
@@ -147,7 +165,8 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
     pw.id           =task.id;
     pw.type         =task.type;
     
-    var illustData = JSON.parse(dom.head.innerHTML.match(/{"illustId":(.+?)(\{.+\})+?\}/)[0]);
+    var illustData = dom.head.innerHTML.substr(dom.head.innerHTML.indexOf("{\"illustId\":\""+ pw.id +"\""));
+    illustData = JSON.parse(this.truncateJSON(illustData));
 
     pw.tagList = illustData.tags.tags.map(e=>e.tag);
     pw.viewCount = illustData.viewCount;

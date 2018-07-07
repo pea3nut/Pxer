@@ -260,11 +260,14 @@ class PxerApp extends PxerEvent{
 /**直接抓取本页面的作品*/
 PxerApp.prototype['getThis'] =function(){
     // 生成任务对象
-    var initdata =JSON.parse(document.head.innerHTML.match(/{"illustId":(.+?)(\{.+\})+?\}/)[0]);
 
     var id = document.URL.match(/illust_id=(\d+)/)[1];
-    var type = initdata.illustType;
-    var pageCount = initdata.pageCount;
+    
+    var initData = document.head.innerHTML.substr(document.head.innerHTML.indexOf("{\"illustId\":\""+ id +"\""));
+    initData = JSON.parse(PxerHtmlParser.truncateJSON(initData));
+    
+    var type = initData.illustType;
+    var pageCount = initData.pageCount;
     var pwr =new PxerWorksRequest({
         isMultiple  :pageCount>1,
         id          :id,
