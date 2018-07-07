@@ -5,7 +5,7 @@
 // @name          Pxer-dev
 // @version       7
 // @namespace     https://github.com/pea3nut/Pxer
-// @author        花生PeA
+// @author        花生PeA / eternal-flame-AD
 // @description   可能是目前最好用的P站收图工具
 // @grant         none
 // @noframes
