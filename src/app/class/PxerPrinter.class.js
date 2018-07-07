@@ -61,9 +61,7 @@ PxerPrinter.prototype['fillAddress'] =function(worksList){
  * */
 PxerPrinter.prototype['fillTaskInfo'] =function(worksList){
     var [manga,ugoira,illust,multiple,single,worksNum,address] =new Array(20).fill(0);
-
     for(let works of worksList){
-
         let configKey =PxerPrinter.getWorksKey(works);
         if(this.config[configKey]==='no') continue;
 
@@ -111,7 +109,7 @@ PxerPrinter.prototype['fillTaskInfo'] =function(worksList){
 PxerPrinter.prototype['print'] =function(){
 
     /**判断输出动图参数*/
-    if(this.config['ugoira_frames'] ==="yes"){
+    if((this.config['ugoira_frames'] ==="yes")&&(Object.keys(this.ugoiraFrames).length !==0)){
         let win =window.open(document.URL ,'_blank');
         if(!win){
             alert('Pxer:\n浏览器拦截了弹出窗口，请检查浏览器提示，设置允许此站点的弹出式窗口。');

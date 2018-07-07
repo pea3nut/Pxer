@@ -31,7 +31,6 @@ const appClass      =/**/[
         "src/app/class/PxerEvent.-1.class.js"
     ],
     [
-        "src/app/class/Patch.js",
         "src/app/class/PxerFilter.class.js",
         "src/app/class/PxerHtmlParser.class.js",
         "src/app/class/PxerPrinter.class.js"
