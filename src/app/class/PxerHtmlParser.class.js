@@ -29,6 +29,7 @@ PxerHtmlParser.parsePage =function(task){
     var taskList =[];
     
     var searchResult =dom.body.querySelector("input#js-mount-point-search-result-list");
+    var elts =null;
     if (searchResult) {
         var searchData = JSON.parse(searchResult.getAttribute('data-items'));
         for (var searchItem of searchData) {
@@ -46,7 +47,7 @@ PxerHtmlParser.parsePage =function(task){
             taskList.push(task);
         };
     } else {
-        var elts =dom.body.querySelectorAll('a.work._work');
+        elts =dom.body.querySelectorAll('a.work._work');
     
         for(let elt of elts){
             var task =new PxerWorksRequest({
@@ -65,7 +66,7 @@ PxerHtmlParser.parsePage =function(task){
         };
     }
 
-    if ((elts.length ===0)&&(!searchResult)) {
+    if ( (elts !== null && elts.length === 0) && !searchResult) {
         window['PXER_ERROR'] ='PxerHtmlParser.parsePage: result empty';
         return false;
     }
