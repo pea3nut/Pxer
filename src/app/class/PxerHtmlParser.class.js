@@ -128,8 +128,8 @@ PxerHtmlParser.parseWorks =function(task){
 
 
 /**
- * @param str s
- * @return truncatedstring
+ * @param {String} s 一个尾部包含额外信息的JSON字符串 
+ * @return {String} - s包含的JSON信息
  */
 PxerHtmlParser.truncateJSON =function(s){
     var par =0;
