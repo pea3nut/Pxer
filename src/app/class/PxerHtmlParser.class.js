@@ -200,7 +200,7 @@ PxerHtmlParser.getImageUrl =function(img){
     return img.getAttribute('src')||img.getAttribute('data-src');
 };
 
-PxerHtmlParser.parseObjectLiteral = function(undefined) {
+PxerHtmlParser.parseObjectLiteral = function() {
     // Javascript object literal parser
     // Splits an object literal string into a set of top-level key-value pairs
     // (c) Michael Best (https://github.com/mbest)
