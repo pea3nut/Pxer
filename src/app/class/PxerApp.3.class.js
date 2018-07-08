@@ -263,9 +263,13 @@ PxerApp.prototype['getThis'] =function(){
     var initdata = document.head.innerHTML.match(PxerHtmlParser.REGEXP['getInitData'])[0];
     var id = document.URL.match(/illust_id=(\d+)/)[1];
     
-    initdata = initdata.replace(PxerHtmlParser.REGEXP['jsonify'][0][0], PxerHtmlParser.REGEXP['jsonify'][0][1]);
+    /*initdata = initdata.replace(PxerHtmlParser.REGEXP['jsonify'][0][0], PxerHtmlParser.REGEXP['jsonify'][0][1]);
     initdata = initdata.replace(PxerHtmlParser.REGEXP['jsonify'][1][0], PxerHtmlParser.REGEXP['jsonify'][1][1]);
-    initdata = JSON.parse(initdata).preload.illust[id];
+    initdata = JSON.parse(initdata).preload.illust[id];*/
+    initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, "preload");
+    initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, 'illust');
+    initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, id);
+    initdata = JSON.parse(initdata);
     
     var type = initdata.illustType;
     var pageCount = initdata.pageCount;
