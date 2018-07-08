@@ -262,10 +262,7 @@ PxerApp.prototype['getThis'] =function(){
     // 生成任务对象
     var initdata = document.head.innerHTML.match(PxerHtmlParser.REGEXP['getInitData'])[0];
     var id = document.URL.match(/illust_id=(\d+)/)[1];
-    
-    /*initdata = initdata.replace(PxerHtmlParser.REGEXP['jsonify'][0][0], PxerHtmlParser.REGEXP['jsonify'][0][1]);
-    initdata = initdata.replace(PxerHtmlParser.REGEXP['jsonify'][1][0], PxerHtmlParser.REGEXP['jsonify'][1][1]);
-    initdata = JSON.parse(initdata).preload.illust[id];*/
+
     initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, "preload");
     initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, 'illust');
     initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, id);
