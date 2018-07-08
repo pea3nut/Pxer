@@ -147,7 +147,10 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
     pw.id           =task.id;
     pw.type         =task.type;
     
-    var illustData = JSON.parse(dom.head.innerHTML.match(/{"illustId":(.+?)(\{.+\})+?\}/)[0]);
+    var illustData = dom.head.innerHTML.match(this.REGEXP['getInitData'])[0];
+    illustData = illustData.replace(this.REGEXP['jsonify'][0][0], this.REGEXP['jsonify'][0][1]);
+    illustData = illustData.replace(this.REGEXP['jsonify'][1][0], this.REGEXP['jsonify'][1][1]);
+    illustData = JSON.parse(illustData).preload.illust[pw.id];
 
     pw.tagList = illustData.tags.tags.map(e=>e.tag);
     pw.viewCount = illustData.viewCount;
@@ -183,6 +186,11 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
 
 PxerHtmlParser.REGEXP ={
     'getDate':/img\/((?:\d+\/){5}\d+)/,
+    'getInitData':/(?<=\()\{token:.*\}(?=\);)/,
+    'jsonify':[
+        [/(\{\s*|,\s*)(\w+):/g,"$1\"$2\":"],
+        [/,\s*\}/g,"}"]
+    ]
 };
 
 PxerHtmlParser.HTMLParser =function(aHTMLString){
