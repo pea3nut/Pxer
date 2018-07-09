@@ -175,6 +175,17 @@ PxerPrinter.defaultConfig =function(){
         "ugoira_frames"   :"no",//[yes|no]
     };
 };
+/**作品页跳过过滤 */
+PxerPrinter.printAllConfig =function(){
+    return{
+        "manga_single"    :"max",//[max|600p|no]
+        "manga_multiple"  :"max",//[max|1200p|cover_600p|no]
+        "illust_single"   :"max",//[max|600p|no]
+        "illust_multiple" :"max",//[max|1200p|cover_600p|no]
+        "ugoira_zip"      :"max",//[max|600p|no]
+        "ugoira_frames"   :"yes",//[yes|no]
+    };
+}
 
 
 
