@@ -73,7 +73,7 @@ class PxerApp extends PxerEvent{
             retry:3,
             thread:8,
         };
-        this.ppConfig =PxerPrinter.defaultConfig();//PxerPrinter
+        this.ppConfig =this.pageType.startsWith("works_")? PxerPrinter.printAllConfig() : PxerPrinter.defaultConfig();//PxerPrinter
         this.pfConfig =PxerFilter.defaultConfig();//PxerFilter
 
         // 使用的PxerThreadManager实例
