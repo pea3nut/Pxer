@@ -536,6 +536,7 @@ PxerHtmlParser.parsePage = function (task) {
     var taskList = [];
 
     var searchResult = dom.body.querySelector("input#js-mount-point-search-result-list");
+    var elts = null;
     if (searchResult) {
         var searchData = JSON.parse(searchResult.getAttribute('data-items'));
         var _iteratorNormalCompletion = true;
@@ -574,7 +575,7 @@ PxerHtmlParser.parsePage = function (task) {
 
         ;
     } else {
-        var elts = dom.body.querySelectorAll('a.work._work');
+        elts = dom.body.querySelectorAll('a.work._work');
 
         var _iteratorNormalCompletion2 = true;
         var _didIteratorError2 = false;
@@ -614,7 +615,7 @@ PxerHtmlParser.parsePage = function (task) {
         ;
     }
 
-    if (elts.length === 0 && !searchResult) {
+    if (elts !== null && elts.length === 0 && !searchResult) {
         window['PXER_ERROR'] = 'PxerHtmlParser.parsePage: result empty';
         return false;
     }
@@ -701,7 +702,11 @@ PxerHtmlParser.parseMediumHtml = function (_ref9) {
     pw.id = task.id;
     pw.type = task.type;
 
-    var illustData = JSON.parse(dom.head.innerHTML.match(/{"illustId":(.+?)(\{.+\})+?\}/)[0]);
+    var illustData = dom.head.innerHTML.match(this.REGEXP['getInitData'])[0];
+    illustData = this.getKeyFromStringObjectLiteral(illustData, "preload");
+    illustData = this.getKeyFromStringObjectLiteral(illustData, 'illust');
+    illustData = this.getKeyFromStringObjectLiteral(illustData, pw.id);
+    illustData = JSON.parse(illustData);
 
     pw.tagList = illustData.tags.tags.map(function (e) {
         return e.tag;
@@ -718,7 +723,6 @@ PxerHtmlParser.parseMediumHtml = function (_ref9) {
         xhr.send();
         var meta = JSON.parse(xhr.responseText);
         var src = meta['body']['originalSrc'];
-        console.log("Catch ugoira src=" + src);
         var URLObj = parseURL(src);
 
         pw.domain = URLObj.domain;
@@ -735,7 +739,8 @@ PxerHtmlParser.parseMediumHtml = function (_ref9) {
 };
 
 PxerHtmlParser.REGEXP = {
-    'getDate': /img\/((?:\d+\/){5}\d+)/
+    'getDate': /img\/((?:\d+\/){5}\d+)/,
+    'getInitData': /(?<=\()\{token:.*\}(?=\);)/
 };
 
 PxerHtmlParser.HTMLParser = function (aHTMLString) {
@@ -747,6 +752,153 @@ PxerHtmlParser.HTMLParser = function (aHTMLString) {
 /**@param {Element} img*/
 PxerHtmlParser.getImageUrl = function (img) {
     return img.getAttribute('src') || img.getAttribute('data-src');
+};
+
+PxerHtmlParser.parseObjectLiteral = function () {
+    // Javascript object literal parser
+    // Splits an object literal string into a set of top-level key-value pairs
+    // (c) Michael Best (https://github.com/mbest)
+    // License: MIT (http://www.opensource.org/licenses/mit-license.php)
+    // Version 2.1.0
+    // https://github.com/mbest/js-object-literal-parse
+    // This parser is inspired by json-sans-eval by Mike Samuel (http://code.google.com/p/json-sans-eval/)
+
+    // These two match strings, either with double quotes or single quotes
+    var stringDouble = '"(?:[^"\\\\]|\\\\.)*"',
+        stringSingle = "'(?:[^'\\\\]|\\\\.)*'",
+
+    // Matches a regular expression (text enclosed by slashes), but will also match sets of divisions
+    // as a regular expression (this is handled by the parsing loop below).
+    stringRegexp = '/(?:[^/\\\\]|\\\\.)*/\w*',
+
+    // These characters have special meaning to the parser and must not appear in the middle of a
+    // token, except as part of a string.
+    specials = ',"\'{}()/:[\\]',
+
+    // Match text (at least two characters) that does not contain any of the above special characters,
+    // although some of the special characters are allowed to start it (all but the colon and comma).
+    // The text can contain spaces, but leading or trailing spaces are skipped.
+    everyThingElse = '[^\\s:,/][^' + specials + ']*[^\\s' + specials + ']',
+
+    // Match any non-space character not matched already. This will match colons and commas, since they're
+    // not matched by "everyThingElse", but will also match any other single character that wasn't already
+    // matched (for example: in "a: 1, b: 2", each of the non-space characters will be matched by oneNotSpace).
+    oneNotSpace = '[^\\s]',
+
+
+    // Create the actual regular expression by or-ing the above strings. The order is important.
+    token = RegExp(stringDouble + '|' + stringSingle + '|' + stringRegexp + '|' + everyThingElse + '|' + oneNotSpace, 'g'),
+
+
+    // Match end of previous token to determine whether a slash is a division or regex.
+    divisionLookBehind = /[\])"'A-Za-z0-9_$]+$/,
+        keywordRegexLookBehind = { 'in': 1, 'return': 1, 'typeof': 1 };
+
+    function trim(string) {
+        return string == null ? '' : string.trim ? string.trim() : string.toString().replace(/^[\s\xa0]+|[\s\xa0]+$/g, '');
+    }
+
+    return function (objectLiteralString) {
+        // Trim leading and trailing spaces from the string
+        var str = trim(objectLiteralString);
+
+        // Trim braces '{' surrounding the whole object literal
+        if (str.charCodeAt(0) === 123) str = str.slice(1, -1);
+
+        // Split into tokens
+        var result = [],
+            toks = str.match(token),
+            key,
+            values = [],
+            depth = 0;
+
+        if (toks) {
+            // Append a comma so that we don't need a separate code block to deal with the last item
+            toks.push(',');
+
+            for (var i = 0, tok; tok = toks[i]; ++i) {
+                var c = tok.charCodeAt(0);
+                // A comma signals the end of a key/value pair if depth is zero
+                if (c === 44) {
+                    // ","
+                    if (depth <= 0) {
+                        if (!key && values.length === 1) {
+                            key = values.pop();
+                        }
+                        result.push([key, values.length ? values.join('') : undefined]);
+                        key = undefined;
+                        values = [];
+                        depth = 0;
+                        continue;
+                    }
+                    // Simply skip the colon that separates the name and value
+                } else if (c === 58) {
+                    // ":"
+                    if (!depth && !key && values.length === 1) {
+                        key = values.pop();
+                        continue;
+                    }
+                    // A set of slashes is initially matched as a regular expression, but could be division
+                } else if (c === 47 && i && tok.length > 1) {
+                    // "/"
+                    // Look at the end of the previous token to determine if the slash is actually division
+                    var match = toks[i - 1].match(divisionLookBehind);
+                    if (match && !keywordRegexLookBehind[match[0]]) {
+                        // The slash is actually a division punctuator; re-parse the remainder of the string (not including the slash)
+                        str = str.substr(str.indexOf(tok) + 1);
+                        toks = str.match(token);
+                        toks.push(',');
+                        i = -1;
+                        // Continue with just the slash
+                        tok = '/';
+                    }
+                    // Increment depth for parentheses, braces, and brackets so that interior commas are ignored
+                } else if (c === 40 || c === 123 || c === 91) {
+                    // '(', '{', '['
+                    ++depth;
+                } else if (c === 41 || c === 125 || c === 93) {
+                    // ')', '}', ']'
+                    --depth;
+                    // The key will be the first token; if it's a string, trim the quotes
+                } else if (!key && !values.length && (c === 34 || c === 39)) {
+                    // '"', "'"
+                    tok = tok.slice(1, -1);
+                }
+                values.push(tok);
+            }
+        }
+        return result;
+    };
+}();
+
+PxerHtmlParser.getKeyFromStringObjectLiteral = function (s, key) {
+    var resolvedpairs = this.parseObjectLiteral(s);
+    var _iteratorNormalCompletion3 = true;
+    var _didIteratorError3 = false;
+    var _iteratorError3 = undefined;
+
+    try {
+        for (var _iterator3 = resolvedpairs[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+            var pair = _step3.value;
+
+            if (pair[0] === key) return pair[1];
+        }
+    } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+    } finally {
+        try {
+            if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                _iterator3.return();
+            }
+        } finally {
+            if (_didIteratorError3) {
+                throw _iteratorError3;
+            }
+        }
+    }
+
+    throw new Error("Key not found.");
 };
 
 var PxerPrinter = function () {
@@ -802,15 +954,15 @@ var PxerPrinter = function () {
  * @return {void}
  * */
 PxerPrinter.prototype['fillAddress'] = function (worksList) {
-    var _iteratorNormalCompletion3 = true;
-    var _didIteratorError3 = false;
-    var _iteratorError3 = undefined;
+    var _iteratorNormalCompletion4 = true;
+    var _didIteratorError4 = false;
+    var _iteratorError4 = undefined;
 
     try {
-        for (var _iterator3 = worksList[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+        for (var _iterator4 = worksList[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
             var _address;
 
-            var works = _step3.value;
+            var works = _step4.value;
 
             var configKey = PxerPrinter.getWorksKey(works);
             if (configKey === 'ugoira_zip' && this.config['ugoira_frames'] === 'yes') {
@@ -821,16 +973,16 @@ PxerPrinter.prototype['fillAddress'] = function (worksList) {
             (_address = this.address).push.apply(_address, _toConsumableArray(PxerPrinter.countAddress(works, this.config[configKey])));
         }
     } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
+        _didIteratorError4 = true;
+        _iteratorError4 = err;
     } finally {
         try {
-            if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                _iterator3.return();
+            if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                _iterator4.return();
             }
         } finally {
-            if (_didIteratorError3) {
-                throw _iteratorError3;
+            if (_didIteratorError4) {
+                throw _iteratorError4;
             }
         }
     }
@@ -852,13 +1004,13 @@ PxerPrinter.prototype['fillTaskInfo'] = function (worksList) {
         worksNum = _fill2[5],
         address = _fill2[6];
 
-    var _iteratorNormalCompletion4 = true;
-    var _didIteratorError4 = false;
-    var _iteratorError4 = undefined;
+    var _iteratorNormalCompletion5 = true;
+    var _didIteratorError5 = false;
+    var _iteratorError5 = undefined;
 
     try {
-        for (var _iterator4 = worksList[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-            var works = _step4.value;
+        for (var _iterator5 = worksList[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+            var works = _step5.value;
 
             var configKey = PxerPrinter.getWorksKey(works);
             if (this.config[configKey] === 'no') continue;
@@ -894,16 +1046,16 @@ PxerPrinter.prototype['fillTaskInfo'] = function (worksList) {
             };
         }
     } catch (err) {
-        _didIteratorError4 = true;
-        _iteratorError4 = err;
+        _didIteratorError5 = true;
+        _iteratorError5 = err;
     } finally {
         try {
-            if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                _iterator4.return();
+            if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                _iterator5.return();
             }
         } finally {
-            if (_didIteratorError4) {
-                throw _iteratorError4;
+            if (_didIteratorError5) {
+                throw _iteratorError5;
             }
         }
     }
@@ -1365,13 +1517,13 @@ PxerThreadManager.prototype['run'] = function () {
         return false;
     };
 
-    var _iteratorNormalCompletion5 = true;
-    var _didIteratorError5 = false;
-    var _iteratorError5 = undefined;
+    var _iteratorNormalCompletion6 = true;
+    var _didIteratorError6 = false;
+    var _iteratorError6 = undefined;
 
     try {
         var _loop = function _loop() {
-            var thread = _step5.value;
+            var thread = _step6.value;
 
 
             thread.on('load', function (data) {
@@ -1386,20 +1538,20 @@ PxerThreadManager.prototype['run'] = function () {
             next(_this8, thread);
         };
 
-        for (var _iterator5 = this.threads[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+        for (var _iterator6 = this.threads[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
             _loop();
         }
     } catch (err) {
-        _didIteratorError5 = true;
-        _iteratorError5 = err;
+        _didIteratorError6 = true;
+        _iteratorError6 = err;
     } finally {
         try {
-            if (!_iteratorNormalCompletion5 && _iterator5.return) {
-                _iterator5.return();
+            if (!_iteratorNormalCompletion6 && _iterator6.return) {
+                _iterator6.return();
             }
         } finally {
-            if (_didIteratorError5) {
-                throw _iteratorError5;
+            if (_didIteratorError6) {
+                throw _iteratorError6;
             }
         }
     }
@@ -1578,13 +1730,13 @@ var PxerApp = function (_PxerEvent3) {
             });
             ptm.on('load', function () {
                 var parseResult = [];
-                var _iteratorNormalCompletion6 = true;
-                var _didIteratorError6 = false;
-                var _iteratorError6 = undefined;
+                var _iteratorNormalCompletion7 = true;
+                var _didIteratorError7 = false;
+                var _iteratorError7 = undefined;
 
                 try {
-                    for (var _iterator6 = _this10.taskList[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-                        var result = _step6.value;
+                    for (var _iterator7 = _this10.taskList[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+                        var result = _step7.value;
 
                         result = PxerHtmlParser.parsePage(result);
                         if (!result) {
@@ -1594,16 +1746,16 @@ var PxerApp = function (_PxerEvent3) {
                         parseResult.push.apply(parseResult, _toConsumableArray(result));
                     }
                 } catch (err) {
-                    _didIteratorError6 = true;
-                    _iteratorError6 = err;
+                    _didIteratorError7 = true;
+                    _iteratorError7 = err;
                 } finally {
                     try {
-                        if (!_iteratorNormalCompletion6 && _iterator6.return) {
-                            _iterator6.return();
+                        if (!_iteratorNormalCompletion7 && _iterator7.return) {
+                            _iterator7.return();
                         }
                     } finally {
-                        if (_didIteratorError6) {
-                            throw _iteratorError6;
+                        if (_didIteratorError7) {
+                            throw _iteratorError7;
                         }
                     }
                 }
@@ -1678,13 +1830,13 @@ var PxerApp = function (_PxerEvent3) {
                 _this11.resultSet = [];
                 var tl = _this11.taskList.slice( //限制结果集条数
                 0, _this11.taskOption.limit ? _this11.taskOption.limit : undefined);
-                var _iteratorNormalCompletion7 = true;
-                var _didIteratorError7 = false;
-                var _iteratorError7 = undefined;
+                var _iteratorNormalCompletion8 = true;
+                var _didIteratorError8 = false;
+                var _iteratorError8 = undefined;
 
                 try {
-                    for (var _iterator7 = tl[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-                        var pwr = _step7.value;
+                    for (var _iterator8 = tl[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+                        var pwr = _step8.value;
 
                         if (!pwr.completed) continue; //跳过未完成的任务
                         var pw = PxerHtmlParser.parseWorks(pwr);
@@ -1701,16 +1853,16 @@ var PxerApp = function (_PxerEvent3) {
                         _this11.resultSet.push(pw);
                     }
                 } catch (err) {
-                    _didIteratorError7 = true;
-                    _iteratorError7 = err;
+                    _didIteratorError8 = true;
+                    _iteratorError8 = err;
                 } finally {
                     try {
-                        if (!_iteratorNormalCompletion7 && _iterator7.return) {
-                            _iterator7.return();
+                        if (!_iteratorNormalCompletion8 && _iterator8.return) {
+                            _iterator8.return();
                         }
                     } finally {
-                        if (_didIteratorError7) {
-                            throw _iteratorError7;
+                        if (_didIteratorError8) {
+                            throw _iteratorError8;
                         }
                     }
                 }
@@ -1791,9 +1943,14 @@ PxerApp.prototype['getThis'] = function () {
     var _this12 = this;
 
     // 生成任务对象
-    var initdata = JSON.parse(document.head.innerHTML.match(/{"illustId":(.+?)(\{.+\})+?\}/)[0]);
-
+    var initdata = document.head.innerHTML.match(PxerHtmlParser.REGEXP['getInitData'])[0];
     var id = document.URL.match(/illust_id=(\d+)/)[1];
+
+    initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, "preload");
+    initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, 'illust');
+    initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, id);
+    initdata = JSON.parse(initdata);
+
     var type = initdata.illustType;
     var pageCount = initdata.pageCount;
     var pwr = new PxerWorksRequest({
