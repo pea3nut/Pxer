@@ -172,7 +172,7 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
 
             pw.domain = URLObj.domain;
             pw.date   =src.match(PxerHtmlParser.REGEXP['getDate'])[1];
-            pw.frames =meta['frames'];
+            pw.frames =meta['body']['frames'];
     } else {
             let src = illustData.urls.original;
             let URLObj = parseURL(src);
