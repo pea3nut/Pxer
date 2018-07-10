@@ -50,7 +50,14 @@ for(let array of PxerUtility.groupFile(
 Fs.writeFileSync(
     Join(__dirname,'../dist/pxer-core.js'),
     PxerUtility.babelTransform(
-        Buffer.concat(fileList.map(path=>Fs.readFileSync(path)))
+        Buffer.concat(
+            fileList.map(
+                path=>Buffer.concat([
+                    Fs.readFileSync(path),
+                    Buffer.from('\n'),
+                ])
+            )
+        )
     )
 );
 console.log('Build ./dist/');
