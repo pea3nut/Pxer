@@ -91,6 +91,8 @@ def test(browser="chrome", sessid=None):
         options.add_extension("/tmp/cors.xpi")
         driver = selenium.webdriver.Firefox(firefox_profile=options)
 
+    driver.get("https://www.pixiv.net")
+    time.sleep(10) # wait for enough time to load page
     driver.add_cookie({
         'name': 'PHPSESSID',
         'value': sessid,
@@ -98,6 +100,8 @@ def test(browser="chrome", sessid=None):
         'secure': True,
         'domain': '.pixiv.net'
     })
+    while not driver.get_cookie('PHPSESSID'):
+        time.sleep(2)
 
     driver.get("file://" + HERE + "/index.html")
 
