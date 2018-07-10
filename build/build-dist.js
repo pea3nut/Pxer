@@ -50,8 +50,13 @@ for(let array of PxerUtility.groupFile(
 Fs.writeFileSync(
     Join(__dirname,'../dist/pxer-core.js'),
     PxerUtility.babelTransform(
-        Buffer.concat(fileList.map(
-                           path=>Buffer.concat([Fs.readFileSync(path), Buffer.from("\n")]))
+        Buffer.concat(
+            fileList.map(
+                path=>Buffer.concat([
+                    Fs.readFileSync(path),
+                    Buffer.from('\n'),
+                ])
+            )
         )
     )
 );
