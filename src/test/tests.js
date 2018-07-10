@@ -428,6 +428,12 @@ describe('PxerThreadManager 线程管理类' ,function(){
         throw 'PxerThread fail: '+pfi.type;
     });
 
+    afterEach(function() {
+        if (this.currentTest.state === 'failed') {
+          document.getElementById("ptm-fail-notice").setAttribute("style", "");
+        }
+    });
+
     it('抓取页码' ,function(done){
         var task =[
             new PxerPageRequest({url:'https://www.pixiv.net/member_illust.php?id=53024&p=1'}),
