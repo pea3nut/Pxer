@@ -740,7 +740,7 @@ PxerHtmlParser.parseMediumHtml = function (_ref9) {
 
 PxerHtmlParser.REGEXP = {
     'getDate': /img\/((?:\d+\/){5}\d+)/,
-    'getInitData': /\{token:.*\}(?=\);)/
+    'getInitData': /(?<=\()\{token:.*\}(?=\);)/
 };
 
 PxerHtmlParser.HTMLParser = function (aHTMLString) {
