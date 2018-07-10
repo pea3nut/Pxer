@@ -1,11 +1,69 @@
 import selenium.webdriver
+import http.client as httpconn
+import re
+import urllib
+import bs4
 import os
 import sys
 import time
+import json
 
 TEST_COUNT = 19
 HERE = os.path.dirname(os.path.abspath(__file__))
 HAVE_FAIL = False
+
+
+def login(username, password):
+    host = "accounts.pixiv.net"
+    conn = httpconn.HTTPSConnection(host)
+    conn.request(
+        "GET",
+        "/login?lang=en&source=pc&view_type=page&ref=wwwtop_accounts_index")
+    res = conn.getresponse()
+    login_cookie = res.getheader("set-cookie")
+    post_key = bs4.BeautifulSoup(res.read(), "html5lib").find(
+        "input", attrs={"name": "post_key"})['value']
+    login_sess_id = re.search(r"(?<=PHPSESSID=)(\w)*(?=;)",
+                              login_cookie).group(0)
+
+    params = urllib.parse.urlencode({
+        "pixiv_id": username,
+        "captcha": "",
+        "g_recaptcha_response": "",
+        "password": password,
+        "post_key": post_key,
+        "lang": "en",
+        "source": "accounts",
+        "ref": "",
+        "return_to": "https://www.pixiv.net",
+    })
+
+    conn.request(
+        "POST",
+        "/api/login?lang=en",
+        body=params,
+        headers={
+            "origin":
+            "https://accounts.pixiv.net",
+            "referer":
+            "https://accounts.pixiv.net/login?lang=en&source=pc&view_type=page&ref=wwwtop_accounts_index",
+            "content-type":
+            "application/x-www-form-urlencoded",
+            "accept":
+            "application/json",
+            "cookie":
+            "show_welcome_modal=1; p_ab_id=7; p_ab_id_2=9; login_bc=1; PHPSESSID="
+            + login_sess_id,
+            "user-agent":
+            "Mozilla/5.0"
+        })
+    res = conn.getresponse()
+    result = json.loads(res.read())
+    if result['error'] or ("success" not in result['body']):
+        print("login fail:" + str(result))
+        raise ValueError
+    return re.search(r"(?<=PHPSESSID=)[\w_]*(?=;)",
+                     res.getheader("set-cookie")).group(0)
 
 
 def print_stat(elem):
@@ -13,7 +71,7 @@ def print_stat(elem):
         print("Failed:" + failitem.find_element_by_tag_name("h2").text.strip())
 
 
-def test(browser="chrome"):
+def test(browser="chrome", sessid=None):
     global HAVE_FAIL
     if browser == "chrome":
         options = selenium.webdriver.ChromeOptions()
@@ -32,6 +90,14 @@ def test(browser="chrome"):
         options = selenium.webdriver.FirefoxProfile()
         options.add_extension("/tmp/cors.xpi")
         driver = selenium.webdriver.Firefox(firefox_profile=options)
+
+    driver.add_cookie({
+        'name': 'PHPSESSID',
+        'value': sessid,
+        'path': '/',
+        'secure': True,
+        'domain': '.pixiv.net'
+    })
 
     driver.get("file://" + HERE + "/index.html")
 
@@ -54,9 +120,10 @@ def test(browser="chrome"):
 
 
 if __name__ == "__main__":
+    sessid = login(sys.argv[1], sys.argv[2])
     print("==========================Chrome==========================")
-    test(browser="chrome")
+    test(browser="chrome", sessid=sessid)
     print("==========================Firefox==========================")
-    test(browser="firefox")
+    test(browser="firefox", sessid=sessid)
     if HAVE_FAIL:
         raise RuntimeError("Test failed.")
