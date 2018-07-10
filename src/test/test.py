@@ -89,10 +89,11 @@ def test(browser="chrome", sessid=None):
     elif browser == "firefox":
         options = selenium.webdriver.FirefoxProfile()
         driver = selenium.webdriver.Firefox(firefox_profile=options)
+        print(HERE+"/cors.xpi")
         driver.install_addon(HERE + "/cors.xpi")
 
     driver.get("https://www.pixiv.net")
-    time.sleep(10) # wait for enough time to load a context for cookie
+    time.sleep(3) # wait for enough time to load a context for cookie
     driver.add_cookie({
         'name': 'PHPSESSID',
         'value': sessid,
@@ -129,7 +130,7 @@ if __name__ == "__main__":
     else:
         sessid = login(os.getenv("PX_USER"), os.getenv("PX_PASS"))
     print("==========================Chrome==========================")
-    test(browser="chrome", sessid=sessid)
+    #test(browser="chrome", sessid=sessid)
     print("==========================Firefox==========================")
     test(browser="firefox", sessid=sessid)
     if HAVE_FAIL:
