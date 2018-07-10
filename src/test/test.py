@@ -89,7 +89,7 @@ def test(browser="chrome", sessid=None):
     elif browser == "firefox":
         options = selenium.webdriver.FirefoxProfile()
         driver = selenium.webdriver.Firefox(firefox_profile=options)
-        driver.install_addon("/tmp/cors.xpi")
+        driver.install_addon(HERE + "/cors.xpi")
 
     driver.get("https://www.pixiv.net")
     time.sleep(10) # wait for enough time to load a context for cookie

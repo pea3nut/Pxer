@@ -8,7 +8,6 @@ python:
 install:
   - wget https://github.com/mozilla/geckodriver/releases/download/v0.21.0/geckodriver-v0.21.0-linux64.tar.gz
   - mkdir geckodriver
-  - wget https://addons.mozilla.org/firefox/downloads/file/947016/cross_domain_cors-0.1.3-an+fx.xpi?src=dp-btn-primary -o /tmp/cors.xpi
   - tar -xzf geckodriver-v0.21.0-linux64.tar.gz -C geckodriver
   - export PATH=$PATH:$PWD/geckodriver
   - export MOZ_HEADLESS=1
