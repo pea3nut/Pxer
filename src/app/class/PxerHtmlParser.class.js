@@ -187,7 +187,7 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
 
 PxerHtmlParser.REGEXP ={
     'getDate':/img\/((?:\d+\/){5}\d+)/,
-    'getInitData':/(?<=\()\{token:.*\}(?=\);)/
+    'getInitData':/\{token:.*\}(?=\);)/
 };
 
 PxerHtmlParser.HTMLParser =function(aHTMLString){
