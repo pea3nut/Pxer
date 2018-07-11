@@ -240,6 +240,7 @@ function denyNewAttr(obj) {
         }
     });
 }
+
 'use strict';
 
 var PxerEvent = function () {
@@ -727,7 +728,7 @@ PxerHtmlParser.parseMediumHtml = function (_ref9) {
 
         pw.domain = URLObj.domain;
         pw.date = src.match(PxerHtmlParser.REGEXP['getDate'])[1];
-        pw.frames = meta['frames'];
+        pw.frames = meta['body']['frames'];
     } else {
         var _src = illustData.urls.original;
         var _URLObj = parseURL(_src);
@@ -740,7 +741,7 @@ PxerHtmlParser.parseMediumHtml = function (_ref9) {
 
 PxerHtmlParser.REGEXP = {
     'getDate': /img\/((?:\d+\/){5}\d+)/,
-    'getInitData': /(?<=\()\{token:.*\}(?=\);)/
+    'getInitData': /\{token:.*\}(?=\);)/
 };
 
 PxerHtmlParser.HTMLParser = function (aHTMLString) {
@@ -1115,6 +1116,17 @@ PxerPrinter.defaultConfig = function () {
         "illust_multiple": "max", //[max|1200p|cover_600p|no]
         "ugoira_zip": "no", //[max|600p|no]
         "ugoira_frames": "no" //[yes|no]
+    };
+};
+/**作品页跳过过滤 */
+PxerPrinter.printAllConfig = function () {
+    return {
+        "manga_single": "max", //[max|600p|no]
+        "manga_multiple": "max", //[max|1200p|cover_600p|no]
+        "illust_single": "max", //[max|600p|no]
+        "illust_multiple": "max", //[max|1200p|cover_600p|no]
+        "ugoira_zip": "max", //[max|600p|no]
+        "ugoira_frames": "yes" //[yes|no]
     };
 };
 
@@ -1648,7 +1660,7 @@ var PxerApp = function (_PxerEvent3) {
             retry: 3,
             thread: 8
         };
-        _this9.ppConfig = PxerPrinter.defaultConfig(); //PxerPrinter
+        _this9.ppConfig = _this9.pageType.startsWith("works_") ? PxerPrinter.printAllConfig() : PxerPrinter.defaultConfig(); //PxerPrinter
         _this9.pfConfig = PxerFilter.defaultConfig(); //PxerFilter
 
         // 使用的PxerThreadManager实例

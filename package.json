@@ -1,6 +1,6 @@
 {
   "name": "pxer",
-  "version": "7.0.10",
+  "version": "7.0.11",
   "description": "<p align=\"left\">\r \t<img alt=\"\" src=\"https://img.shields.io/badge/JavaScript-ES6-green.svg\" />\r \t<img alt=\"\" src=\"https://img.shields.io/badge/install-Greasemonkey-green.svg\" />\r \t<img alt=\"\" src=\"https://img.shields.io/badge/jQuery-No-red.svg\" />\r \t<img alt=\"\" src=\"https://img.shields.io/badge/Node.js-No-red.svg\" />\r \t<img alt=\"\" src=\"https://img.shields.io/npm/l/express.svg\" />\r </p>",
   "main": "index.js",
   "scripts": {
