@@ -10,6 +10,7 @@
 	<img alt="" src="https://img.shields.io/badge/Test-mocha-blue.svg" />
 	<img alt="" src="https://img.shields.io/badge/jQuery-No-red.svg" />
 	<img alt="MIT" src="https://img.shields.io/npm/l/express.svg" />
+	<img alt="" src="https://travis-ci.org/pea3nut/Pxer.svg?branch=dev" />
 </p>
 
 
