@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node ./build/watcher.js",
-    "build": "node ./build/build-dist.js"
+    "build": "node ./build/build-dist.js",
+    "server": "node ./build/server.js"
   },
   "repository": {
     "type": "git",
