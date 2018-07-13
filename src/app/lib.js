@@ -136,6 +136,8 @@ window.getPageType =function(url=document.URL){
         type ='bookmark_new';
     }else if(URLData.path==='/member.php'){
         type ='member_info';
+    }else if(URLData.path==='/ranking.php'){
+        type ='rank';
     }else if(URLData.path==='/member_illust.php'){
         if(URLData.query&&URLData.query.mode){
             switch(URLData.query.mode){
@@ -163,6 +165,18 @@ window.getPageType =function(url=document.URL){
     }
     return type;
 };
+/**
+ * 查询对应页面类型每页作品数量
+ * @param {string} type - 作品类型
+ * @return {number} - 每页作品数
+ */
+window.getOnePageWorkCount =function(type) {
+    switch (type) {
+        case "search":return 40
+        case "rank":return 50
+        default:return 20
+    };
+}
 /*EventTarget扩展
 EventTarget.prototype['addOneEventListener'] =function(type,listener,useCapture){
     var fn;

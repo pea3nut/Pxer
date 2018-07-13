@@ -100,7 +100,7 @@ class PxerApp extends PxerEvent{
             return false;
         };
 
-        let onePageWorksNumber =this.pageType==='search'?40:20;
+        let onePageWorksNumber = getOnePageWorkCount(this.pageType);
 
         var pageNum =Math.ceil(
             this.taskOption.limit
@@ -109,9 +109,10 @@ class PxerApp extends PxerEvent{
         )/onePageWorksNumber;
 
         var separator =/\?/.test(document.URL)?"&":"?";
+        var extraparam = this.pageType==='rank'? "&format=json" : "";
         for(var i=0 ;i<pageNum ;i++){
             this.taskList.push(new PxerPageRequest({
-                url:document.URL+separator+"p="+(i+1),
+                url:document.URL+separator+"p="+(i+1)+extraparam,
             }));
         };
 
@@ -293,7 +294,13 @@ PxerApp.prototype['getThis'] =function(){
  * @return {number} - 作品数
  * */
 PxerApp.getWorksNum =function(dom=document){
-    if (getPageType()==="bookmark_new") {
+    if (getPageType()==="rank") {
+        var queryurl = dom.URL + "&format=json";
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", queryurl, false);
+        xhr.send();
+        return JSON.parse(xhr.responseText)['rank_total'];
+    } else if (getPageType()==="bookmark_new") {
         // 关注的新作品页数最多100页
         // 因为一般用户关注的用户数作品都足够填满100页，所以从100开始尝试页数
         // 如果没有100页进行一次二分查找

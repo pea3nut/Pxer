@@ -55,6 +55,7 @@ afterLoad(function(){
                     'member_works'     :'作品列表页',
                     'search'           :'检索页',
                     'bookmark_works'   :'收藏列表页',
+                    'rank'             :'排行榜',
                     'bookmark_new'     :'关注的新作品',
                     'unknown'          :'未知',
                 };
@@ -68,7 +69,8 @@ afterLoad(function(){
                 return this.pxer.taskOption.limit ||this.pxer.worksNum;
             },
             taskCount(){
-                return Math.ceil(this.worksNum/20)+ +this.worksNum;
+                var pageWorkCount = getOnePageWorkCount(this.pxer.pageType);
+                return Math.ceil(this.worksNum/pageWorkCount)+ +this.worksNum;
             },
             finishCount(){
                 if(this.state==='page'){
