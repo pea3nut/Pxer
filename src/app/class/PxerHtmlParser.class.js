@@ -28,19 +28,20 @@ PxerHtmlParser.parsePage =function(task){
     // old method
     var taskList =[];
     
-    var searchResult =dom.body.querySelector("input#js-mount-point-search-result-list");
+    var pageResultList =dom.body.querySelector("input#js-mount-point-search-result-list")
+                        || dom.body.querySelector("div#js-mount-point-latest-following");
     var elts =null;
-    if (searchResult) {
-        var searchData = JSON.parse(searchResult.getAttribute('data-items'));
-        for (var searchItem of searchData) {
+    if (pageResultList) {
+        var pageResultList = JSON.parse(pageResultList.getAttribute('data-items'));
+        for (var pageWorkItem of pageResultList) {
             var task =new PxerWorksRequest({
-                html    :{},
-                type    :searchItem.illustType==2?'ugoira'
-                        :searchItem.illustType==1?'manga'
-                        :'illust'
-                        ,
-                isMultiple  :searchItem.pageCount>1,
-                id  :searchItem.illustId
+                html       :{},
+                type       :pageWorkItem.illustType==2?'ugoira'
+                           :pageWorkItem.illustType==1?'manga'
+                           :'illust'
+                           ,
+                isMultiple :pageWorkItem.pageCount>1,
+                id         :pageWorkItem.illustId
             });
             task.url =PxerHtmlParser.getUrlList(task);
             

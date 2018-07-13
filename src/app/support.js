@@ -5,7 +5,7 @@
 // 环境检测
 window['PXER_SUPPORT']  =true;
 window['PXER_LOAD_APP'] =false;
-const supportType =['bookmark_works','member_works','search','works_medium'];
+const supportType =['bookmark_works','member_works','search','works_medium','bookmark_new'];
 const URLData =parseURL(document.URL);
 if(URLData.domain ==='www.pixiv.net'){
     if(supportType.indexOf(getPageType())!==-1){

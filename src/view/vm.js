@@ -55,6 +55,7 @@ afterLoad(function(){
                     'member_works'     :'作品列表页',
                     'search'           :'检索页',
                     'bookmark_works'   :'收藏列表页',
+                    'bookmark_new'     :'关注的新作品',
                     'unknown'          :'未知',
                 };
                 return map[this.pxer.pageType];

@@ -293,9 +293,40 @@ PxerApp.prototype['getThis'] =function(){
  * @return {number} - 作品数
  * */
 PxerApp.getWorksNum =function(dom=document){
-    var elt =dom.querySelector(".count-badge");
-    if(!elt) return null;
-    return parseInt(elt.innerHTML);
+    if (getPageType()==="bookmark_new") {
+        // bookmark_new is dynamically paged with at most 100 pages.
+        // We are trying 100 at first, because most people have a lot of followings and starting from 50 could cause serious efficiency degradation
+        // if it doesn't work then we are doing a binary search.
+        var currpage = parseInt(dom.querySelector("li.current").innerHTML);
+        return this.getFollowingBookmarkWorksNum(currpage, 100, 100);
+    } else {
+        var elt =dom.querySelector(".count-badge");
+        if(!elt) return null;
+        return parseInt(elt.innerHTML);
+    }
 };
 
-
+/**
+ * 获取关注的新作品页的总作品数
+ * @param {number} min - 最小页数
+ * @param {number} max - 最大页数
+ * @param {number} cur - 当前页数
+ * @return {number} - 作品数
+ */
+PxerApp.getFollowingBookmarkWorksNum =function(min, max, cur){
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "https://www.pixiv.net/bookmark_new_illust.php?p=" +cur, false);
+    xhr.send();
+    var html = xhr.response;
+    var el = document.createElement("div");
+    el.innerHTML = html;
+    if (min===max) {
+        var lastworkcount = JSON.parse(el.querySelector("div#js-mount-point-latest-following").getAttribute("data-items")).length;
+        return (min-1)*20 + lastworkcount;
+    }
+    if (!!el.querySelector("div._no-item")) {
+        return this.getFollowingBookmarkWorksNum(min, cur-1, parseInt((min+cur)/2));
+    } else {
+        return this.getFollowingBookmarkWorksNum(cur, max, parseInt((cur+max)/2));
+    }
+}
