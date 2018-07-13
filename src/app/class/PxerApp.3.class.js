@@ -294,9 +294,9 @@ PxerApp.prototype['getThis'] =function(){
  * */
 PxerApp.getWorksNum =function(dom=document){
     if (getPageType()==="bookmark_new") {
-        // bookmark_new is dynamically paged with at most 100 pages.
-        // We are trying 100 at first, because most people have a lot of followings and starting from 50 could cause serious efficiency degradation
-        // if it doesn't work then we are doing a binary search.
+        // 关注的新作品页数最多100页
+        // 因为一般用户关注的用户数作品都足够填满100页，所以从100开始尝试页数
+        // 如果没有100页进行一次二分查找
         var currpage = parseInt(dom.querySelector("li.current").innerHTML);
         return this.getFollowingBookmarkWorksNum(currpage, 100, 100);
     } else {
