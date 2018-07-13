@@ -327,6 +327,6 @@ PxerApp.getFollowingBookmarkWorksNum =function(min, max, cur){
     if (!!el.querySelector("div._no-item")) {
         return this.getFollowingBookmarkWorksNum(min, cur-1, parseInt((min+cur)/2));
     } else {
-        return this.getFollowingBookmarkWorksNum(cur, max, parseInt((cur+max)/2));
+        return this.getFollowingBookmarkWorksNum(cur, max, parseInt((cur+max+1)/2));
     }
 }
