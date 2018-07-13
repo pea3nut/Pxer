@@ -68,7 +68,8 @@ afterLoad(function(){
                 return this.pxer.taskOption.limit ||this.pxer.worksNum;
             },
             taskCount(){
-                return Math.ceil(this.worksNum/20)+ +this.worksNum;
+                var pageWorkCount = this.pxer.pageType ==="search"? 40:20;
+                return Math.ceil(this.worksNum/pageWorkCount) +this.worksNum;
             },
             finishCount(){
                 if(this.state==='page'){
