@@ -100,9 +100,7 @@ class PxerApp extends PxerEvent{
             return false;
         };
 
-        let onePageWorksNumber = this.pageType === 'search' ? 40
-                                :this.pageType === 'rank' ? 50
-                                :20;
+        let onePageWorksNumber = getOnePageWorkCount(this.pageType);
 
         var pageNum =Math.ceil(
             this.taskOption.limit

@@ -69,8 +69,8 @@ afterLoad(function(){
                 return this.pxer.taskOption.limit ||this.pxer.worksNum;
             },
             taskCount(){
-                var pageWorkCount = this.pxer.pageType ==="rank"? 50:20;
-                return Math.ceil(this.worksNum/pageWorkCount) +this.worksNum;
+                var pageWorkCount = getOnePageWorkCount(this.pxer.pageType);
+                return Math.ceil(this.worksNum/pageWorkCount)+ +this.worksNum;
             },
             finishCount(){
                 if(this.state==='page'){
