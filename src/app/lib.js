@@ -132,6 +132,8 @@ window.getPageType =function(url=document.URL){
         }else{
             type ='bookmark_works';
         }
+    }else if(URLData.path==='/bookmark_new_illust.php'){
+        type ='bookmark_new';
     }else if(URLData.path==='/member.php'){
         type ='member_info';
     }else if(URLData.path==='/ranking.php'){
