@@ -100,7 +100,9 @@ class PxerApp extends PxerEvent{
             return false;
         };
 
-        let onePageWorksNumber =this.pageType==='search'?40:20;
+        let onePageWorksNumber = this.pageType === 'search' ? 40
+                                :this.pageType === 'rank' ? 50
+                                :20;
 
         var pageNum =Math.ceil(
             this.taskOption.limit
@@ -109,9 +111,10 @@ class PxerApp extends PxerEvent{
         )/onePageWorksNumber;
 
         var separator =/\?/.test(document.URL)?"&":"?";
+        var extraparam = this.pageType==='rank'? "&format=json" : "";
         for(var i=0 ;i<pageNum ;i++){
             this.taskList.push(new PxerPageRequest({
-                url:document.URL+separator+"p="+(i+1),
+                url:document.URL+separator+"p="+(i+1)+extraparam,
             }));
         };
 
@@ -293,9 +296,17 @@ PxerApp.prototype['getThis'] =function(){
  * @return {number} - 作品数
  * */
 PxerApp.getWorksNum =function(dom=document){
-    var elt =dom.querySelector(".count-badge");
-    if(!elt) return null;
-    return parseInt(elt.innerHTML);
+    if (getPageType()==="rank") {
+        var queryurl = dom.URL + "&format=json";
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", queryurl, false);
+        xhr.send();
+        return JSON.parse(xhr.responseText)['rank_total'];
+    } else {
+        var elt =dom.querySelector(".count-badge");
+        if(!elt) return null;
+        return parseInt(elt.innerHTML);
+    }
 };
 
 

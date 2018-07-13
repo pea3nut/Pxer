@@ -134,6 +134,8 @@ window.getPageType =function(url=document.URL){
         }
     }else if(URLData.path==='/member.php'){
         type ='member_info';
+    }else if(URLData.path==='/ranking.php'){
+        type ='rank';
     }else if(URLData.path==='/member_illust.php'){
         if(URLData.query&&URLData.query.mode){
             switch(URLData.query.mode){
