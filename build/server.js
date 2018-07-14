@@ -66,11 +66,11 @@ const addFolder = function _self(fpath, uri) {
         })
     })
 }
-addFolder(PROJECT_PATH +"/src/", "/src/");
-addFolder(PROJECT_PATH +"/dist/", "/dist/");
-addFile(PROJECT_PATH +"/jsonp.js", "/jsonp.js");
-addFile(PROJECT_PATH +"/pxer-dev.user.js", "/pxer-dev.user.js");
-addFile(PROJECT_PATH +"/pxer-master.user.js", "/pxer-master.user.js");
+addFolder(path.resolve(PROJECT_PATH, "src/"), "/src/");
+addFolder(path.resolve(PROJECT_PATH, "dist/"), "/dist/");
+addFile(path.resolve(PROJECT_PATH, "jsonp.js"), "/jsonp.js");
+addFile(path.resolve(PROJECT_PATH, "pxer-dev.user.js"), "/pxer-dev.user.js");
+addFile(path.resolve(PROJECT_PATH, "pxer-master.user.js"), "/pxer-master.user.js");
 
 var server = null;
 
