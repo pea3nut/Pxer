@@ -115,10 +115,48 @@ PxerPrinter.prototype['print'] =function(){
             alert('Pxer:\n浏览器拦截了弹出窗口，请检查浏览器提示，设置允许此站点的弹出式窗口。');
             return;
         };
+        
+        var lines=[];
+        var resstring;
+        switch (this.config.ugoira_zip) {
+            case "max": resstring = "1920x1080"; break;
+            case "600p": resstring = "600x338"; break;
+        }
+
+        var slashstr = "";
+        switch (navigator.platform) {
+            case "Win32":
+                slashstr="^";
+                lines.push("@echo off");
+                lines.push("set /p ext=请输入输出文件扩展名(mp4/gif/...):");
+                break;
+            default:
+                slashstr="\\";
+                lines.push("#!/bin/bash");
+                lines.push("");
+                lines.push("read -p '请输入输出文件扩展名(mp4/gif/...):' ext");
+                break;
+        }
+        for (key in this.ugoiraFrames) {
+            var foldername = key + "_ugoira" + resstring;
+            var confpath = foldername + "/config.txt";
+            lines.push("del "+ foldername + "\\config.txt");
+            for (frame of this.ugoiraFrames[key]) {
+                lines.push("echo file "+slashstr+"'" + frame['file']+ slashstr +"' >> "+confpath);
+                lines.push("echo duration " + frame['delay']/1000 + " >> "+ confpath);
+            }
+            lines.push("echo file "+ slashstr + "'" +this.ugoiraFrames[key][this.ugoiraFrames[key].length-1]['file'] + slashstr + "' >> "+confpath);
+            lines.push("ffmpeg -f concat -i "+confpath+" -framerate 30 -vsync -1 -s "+resstring+" "+foldername+"/remux." + (navigator.platform==="Win32"? "%ext%":"$ext"));
+        }
+        switch (navigator.platform) {
+            case "Win32":   lines.push("pause"); break;
+            default: lines.push("read  -n 1 -p \"按任意键退出\" m && echo"); break;
+        }
+
         let str =[
             '<pre>',
             '/** 这个页面是动图压缩包的动画参数，目前Pxer还无法将动图压缩包打包成GIF，请寻找其他第三方软件 */',
-            JSON.stringify(this.ugoiraFrames ,null ,4),
+            ...lines,
             '</pre>',
         ];
         win.document.write(str.join('\n'));
