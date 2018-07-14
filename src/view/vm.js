@@ -1,3 +1,5 @@
+var SupportLanguages = ['zh-CN', 'en-US'];
+
 afterLoad(function(){
     // 寻找插入点
     var elt =document.createElement('div');
@@ -8,23 +10,35 @@ afterLoad(function(){
     );
     insetElt.insertBefore(elt,insetElt.firstChild);
 
+    // 国际化
+    Vue.use(VueI18n);
+    var i18n = new VueI18n({
+        locale: window.navigator.language,
+        fallbackLocale: 'zh-CN',
+        messages: new Proxy({}, {
+            get(target, key) {
+                if (key in target || !SupportLanguages.includes(key)) {
+                    return target[key]
+                } else {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', window['PXER_URL'] + 'src/i18n/' + key + '.json', false);
+                    xhr.send();
+                    var locale = JSON.parse(xhr.responseText);
+                    target[key] = locale;
+                    return locale;
+                }
+            }
+        })
+    });
+
     // 运行Vue实例
     new Vue({render:ce=>ce({
+        i18n,
         template:PXER_TEMPLATE,
         data(){return {
             pxer:new PxerApp(),
             showAll:false,
             state:'loaded',//[loaded|ready|page|works|finish|re-ready|stop|error]
-            stateMap:{
-                loaded:'初始完毕',
-                ready :'就绪',
-                page  :'抓取页码中',
-                works :'抓取作品中',
-                finish:'完成',
-                're-ready':'再抓取就绪',
-                stop  :'用户手动停止',
-                error :'出错',
-            },
             pxerVersion:window['PXER_VERSION'],
             showPxerFailWindow:false,
             runTimeTimestamp:0,
@@ -50,17 +64,6 @@ afterLoad(function(){
             });
         },
         computed:{
-            pageType(){
-                var map ={
-                    'member_works'     :'作品列表页',
-                    'search'           :'检索页',
-                    'bookmark_works'   :'收藏列表页',
-                    'rank'             :'排行榜',
-                    'bookmark_new'     :'关注的新作品',
-                    'unknown'          :'未知',
-                };
-                return map[this.pxer.pageType];
-            },
             isRunning(){
                 var runState =['page','works'];
                 return runState.indexOf(this.state)!==-1;

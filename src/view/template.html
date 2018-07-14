@@ -68,18 +68,18 @@
 
     <div class="pxer-info" v-show="showAll ||isRunning||['ready','re-ready'].indexOf(state)!==-1">
         <div class="pi-item">
-            <div class="pii-title">程序状态</div>
+            <div class="pii-title">{{ $t('program_status') }}</div>
             <table class="table">
                 <tr>
-                    <td>主程序版本：</td>
+                    <td>{{ $t('main_version') }}:</td>
                     <td v-text="pxerVersion"></td>
                 </tr>
                 <tr>
-                    <td>当前状态：</td>
-                    <td v-text="stateMap[state]"></td>
+                    <td>{{ $t('current_status') }}:</td>
+                    <td v-text="$t('states.' + state)"></td>
                 </tr>
                 <tr>
-                    <td>已运行时间：</td>
+                    <td>{{ $t('time_used') }}: </td>
                     <td v-text="formatTime(runTimeTimestamp)"></td>
                 </tr>
             </table>
@@ -102,7 +102,7 @@
             <table class="table">
                 <tr>
                     <td>页面类型：</td>
-                    <td v-text="pageType"></td>
+                    <td v-text="$t('page_types.' + pxer.pageType)"></td>
                 </tr>
                 <tr>
                     <td>下载数量：</td>
