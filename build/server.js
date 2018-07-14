@@ -1,78 +1,97 @@
 const express = require('express');
+const process = require('process');
+const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const program = require('commander');
 
+const PROJECT_PATH = __dirname + "/../";
+
 program
-    .option('-m, --mode <mode>', "server mode")
-    .option('-a, --addr <addr>', "bind address")
-    .option('-p, --port <port>', "bind port")
+    .option('-c, --cache <sec>', "cache max age", /\d+/, "0")
+    .option('-a, --addr <addr>', "bind address", "127.0.0.1")
+    .option('-p, --port <port>', "bind port", /\d+/, 8125)
+    .option('--cert <cert>', "certificate file(omit for http)", undefined)
+    .option('--key <key>', "private key(omit for http)", undefined)
+    .option('--ca <chain>', "cert chain file(optional)", undefined)
 
 program.parse(process.argv);
 
-if (['dev','release', undefined].indexOf(program.mode)===-1) {
-    throw new Error("Invalid mode:"+ program.mode);
-}
-const MODE = program.mode || "dev";
-const ADDR = program.addr || "127.0.0.1";
-const PORT = parseInt(program.port) || 8125;
+const ADDR = program.addr;
+const PORT = parseInt(program.port);
+const CACHE_TIME = program.cache;
 
-console.log("Running server in " +MODE)
+const safeJoinPath =function(base, fpath) {
+    if (path.isAbsolute(fpath)) {
+        return fpath;
+    } else {
+        return path.join(base, path);
+    }
+}
+
+const credentials = {
+	key: program.cert ? fs.readFileSync(safeJoinPath(process.cwd(), program.cert), 'utf-8') :undefined,
+	cert: program.key? fs.readFileSync(safeJoinPath(process.cwd(), program.key), 'utf-8') :undefined,
+	ca: program.ca? fs.readFileSync(safeJoinPath(process.cwd(), program.ca), 'utf-8') :undefined,
+};
 
 var app = express();
 
 app.get('/', (req, res) => res.status(303).send("http://pxer.pea3nut.org/"));
 
-addFile =function(fpath, uri) {
+const addFile =function(fpath, uri) {
     fpath = path.normalize(fpath);
-    var contentType = "text/plain";
-    switch (path.extname(fpath)) {
-        case ".js"  : contentType = "text/javascript"; break;
-        case ".html": contentType = "text/html"; break;
-        case ".css" : contentType = "text/css"; break;
-    }
     var options = {
         dotfiles: 'deny',
         cacheControl: true,
         headers : {
             "Access-Control-Allow-Origin": "*",
-            "Content-Type"               : contentType,
+            "Cache-Control"              : "max-age="+CACHE_TIME,
         },
-    };
-    switch (MODE) {
-        case "dev"    : options.headers['Cache-Control'] = "no-store, must-revalidate"; break;
-        case "release": options.headers['Cache-Control'] = "max-age=1200"; break;
     };
     app.get(uri, (req, res)=>res.sendFile(fpath, options));
 }
 
-addFolder =function(fpath, uri) {
-    fs.readdir(fpath, function(err, filelist) {
+const addFolder = function _self(fpath, uri) {
+    fs.readdir(fpath, function (err, filelist) {
         if (err) {
-            console.log("Error while preloading folder:" +err.message);
-        } else {
-            filelist.forEach(function(fn) {
-                var filepath = path.join(fpath, fn);
-                fs.stat(filepath, function(err, info) {
-                    if (err) {
-                        console.log("Error while reading" + filepath + err.message);
-                    } else {
-                        switch (true) {
-                            case info.isDirectory(): addFolder(filepath, uri + fn + "/"); break;
-                            case info.isFile():      addFile(filepath, uri + fn); break;
-                        }
-                    }
-                })
-            })
+            console.log("Error while preloading folder:" + err.message);
+            return;
         }
+        filelist.forEach(function (fn) {
+            var filepath = path.join(fpath, fn);
+            fs.stat(filepath, function (err, info) {
+                if (err) {
+                    console.log("Error while reading" + filepath + err.message);
+                    return;
+                }
+                switch (true) {
+                    case info.isDirectory(): _self(filepath, uri + fn + "/"); break;
+                    case info.isFile(): addFile(filepath, uri + fn); break;
+                }
+            })
+        })
     })
 }
-addFolder(__dirname +"/../src/", "/src/");
-addFolder(__dirname +"/../dist/", "/dist/");
-addFile(__dirname +"/../jsonp.js", "/jsonp.js");
-addFile(__dirname +"../pxer-dev.user.js", "/pxer-dev.user.js");
-addFile(__dirname +"../pxer-master.user.js", "/pxer-master.user.js");
+addFolder(PROJECT_PATH +"src/", "/src/");
+addFolder(PROJECT_PATH +"dist/", "/dist/");
+addFile(PROJECT_PATH +"jsonp.js", "/jsonp.js");
+addFile(PROJECT_PATH +"pxer-dev.user.js", "/pxer-dev.user.js");
+addFile(PROJECT_PATH +"pxer-master.user.js", "/pxer-master.user.js");
 
-app.listen(PORT, ADDR, function () {
-    console.log('Server running at ' + ADDR +":"+ PORT);
-})
+var server = null;
+
+console.log("Cache max age: "+CACHE_TIME+" sec.");
+
+if (credentials.key && credentials.cert) {
+    console.log("Serving HTTPS");
+    server = https.createServer(credentials, app);
+} else {
+    console.log("Serving HTTP");
+    server = http.createServer(app);
+}
+
+server.listen(PORT, ADDR, function () {
+    console.log('Server running at ' + ADDR + ":" + PORT);
+});
