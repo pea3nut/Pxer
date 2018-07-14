@@ -1,0 +1,6 @@
+apps:
+  - script     : 'build/server.js'
+    name       : 'pxer-server'
+    instances  : 4
+    args       : '-a 0.0.0.0 -p 443 --cert /path/to/your/cert.pem --key /path/to/your/privkey.pem'
+    watch      : true

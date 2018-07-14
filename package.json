@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node ./build/watcher.js",
     "build": "node ./build/build-dist.js",
-    "server": "node ./build/server.js"
+    "server": "node ./build/server.js",
+    "prod": "pm2 start ./prod-server.yml"
   },
   "repository": {
     "type": "git",
@@ -35,6 +36,7 @@
   },
   "dependencies": {
     "commander": "^2.16.0",
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "pm2": "^3.0.0"
   }
 }

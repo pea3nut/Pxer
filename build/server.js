@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const program = require('commander');
 
-const PROJECT_PATH = __dirname + "/../";
+const PROJECT_PATH = path.resolve(__dirname, "../");
 
 program
     .option('-c, --cache <sec>', "cache max age", /\d+/, "0")
@@ -22,18 +22,10 @@ const ADDR = program.addr;
 const PORT = parseInt(program.port);
 const CACHE_TIME = program.cache;
 
-const safeJoinPath =function(base, fpath) {
-    if (path.isAbsolute(fpath)) {
-        return fpath;
-    } else {
-        return path.join(base, path);
-    }
-}
-
 const credentials = {
-	key: program.cert ? fs.readFileSync(safeJoinPath(process.cwd(), program.cert), 'utf-8') :undefined,
-	cert: program.key? fs.readFileSync(safeJoinPath(process.cwd(), program.key), 'utf-8') :undefined,
-	ca: program.ca? fs.readFileSync(safeJoinPath(process.cwd(), program.ca), 'utf-8') :undefined,
+	key: program.cert ? fs.readFileSync(program.cert, 'utf-8') :undefined,
+	cert: program.key? fs.readFileSync(program.key, 'utf-8') :undefined,
+	ca: program.ca? fs.readFileSync(program.ca, 'utf-8') :undefined,
 };
 
 var app = express();
@@ -74,11 +66,11 @@ const addFolder = function _self(fpath, uri) {
         })
     })
 }
-addFolder(PROJECT_PATH +"src/", "/src/");
-addFolder(PROJECT_PATH +"dist/", "/dist/");
-addFile(PROJECT_PATH +"jsonp.js", "/jsonp.js");
-addFile(PROJECT_PATH +"pxer-dev.user.js", "/pxer-dev.user.js");
-addFile(PROJECT_PATH +"pxer-master.user.js", "/pxer-master.user.js");
+addFolder(PROJECT_PATH +"/src/", "/src/");
+addFolder(PROJECT_PATH +"/dist/", "/dist/");
+addFile(PROJECT_PATH +"/jsonp.js", "/jsonp.js");
+addFile(PROJECT_PATH +"/pxer-dev.user.js", "/pxer-dev.user.js");
+addFile(PROJECT_PATH +"/pxer-master.user.js", "/pxer-master.user.js");
 
 var server = null;
 
