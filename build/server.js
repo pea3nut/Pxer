@@ -23,8 +23,8 @@ const PORT = parseInt(program.port);
 const CACHE_TIME = program.cache;
 
 const credentials = {
-	key: program.cert ? fs.readFileSync(program.cert, 'utf-8') :undefined,
-	cert: program.key? fs.readFileSync(program.key, 'utf-8') :undefined,
+	key: program.key ? fs.readFileSync(program.key, 'utf-8') :undefined,
+	cert: program.cert? fs.readFileSync(program.cert, 'utf-8') :undefined,
 	ca: program.ca? fs.readFileSync(program.ca, 'utf-8') :undefined,
 };
 
