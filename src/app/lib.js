@@ -22,10 +22,10 @@ window.blinkTitle =function(addMsg ,spaceMsg){
         document.title =(counter ? addMsg : spaceMsg) + originalTitle;
         counter ^=1;
     },500);
-    window.addEventListener('mousemove' ,function _self(){
+    window.addEventListener('mousemove' ,function(){
         clearInterval(timer);
         document.title =originalTitle;
-    });
+    },{once:true});
 };
 window.parseURL =function(url=document.URL){
     var arr  =url.match(/^(?:(https?)\:)?\/\/([\w\_\.]+)((?:\/[^\/?]*)*)\/?(?:\?(.+))?$/);
