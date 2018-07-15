@@ -9,17 +9,26 @@ const program = require('commander');
 const PROJECT_PATH = path.resolve(__dirname, "../");
 
 program
-    .option('-c, --cache <sec>', "cache max age", /\d+/, "0")
+    .option('-c, --cache <yes/no/time>', "cache max age (example: --cache 10m)", /(no|yes|\d+(m|s|h|d)?)/, "no")
     .option('-a, --addr <addr>', "bind address", "127.0.0.1")
     .option('-p, --port <port>', "bind port", /\d+/, 8125)
-    .option('--cert <cert>', "certificate file(omit for http)", undefined)
-    .option('--key <key>', "private key(omit for http)", undefined)
-    .option('--ca <chain>', "cert chain file(optional)", undefined)
+    .option('--cert <cert>', "certificate file (omit for http)", undefined)
+    .option('--key <key>', "private key (omit for http)", undefined)
+    .option('--ca <chain>', "cert chain file (optional)", undefined)
 
 program.parse(process.argv);
 
 const ADDR = program.addr;
 const PORT = parseInt(program.port);
+switch (true) {
+    case program.cache === "no": program.cache = "0"; break;
+    case program.cache === "yes": program.cache = "1200"; break; // 20m
+    case program.cache.endsWith("s"): program.cache = parseInt(program.cache); break;
+    case program.cache.endsWith("m"): program.cache = parseInt(program.cache)*60; break;
+    case program.cache.endsWith("h"): program.cache = parseInt(program.cache)*3600; break;
+    case program.cache.endsWith("d"): program.cache = parseInt(program.cache)*3600*24; break;
+    default: program.cache = parseInt(program.cache);
+}
 const CACHE_TIME = program.cache;
 
 const credentials = {
