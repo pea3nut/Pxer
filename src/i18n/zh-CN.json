@@ -3,6 +3,10 @@
     "main_version": "主程序版本",
     "current_status": "当前状态",
     "time_used": "已运行时间",
+    "configurations": "配置信息",
+    "thread_count": "线程数",
+    "waiting_time": "等待时间",
+    "trial_count": "尝试次数",
     "states": {
         "loaded": "初始完毕",
         "ready": "就绪",

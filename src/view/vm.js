@@ -1,5 +1,3 @@
-var SupportLanguages = ['zh-CN', 'en-US'];
-
 afterLoad(async function(){
     // 寻找插入点
     var elt =document.createElement('div');
@@ -14,7 +12,8 @@ afterLoad(async function(){
     Vue.use(VueI18n);
     var messages = {};
     var fallbackLocale = 'zh-CN';
-    var locale = window.navigator.language;
+    var locale = fallbackLocale;
+    var defaultRegions = await window.loadLanguage('region');
     messages[fallbackLocale] = await window.loadLanguage(fallbackLocale);
     var i18n = new VueI18n({locale, fallbackLocale, messages});
 
@@ -42,7 +41,7 @@ afterLoad(async function(){
             errmsg:'',
         }},
         created(){
-            this.locale = document.querySelector('html').lang;
+            this.locale = navigator.language;
             window['PXER_VM'] =this;
             this.pxer.on('error',(err)=>{
                 this.errmsg =err;
@@ -140,11 +139,12 @@ afterLoad(async function(){
                     return this.$i18n.locale;
                 },
                 set(value) {
+                    if (value in defaultRegions) value = defaultRegions[value];
                     if (value in this.$i18n.messages) {
                         this.$i18n.locale = value;
                     } else {
                         window.loadLanguage(value).then((data) => {
-                            this.$i18n.messages[value] = data;
+                            this.$i18n.setLocaleMessage(value, data);
                             this.$i18n.locale = value;
                         }, (error) => {console.error(error)});
                     }

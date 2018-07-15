@@ -68,32 +68,32 @@
 
     <div class="pxer-info" v-show="showAll ||isRunning||['ready','re-ready'].indexOf(state)!==-1">
         <div class="pi-item">
-            <div class="pii-title">{{ $t('program_status') }}</div>
+            <div class="pii-title" v-t="'program_status'" />
             <table class="table">
                 <tr>
-                    <td>{{ $t('main_version') }}:</td>
-                    <td v-text="pxerVersion"></td>
+                    <td v-t="'main_version'" />
+                    <td v-text="pxerVersion" />
                 </tr>
                 <tr>
-                    <td>{{ $t('current_status') }}:</td>
-                    <td v-text="$t('states.' + state)"></td>
+                    <td v-t="'current_status'" />
+                    <td v-t="'states.' + state" />
                 </tr>
                 <tr>
-                    <td>{{ $t('time_used') }}: </td>
-                    <td v-text="formatTime(runTimeTimestamp)"></td>
+                    <td v-t="'time_used'" />
+                    <td v-text="formatTime(runTimeTimestamp)" />
                 </tr>
             </table>
         </div>
         <div class="pi-item">
-            <div class="pii-title">配置信息</div>
+            <div class="pii-title" v-t="'configurations'" />
             <table class="table"><tr>
-                    <td>线程数：</td>
+                    <td v-t="'thread_count'" />
                     <td><input v-model="pxer.ptmConfig.thread" class="form-control" type="text" /></td>
                 </tr><tr>
-                    <td>等待时间：</td>
+                    <td v-t="'waiting_time'" />
                     <td><input v-model="pxer.ptmConfig.timeout" class="form-control" type="text" /></td>
                 </tr><tr>
-                    <td>重试次数：</td>
+                    <td v-t="'trial_count'" />
                     <td><input v-model="pxer.ptmConfig.retry" class="form-control" type="text" /></td>
             </tr></table>
         </div>
