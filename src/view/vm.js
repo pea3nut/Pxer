@@ -1,6 +1,6 @@
 var SupportLanguages = ['zh-CN', 'en-US'];
 
-afterLoad(function(){
+afterLoad(async function(){
     // 寻找插入点
     var elt =document.createElement('div');
     var insetElt=(
@@ -10,26 +10,13 @@ afterLoad(function(){
     );
     insetElt.insertBefore(elt,insetElt.firstChild);
 
-    // 国际化
+    // 国际化，加载默认语言
     Vue.use(VueI18n);
-    var i18n = new VueI18n({
-        locale: window.navigator.language,
-        fallbackLocale: 'zh-CN',
-        messages: new Proxy({}, {
-            get(target, key) {
-                if (key in target || !SupportLanguages.includes(key)) {
-                    return target[key]
-                } else {
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('GET', window['PXER_URL'] + 'src/i18n/' + key + '.json', false);
-                    xhr.send();
-                    var locale = JSON.parse(xhr.responseText);
-                    target[key] = locale;
-                    return locale;
-                }
-            }
-        })
-    });
+    var messages = {};
+    var fallbackLocale = 'zh-CN';
+    var locale = window.navigator.language;
+    messages[fallbackLocale] = await window.loadLanguage(fallbackLocale);
+    var i18n = new VueI18n({locale, fallbackLocale, messages});
 
     // 运行Vue实例
     new Vue({render:ce=>ce({
@@ -55,6 +42,7 @@ afterLoad(function(){
             errmsg:'',
         }},
         created(){
+            this.locale = document.querySelector('html').lang;
             window['PXER_VM'] =this;
             this.pxer.on('error',(err)=>{
                 this.errmsg =err;
@@ -147,6 +135,21 @@ afterLoad(function(){
                     })
                 ;
             },
+            locale: {
+                get() {
+                    return this.$i18n.locale;
+                },
+                set(value) {
+                    if (value in this.$i18n.messages) {
+                        this.$i18n.locale = value;
+                    } else {
+                        window.loadLanguage(value).then((data) => {
+                            this.$i18n.messages[value] = data;
+                            this.$i18n.locale = value;
+                        }, (error) => {console.error(error)});
+                    }
+                }
+            }
         },
         watch:{
             state(newValue,oldValue){

@@ -28,6 +28,7 @@ const renderData ={
         viewStyles  :PxerUtility.path2URL('../src/view/style.css'),
         viewScripts :[
             '../src/view/vue.dev.js',
+            '../src/view/vue-i18n.js',
             '../src/view/vm.js',
         ].map(path=>PxerUtility.path2URL(path)),
         afterRun    :PxerUtility.getAllFile('../src/run/').map(path=>PxerUtility.path2URL(path)),
