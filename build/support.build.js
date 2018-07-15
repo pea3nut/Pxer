@@ -10,6 +10,7 @@ const renderData ={
         viewStyles  :PxerUtility.path2URL('../dist/view/style.css'),
         viewScripts :[
             '../dist/view/vue.min.js',
+            '../dist/view/vue-i18n.min.js',
             '../dist/view/vm.js',
         ].map(path=>PxerUtility.path2URL(path)),
         afterRun    :PxerUtility.path2URL('../dist/run.js'),
