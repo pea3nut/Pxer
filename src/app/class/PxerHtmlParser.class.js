@@ -188,7 +188,11 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
 
             pw.domain = URLObj.domain;
             pw.date   =src.match(PxerHtmlParser.REGEXP['getDate'])[1];
-            pw.frames =meta['body']['frames'];
+            pw.frames ={
+                framedef:meta['body']['frames'],
+                height:illustData.height,
+                width:illustData.width,
+            };
     } else {
             let src = illustData.urls.original;
             let URLObj = parseURL(src);

@@ -116,47 +116,15 @@ PxerPrinter.prototype['print'] =function(){
             return;
         };
         
-        var lines=[];
-        var resstring;
-        switch (this.config.ugoira_zip) {
-            case "max": resstring = "1920x1080"; break;
-            case "600p": resstring = "600x338"; break;
-        }
-
-        var slashstr = "";
+        var scriptname="";
         switch (navigator.platform) {
-            case "Win32":
-                slashstr="^";
-                lines.push("@echo off");
-                lines.push("set /p ext=请输入输出文件扩展名(mp4/gif/...):");
-                break;
-            default:
-                slashstr="\\";
-                lines.push("#!/bin/bash");
-                lines.push("");
-                lines.push("read -p '请输入输出文件扩展名(mp4/gif/...):' ext");
-                break;
+            case "Win32":scriptname="bat批处理"; break;
+            default:scriptname="bash"; break;
         }
-        for (key in this.ugoiraFrames) {
-            var foldername = key + "_ugoira" + resstring;
-            var confpath = foldername + "/config.txt";
-            lines.push(navigator.platform==="Win32"?("del "+ foldername + "\\config.txt"):("rm "+ foldername + "/config.txt"));
-            for (frame of this.ugoiraFrames[key]) {
-                lines.push("echo file "+slashstr+"'" + frame['file']+ slashstr +"' >> "+confpath);
-                lines.push("echo duration " + frame['delay']/1000 + " >> "+ confpath);
-            }
-            lines.push("echo file "+ slashstr + "'" +this.ugoiraFrames[key][this.ugoiraFrames[key].length-1]['file'] + slashstr + "' >> "+confpath);
-            lines.push("ffmpeg -f concat -i "+confpath+" -framerate 30 -vsync -1 -s "+resstring+" "+foldername+"/remux." + (navigator.platform==="Win32"? "%ext%":"$ext"));
-        }
-        switch (navigator.platform) {
-            case "Win32":   lines.push("pause"); break;
-            default: lines.push("read  -n 1 -p \"按任意键退出\" m && echo"); break;
-        }
-
         let str =[
             '<pre>',
-            '/** 这个页面是动图压缩包的动画参数，目前Pxer还无法将动图压缩包打包成GIF，请寻找其他第三方软件 */',
-            ...lines,
+            '/** 这个页面自动生成的使用FFmpeg自行合成动图的'+scriptname+'脚本，详细使用教程见http://pxer.pea3nut.org/ */',
+            ...this.generateUgoiraScript(this.ugoiraFrames),
             '</pre>',
         ];
         win.document.write(str.join('\n'));
@@ -202,6 +170,59 @@ PxerPrinter.getWorksKey =function(works){
     };
     return configKey;
 };
+
+/**
+ * 根据动图参数，生成ffmpeg脚本
+ * @param 动图参数
+ * @return {String[]} 生成的脚本行
+ * @see PxerPrinter.prototype['print']
+ */
+PxerPrinter.prototype['generateUgoiraScript'] =function(frames) {
+    var lines=[];
+    var resstring;
+    switch (this.config.ugoira_zip) {
+        case "max": resstring = "1920x1080"; break;
+        case "600p": resstring = "600x338"; break;
+    }
+    var slashstr = "";
+    switch (navigator.platform) {
+        case "Win32":
+            slashstr="^";
+            lines.push("@echo off");
+            lines.push("set /p ext=请输入输出文件扩展名(mp4/gif/...):");
+            break;
+        default:
+            slashstr="\\";
+            lines.push("#!/bin/bash");
+            lines.push("");
+            lines.push("read -p '请输入输出文件扩展名(mp4/gif/...):' ext");
+            break;
+    }
+    for (key in frames) {
+        var foldername = key + "_ugoira" + resstring;
+        var confpath = foldername + "/config.txt";
+        var height = frames[key].height;
+        var width = frames[key].width;
+        if (this.config.ugoira_zip==="600p") {
+            var scale = Math.max(height, width)/600;
+            height = parseInt(height/scale);
+            width = parseInt(width/scale);
+        }
+        lines.push(navigator.platform==="Win32"?("del "+ foldername + "\\config.txt"):("rm "+ foldername + "/config.txt"));
+        for (frame of frames[key].framedef) {
+            lines.push("echo file "+slashstr+"'" + frame['file']+ slashstr +"' >> "+confpath);
+            lines.push("echo duration " + frame['delay']/1000 + " >> "+ confpath);
+        }
+        lines.push("echo file "+ slashstr + "'" +frames[key].framedef[frames[key].framedef.length-1]['file'] + slashstr + "' >> "+confpath);
+        lines.push("ffmpeg -f concat -i "+confpath+" -framerate 30 -vsync -1 -s "+width+"x"+height+" "+foldername+"/remux." + (navigator.platform==="Win32"? "%ext%":"$ext"));
+    }
+    switch (navigator.platform) {
+        case "Win32":   lines.push("echo 完成 & pause"); break;
+        default: lines.push("read  -n 1 -p \"完成，按任意键退出\" m && echo"); break;
+    }
+    return lines;
+}
+
 /**返回默认的配置对象*/
 PxerPrinter.defaultConfig =function(){
     return{
@@ -321,7 +342,3 @@ PxerPrinter.countAddress =function(works,argn){
             throw new Error('PxerPrinter.countAddress: unknown works');
     };
 };
-
-
-
-
