@@ -140,7 +140,7 @@ PxerPrinter.prototype['print'] =function(){
         for (key in this.ugoiraFrames) {
             var foldername = key + "_ugoira" + resstring;
             var confpath = foldername + "/config.txt";
-            lines.push("del "+ foldername + "\\config.txt");
+            lines.push(navigator.platform==="Win32"?("del "+ foldername + "\\config.txt"):("rm "+ foldername + "/config.txt"));
             for (frame of this.ugoiraFrames[key]) {
                 lines.push("echo file "+slashstr+"'" + frame['file']+ slashstr +"' >> "+confpath);
                 lines.push("echo duration " + frame['delay']/1000 + " >> "+ confpath);
