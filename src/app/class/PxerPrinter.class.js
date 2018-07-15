@@ -122,10 +122,10 @@ PxerPrinter.prototype['print'] =function(){
             default:scriptname="bash"; break;
         }
         let str =[
-            '<pre>',
-            '/** 这个页面自动生成的使用FFmpeg自行合成动图的'+scriptname+'脚本，详细使用教程见http://pxer.pea3nut.org/ */',
+            '<p>/** 这个页面是自动生成的使用FFmpeg自行合成动图的'+scriptname+'脚本，详细使用教程见<a href="http://pxer.pea3nut.org/md/ugoira_concat" target="_blank" >http://pxer.pea3nut.org/md/ugoira_concat</a> */</p>',
+            '<textarea style="height:100%; width:100%" readonly>',
             ...this.generateUgoiraScript(this.ugoiraFrames),
-            '</pre>',
+            '</textarea>',
         ];
         win.document.write(str.join('\n'));
     };
@@ -137,13 +137,13 @@ PxerPrinter.prototype['print'] =function(){
             return;
         };
         let str = [
-            '<pre>' ,
-            '/** 这个页面是抓取到的下载地址，你可以将它们复制到第三方下载工具如QQ旋风中下载 */' ,
-            '/**' ,
-            this.taskInfo.replace(/\<br \/\>/g,'') ,
-            '*/' ,
+            '<p>' ,
+            '/** 这个页面是抓取到的下载地址，你可以将它们复制到第三方下载工具如QQ旋风中下载 */<br />' ,
+            this.taskInfo,
+            '</p>',
+            '<textarea style="height:100%; width:100%" readonly>' ,
             this.address.join('\n') ,
-            '</pre>' ,
+            '</textarea>' ,
         ];
         win.document.write(str.join('\n'));
     }
