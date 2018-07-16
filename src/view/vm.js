@@ -11,10 +11,10 @@ afterLoad(async function(){
     // 国际化，加载默认语言
     Vue.use(VueI18n);
     var messages = {};
-    var fallbackLocale = 'zh-CN';
+    var fallbackLocale = 'en-US';
     var locale = fallbackLocale;
-    var defaultRegions = await window.loadLanguage('region');
-    messages[fallbackLocale] = await window.loadLanguage(fallbackLocale);
+    var defaultRegions = await window.loadI18nResource('region');
+    messages[fallbackLocale] = await window.loadI18nResource(fallbackLocale);
     var i18n = new VueI18n({locale, fallbackLocale, messages});
 
     // 运行Vue实例
@@ -143,7 +143,7 @@ afterLoad(async function(){
                     if (value in this.$i18n.messages) {
                         this.$i18n.locale = value;
                     } else {
-                        window.loadLanguage(value).then((data) => {
+                        window.loadI18nResource(value).then((data) => {
                             this.$i18n.setLocaleMessage(value, data);
                             this.$i18n.locale = value;
                         }, (error) => {console.error(error)});

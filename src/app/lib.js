@@ -48,7 +48,7 @@ window.parseURL =function(url=document.URL){
     }
     return data;
 };
-window.loadLanguage = async function(lang) {
+window.loadI18nResource = async function(lang) {
     var request = await fetch(`${window['PXER_URL']}src/i18n/${lang}.json`);
     return JSON.parse(await request.text());
 };
