@@ -14,8 +14,9 @@ afterLoad(function(){
         data(){return {
             pxer:new PxerApp(),
             showAll:false,
-            state:'loaded',//[loaded|ready|page|works|finish|re-ready|stop|error]
+            state:'init',//[init|loaded|ready|page|works|finish|re-ready|stop|error]
             stateMap:{
+                init  :'初始化',
                 loaded:'初始完毕',
                 ready :'就绪',
                 page  :'抓取页码中',
@@ -42,6 +43,9 @@ afterLoad(function(){
         }},
         created(){
             window['PXER_VM'] =this;
+            this.pxer.init().then(()=>{
+                this.state='loaded';
+            });
             this.pxer.on('error',(err)=>{
                 this.errmsg =err;
             });
