@@ -318,7 +318,7 @@ PxerApp.getWorksNum =function(dom=document){
             this.getFollowingBookmarkWorksNum(currpage, 100, 100).then((res) => resolve(res));
         } else {
             var elt = dom.querySelector(".count-badge");
-            if (!elt) return null;
+            if (!elt) reject("No Count Badge");
             resolve(parseInt(elt.innerHTML));
         }
     })
