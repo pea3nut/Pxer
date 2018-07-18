@@ -13,7 +13,7 @@ afterLoad(async function(){
     var messages = {};
     var fallbackLocale = 'en-US';
     var locale = fallbackLocale;
-    var defaultRegions = await window.loadI18nResource('region');
+    var languageMap = await window.loadI18nResource('map');
     messages[fallbackLocale] = await window.loadI18nResource(fallbackLocale);
     var i18n = new VueI18n({locale, fallbackLocale, messages});
 
@@ -139,14 +139,14 @@ afterLoad(async function(){
                     return this.$i18n.locale;
                 },
                 set(value) {
-                    if (value in defaultRegions) value = defaultRegions[value];
-                    if (value in this.$i18n.messages) {
-                        this.$i18n.locale = value;
+                    var locale = languageMap[value];
+                    if (locale in this.$i18n.messages) {
+                        this.$i18n.locale = locale;
                     } else {
-                        window.loadI18nResource(value).then((data) => {
-                            this.$i18n.setLocaleMessage(value, data);
-                            this.$i18n.locale = value;
-                        }, (error) => {console.error(error)});
+                        window.loadI18nResource(locale).then((data) => {
+                            this.$i18n.setLocaleMessage(locale, data);
+                            this.$i18n.locale = locale;
+                        }, (error) => console.error(error));
                     }
                 }
             }
