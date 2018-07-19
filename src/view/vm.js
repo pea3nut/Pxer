@@ -41,7 +41,7 @@ afterLoad(async function(){
             errmsg:'',
         }},
         created(){
-            this.locale = navigator.language;
+            this.locale = document.querySelector('html').lang;
             window['PXER_VM'] =this;
             this.pxer.on('error',(err)=>{
                 this.errmsg =err;

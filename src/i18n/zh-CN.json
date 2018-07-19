@@ -7,6 +7,8 @@
     "thread_count": "线程数",
     "waiting_time": "等待时间",
     "trial_count": "尝试次数",
+    "first_x_images": "仅抓取前 x 幅：",
+    "id_before_x": "仅抓取 id 为 x 之前的：",
     "states": {
         "loaded": "初始完毕",
         "ready": "就绪",
@@ -28,5 +30,13 @@
         "search": "检索页面",
         "index": "首页",
         "unknown": "未知页面"
+    },
+    "buttons": {
+        "load": "加载",
+        "run": "开始",
+        "stop": "停止",
+        "warn": "警告",
+        "apply": "应用",
+        "option": "选项"
     }
 }

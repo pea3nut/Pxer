@@ -7,6 +7,8 @@
     "thread_count": "Thread count",
     "waiting_time": "Waiting time",
     "trial_count": "Trial count",
+    "first_x_images": "Only first x images: ",
+    "id_before_x": "Images with id before x: ",
     "states": {
         "loaded": "Loaded",
         "ready": "Ready",
@@ -28,5 +30,13 @@
         "search": "Search",
         "index": "Index",
         "unknown": "Unknown"
+    },
+    "buttons": {
+        "load": "Load",
+        "run": "Run",
+        "stop": "Stop",
+        "warn": "Warn",
+        "apply": "Apply",
+        "option": "Option"
     }
 }
