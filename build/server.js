@@ -9,7 +9,7 @@ const program = require('commander');
 const PROJECT_PATH = path.resolve(__dirname, "../");
 
 program
-    .option('-c, --cache <yes/no/time>', "cache max age (example: --cache 10m)", /(no|yes|\d+(m|s|h|d)?)/, "no")
+    .option('-c, --cache <yes|no|duration>', "cache max age (example: --cache 10m)", /(no|yes|\d+(m|s|h|d)?)/, "no")
     .option('-a, --addr <addr>', "bind address", "127.0.0.1")
     .option('-p, --port <port>', "bind port", /\d+/, 8125)
     .option('--cert <cert>', "certificate file (omit for http)")
