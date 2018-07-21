@@ -212,7 +212,12 @@ PxerPrinter.prototype['generateUgoiraScript'] =function(frames) {
             lines.push("echo duration " + frame['delay']/1000 + " >> "+ confpath);
         }
         lines.push("echo file "+ slashstr + "'" +frames[key].framedef[frames[key].framedef.length-1]['file'] + slashstr + "' >> "+confpath);
+        lines.push(isWindows? "if %ext%==gif (":"if [ $ext == \"gif\"]; then");
+        lines.push("ffmpeg -f concat -i "+confpath+" -vf palettegen "+foldername+"/palette.png");
+        lines.push("ffmpeg -f concat -i "+confpath+" -i "+foldername+"/palette.png -lavfi paletteuse -framerate 30 -vsync -1 -s "+width+"x"+height+" "+foldername+"/remux." + (isWindows? "%ext%":"$ext"));
+        lines.push(isWindows? ") else (":"else");
         lines.push("ffmpeg -f concat -i "+confpath+" -framerate 30 -vsync -1 -s "+width+"x"+height+" "+foldername+"/remux." + (isWindows? "%ext%":"$ext"));
+        lines.push(isWindows? ")":"fi");
     }
     if (isWindows) {
         lines.push("echo 完成 & pause");
