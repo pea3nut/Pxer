@@ -180,23 +180,21 @@ PxerPrinter.getWorksKey =function(works){
 PxerPrinter.prototype['generateUgoiraScript'] =function(frames) {
     var lines=[];
     var resstring;
+    var isWindows = ['Win32', 'Win64', 'Windows', 'WinCE'].indexOf(navigator.platform)!==-1;
     switch (this.config.ugoira_zip) {
         case "max": resstring = "1920x1080"; break;
         case "600p": resstring = "600x338"; break;
     }
     var slashstr = "";
-    switch (navigator.platform) {
-        case "Win32":
-            slashstr="^";
-            lines.push("@echo off");
-            lines.push("set /p ext=请输入输出文件扩展名(mp4/gif/...):");
-            break;
-        default:
-            slashstr="\\";
-            lines.push("#!/bin/bash");
-            lines.push("");
-            lines.push("read -p '请输入输出文件扩展名(mp4/gif/...):' ext");
-            break;
+    if (isWindows) {
+        slashstr="^";
+        lines.push("@echo off");
+        lines.push("set /p ext=请输入输出文件扩展名(mp4/gif/...):");
+    } else {
+        slashstr="\\";
+        lines.push("#!/bin/bash");
+        lines.push("");
+        lines.push("read -p '请输入输出文件扩展名(mp4/gif/...):' ext");
     }
     for (key in frames) {
         var foldername = key + "_ugoira" + resstring;
@@ -208,17 +206,18 @@ PxerPrinter.prototype['generateUgoiraScript'] =function(frames) {
             height = parseInt(height/scale);
             width = parseInt(width/scale);
         }
-        lines.push(navigator.platform==="Win32"?("del "+ foldername + "\\config.txt"):("rm "+ foldername + "/config.txt"));
+        lines.push(isWindows?("del "+ foldername + "\\config.txt"):("rm "+ foldername + "/config.txt"));
         for (frame of frames[key].framedef) {
             lines.push("echo file "+slashstr+"'" + frame['file']+ slashstr +"' >> "+confpath);
             lines.push("echo duration " + frame['delay']/1000 + " >> "+ confpath);
         }
         lines.push("echo file "+ slashstr + "'" +frames[key].framedef[frames[key].framedef.length-1]['file'] + slashstr + "' >> "+confpath);
-        lines.push("ffmpeg -f concat -i "+confpath+" -framerate 30 -vsync -1 -s "+width+"x"+height+" "+foldername+"/remux." + (navigator.platform==="Win32"? "%ext%":"$ext"));
+        lines.push("ffmpeg -f concat -i "+confpath+" -framerate 30 -vsync -1 -s "+width+"x"+height+" "+foldername+"/remux." + (isWindows? "%ext%":"$ext"));
     }
-    switch (navigator.platform) {
-        case "Win32":   lines.push("echo 完成 & pause"); break;
-        default: lines.push("read  -n 1 -p \"完成，按任意键退出\" m && echo"); break;
+    if (isWindows) {
+        lines.push("echo 完成 & pause");
+    } else {
+        lines.push("read  -n 1 -p \"完成，按任意键退出\" m && echo");
     }
     return lines;
 }
