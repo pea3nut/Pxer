@@ -5,6 +5,7 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const program = require('commander');
+const PxerUtility =require('./pxer-utility.js');
 
 const PROJECT_PATH = path.resolve(__dirname, "../");
 
@@ -37,6 +38,7 @@ const credentials = {
 	ca: program.ca? fs.readFileSync(program.ca, 'utf-8') :undefined,
 };
 
+var serveHttps = credentials.key && credentials.cert;
 var app = express();
 
 app.get('/', (req, res) => res.status(303).send("http://pxer.pea3nut.org/"));
@@ -81,11 +83,23 @@ addFile(path.resolve(PROJECT_PATH, "jsonp.js"), "/jsonp.js");
 addFile(path.resolve(PROJECT_PATH, "pxer-dev.user.js"), "/pxer-dev.user.js");
 addFile(path.resolve(PROJECT_PATH, "pxer-master.user.js"), "/pxer-master.user.js");
 
+app.get('/pxer-dev-local.user.js', (req, res) => {
+    res.setHeader("Content-Type", "application/javascript");
+    res.send(
+        PxerUtility.reader(
+            fs.readFileSync(path.resolve(PROJECT_PATH, 'build/user.jstpl.ejs')).toString(),
+            {
+                isLocal: true,
+                isDev: true,
+                pxerURL: (serveHttps ? "https://" : "http://") + ADDR + ":" + PORT + "/"
+            }));
+});
+
 var server = null;
 
 console.log("Cache max age: "+CACHE_TIME+" sec.");
 
-if (credentials.key && credentials.cert) {
+if (serveHttps) {
     console.log("Serving HTTPS");
     server = https.createServer(credentials, app);
 } else {
@@ -95,4 +109,5 @@ if (credentials.key && credentials.cert) {
 
 server.listen(PORT, ADDR, function () {
     console.log('Server running at ' + ADDR + ":" + PORT);
+    console.log('Please install local Pxer script from ' + (serveHttps? "https://" : "http://") + ADDR + ":" + PORT + "/pxer-dev-local.user.js");
 });

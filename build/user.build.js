@@ -5,10 +5,12 @@ const PxerUtility =require('./pxer-utility.js');
 const readerTpl =Fs.readFileSync('./user.jstpl.ejs').toString();
 const renderData ={
     master:{
+        isLocal :false,
         isDev   :false,
         pxerURL :PxerUtility.pxerURL,
     },
     dev   :{
+        isLocal :false,
         isDev   :true,
         pxerURL :PxerUtility.pxerURL,
     },
