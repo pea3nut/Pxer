@@ -20,10 +20,6 @@
                     @click="stop"
                     v-show="isRunning"
             >Stop</button>
-            <button class="btn btn-outline-secondary"
-                    v-show="state==='init'"
-                    disabled="disabled"
-            >Init...</button>
             <template v-if="showFailTaskList.length">
                 <button class="btn btn-outline-warning"
                         @click="showPxerFailWindow=!showPxerFailWindow"
