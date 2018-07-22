@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node ./build/watcher.js",
-    "build": "node ./build/build-dist.js"
+    "build": "node ./build/build-dist.js",
+    "server": "node ./build/server.js",
+    "prod": "pm2 start ./prod-server.yml"
   },
   "repository": {
     "type": "git",
@@ -32,5 +34,9 @@
     "node-sass": "^4.5.0",
     "typescript": "^2.7.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "commander": "^2.16.0",
+    "express": "^4.16.3",
+    "pm2": "^3.0.0"
+  }
 }
