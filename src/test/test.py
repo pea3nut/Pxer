@@ -125,7 +125,7 @@ def test(browser="chrome", sessid=None):
 
 if __name__ == "__main__":
     print("TRAVIS_PULL_REQUEST:", os.getenv("TRAVIS_PULL_REQUEST",""))
-    if os.getenv("TRAVIS_PULL_REQUEST","")=="true":
+    if os.getenv("TRAVIS_PULL_REQUEST","false")!="false":
         sessid = ""
     else:
         if sys.platform=="win32":
