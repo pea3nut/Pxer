@@ -103,8 +103,8 @@ npm run server
 ```
 
 3. 修改入口文件
-- 方法一：在Tampermonkey中修改入口文件的PXER_URL为本地服务器地址（默认为http://127.0.0.1:8125/）
-- 方法二(推荐)：访问http://127.0.0.1:8125/pxer-dev-local.user.js安装自动生成的本地开发入口文件
+- 方法一：在Tampermonkey中修改入口文件的PXER_URL为本地服务器地址（默认为http://127.0.0.1:8125/ ）
+- 方法二(推荐)：访问http://127.0.0.1:8125/pxer-dev-local.user.js 安装自动生成的本地开发入口文件
 
 4. 监视Sass改动并自动编译css(如果不修改Sass和css可以跳过)
 ```bash
