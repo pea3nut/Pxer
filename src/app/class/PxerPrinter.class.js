@@ -206,7 +206,7 @@ PxerPrinter.prototype['generateUgoiraScript'] =function(frames) {
             height = parseInt(height/scale);
             width = parseInt(width/scale);
         }
-        lines.push(isWindows?("del "+ foldername + "\\config.txt"):("rm "+ foldername + "/config.txt"));
+        lines.push(isWindows?("del "+ foldername + "\\config.txt >nul 2>nul"):("rm "+ foldername + "/config.txt &> /dev/null"));
         for (frame of frames[key].framedef) {
             lines.push("echo file "+slashstr+"'" + frame['file']+ slashstr +"' >> "+confpath);
             lines.push("echo duration " + frame['delay']/1000 + " >> "+ confpath);
