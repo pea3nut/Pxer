@@ -20,10 +20,13 @@
                     @click="stop"
                     v-show="isRunning"
             >Stop</button>
-            <button class="btn btn-outline-secondary"	
-                    v-show="state==='init'"	
-                    disabled="disabled"	
-            >Init...</button>
+            <div id="wave"	
+                 v-show="state==='init'"	
+            >
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            </div>
             <template v-if="showFailTaskList.length">
                 <button class="btn btn-outline-warning"
                         @click="showPxerFailWindow=!showPxerFailWindow"
