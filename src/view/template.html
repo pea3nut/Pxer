@@ -10,13 +10,18 @@
         <div class="pn-buttons">
             <button class="btn btn-outline-success"
                     v-t="'buttons.load'" @click="load"
-                    v-show="state==='loaded'&&showLoadBtn"/>
+                    v-show="state==='standby'&&showLoadBtn"/>
             <button class="btn btn-outline-primary"
                     v-t="'buttons.run'" @click="run"
                     v-show="state==='ready' || (state==='re-ready'&&pxer.taskList.length)"/>
             <button class="btn btn-outline-danger"
                     v-t="'buttons.stop'" @click="stop"
                     v-show="isRunning"/>
+            <div id="wave" v-show="state==='init'">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
             <template v-if="showFailTaskList.length">
                 <button class="btn btn-outline-warning" v-t="'buttons.warn'"
                         @click="showPxerFailWindow=!showPxerFailWindow"/>

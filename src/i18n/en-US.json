@@ -10,7 +10,8 @@
     "first_x_images": "Only first x images: ",
     "id_before_x": "Images with id before x: ",
     "states": {
-        "loaded": "Loaded",
+        "standby": "Standby",
+        "init": "Init",
         "ready": "Ready",
         "page": "Grabbing pages",
         "works": "Grabbing works",

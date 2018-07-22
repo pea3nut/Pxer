@@ -10,6 +10,8 @@
     "first_x_images": "仅抓取前 x 幅：",
     "id_before_x": "仅抓取 id 为 x 之前的：",
     "states": {
+        "standby": "待命",
+        "init": "初始化",
         "loaded": "初始完毕",
         "ready": "就绪",
         "page": "抓取页码中",

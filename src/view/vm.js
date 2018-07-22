@@ -24,7 +24,7 @@ afterLoad(async function(){
         data(){return {
             pxer:new PxerApp(),
             showAll:false,
-            state:'loaded',//[loaded|ready|page|works|finish|re-ready|stop|error]
+            state:'standby',
             pxerVersion:window['PXER_VERSION'],
             showPxerFailWindow:false,
             runTimeTimestamp:0,
@@ -172,7 +172,8 @@ afterLoad(async function(){
                     this.showLoadBtn=false;
                     this.pxer.one('finishWorksTask',()=>this.showLoadBtn=true);
                 }else{
-                    this.state='ready'
+                    this.state='init';
+                    this.pxer.init().then(()=>this.state='ready');
                 }
             },
             run(){
