@@ -124,10 +124,14 @@ def test(browser="chrome", sessid=None):
 
 
 if __name__ == "__main__":
-    if sys.platform=="win32":
-        sessid = login(sys.argv[1], sys.argv[2])
+    print("TRAVIS_PULL_REQUEST:", os.getenv("TRAVIS_PULL_REQUEST",""))
+    if os.getenv("TRAVIS_PULL_REQUEST","")=="true":
+        sessid = ""
     else:
-        sessid = login(os.getenv("PX_USER"), os.getenv("PX_PASS"))
+        if sys.platform=="win32":
+            sessid = login(sys.argv[1], sys.argv[2])
+        else:
+            sessid = login(os.getenv("PX_USER"), os.getenv("PX_PASS"))
     print("==========================Chrome==========================")
     test(browser="chrome", sessid=sessid)
     print("==========================Firefox==========================")
