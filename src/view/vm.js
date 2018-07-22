@@ -14,9 +14,10 @@ afterLoad(function(){
         data(){return {
             pxer:new PxerApp(),
             showAll:false,
-            state:'loaded',//[loaded|ready|page|works|finish|re-ready|stop|error]
+            state:'standby',//[standby|init|ready|page|works|finish|re-ready|stop|error]
             stateMap:{
-                loaded:'初始完毕',
+                standby:'待命',
+                init  :'初始化',
                 ready :'就绪',
                 page  :'抓取页码中',
                 works :'抓取作品中',
@@ -164,7 +165,8 @@ afterLoad(function(){
                     this.showLoadBtn=false;
                     this.pxer.one('finishWorksTask',()=>this.showLoadBtn=true);
                 }else{
-                    this.state='ready'
+                    this.state='init';
+                    this.pxer.init().then(()=>this.state='ready');
                 }
             },
             run(){

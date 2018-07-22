@@ -10,7 +10,7 @@
         <div class="pn-buttons">
             <button class="btn btn-outline-success"
                     @click="load"
-                    v-show="state==='loaded'&&showLoadBtn"
+                    v-show="state==='standby'&&showLoadBtn"
             >Load</button>
             <button class="btn btn-outline-primary"
                     @click="run"
@@ -20,6 +20,13 @@
                     @click="stop"
                     v-show="isRunning"
             >Stop</button>
+            <div id="wave"	
+                 v-show="state==='init'"	
+            >
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
             <template v-if="showFailTaskList.length">
                 <button class="btn btn-outline-warning"
                         @click="showPxerFailWindow=!showPxerFailWindow"
