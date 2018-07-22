@@ -45,11 +45,6 @@ afterLoad(function(){
             this.pxer.on('error',(err)=>{
                 this.errmsg =err;
             });
-            this.pxer.on('finishWorksTask',()=>{
-                if (!this.pxer.pageType.startsWith("works_")) {
-                    window.blinkTitle();
-                }
-            });
         },
         computed:{
             pageType(){
@@ -163,7 +158,10 @@ afterLoad(function(){
                     this.showLoadBtn=false;
                     this.pxer.one('finishWorksTask',()=>this.showLoadBtn=true);
                 }else{
-                    this.state='ready'
+                    this.state='ready';
+                    this.pxer.on('finishWorksTask',()=>{
+                        window.blinkTitle();
+                    });
                 }
             },
             run(){
