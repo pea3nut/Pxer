@@ -71,7 +71,11 @@ describe('PxerHtmlParser 解析类' ,function(){
         Expect(pw.fileFormat).to.be.equal('zip');
         Expect(pw.date).to.be.equal('2016/06/22/15/00/43');
         Expect(pw.tagList).to.be.deep.equal(['test']);
-        Expect(pw.frames).to.be.deep.equal([{"file":"000000.jpg","delay":200},{"file":"000001.jpg","delay":200}]);
+        Expect(pw.frames).to.be.deep.equal({
+            framedef:[{"file":"000000.jpg","delay":200},{"file":"000001.jpg","delay":200}],
+            height:1080,
+            width:1920,
+        });
         Expect(pw.viewCount>130).to.be.ok;
         Expect(pw.ratedCount).to.be.a('number');
 
