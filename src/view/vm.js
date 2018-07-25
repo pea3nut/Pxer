@@ -78,8 +78,8 @@ afterLoad(function(){
                     return this.pxer.taskList.filter(pr=>pr.completed).length;
                 }else if(this.state==='works'){
                     return (
-                        this.pxer.taskList.filter(pr=>pr.completed).length
-                        +~~(this.worksNum/20)
+                        this.pxer.taskList.filter(pr=>pr.completed).map(pr=>pr.id instanceof Array? pr.id.length:1).reduce((total, curr)=>total+curr, 0)
+                        +~~(this.worksNum/getOnePageWorkCount(this.pxer.pageType))
                         +this.pxer.failList.length
                     );
                 }else{

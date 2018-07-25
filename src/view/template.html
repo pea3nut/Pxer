@@ -102,6 +102,9 @@
                 </tr><tr>
                     <td>重试次数：</td>
                     <td><input v-model="pxer.ptmConfig.retry" class="form-control" type="text" /></td>
+                </tr><tr v-show="['search'].indexOf(pxer.pageType)!==-1">
+                    <td>批量模式：</td>
+                    <td><input v-model="pxer.batchMode" class="form-control" type="checkbox" /></td>
             </tr></table>
         </div>
         <div class="pi-item">
@@ -152,16 +155,16 @@
             <div class="ppf-title pcf-title">过滤选项</div>
             <div class="ppf-form">
                 <div class="form-group">
-                    <label>点赞数 ≥</label>
-                    <input type="number" class="form-control" v-model.number="pxer.pfConfig.rated" />
+                    <label>点赞数 ≥(批量模式下不可用)</label>
+                    <input type="number" class="form-control" v-model.number="pxer.pfConfig.rated" v-bind:disabled="pxer.batchMode"/>
                 </div>
                 <div class="form-group">
-                    <label>浏览数 ≥</label>
-                    <input type="number" class="form-control" v-model.number="pxer.pfConfig.view" />
+                    <label>浏览数 ≥(批量模式下不可用)</label>
+                    <input type="number" class="form-control" v-model.number="pxer.pfConfig.view" v-bind:disabled="pxer.batchMode"/>
                 </div>
                 <div class="form-group">
-                    <label>点赞率 ≥</label>
-                    <input type="number" class="form-control" v-model.number="pxer.pfConfig.rated_pro" placeholder="若输入，则必须为一个小于1的数字" />
+                    <label>点赞率 ≥(批量模式下不可用)</label>
+                    <input type="number" class="form-control" v-model.number="pxer.pfConfig.rated_pro" placeholder="若输入，则必须为一个小于1的数字" v-bind:disabled="pxer.batchMode"/>
                 </div>
                 <div class="form-group">
                     <label>作品中<strong>不能</strong>含有以下<strong>任意一个</strong>标签</label>

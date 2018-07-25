@@ -75,9 +75,9 @@ PxerThread.prototype['init'] =function(task){
     }
 
     //判断行为，读取要请求的URL
-    if(this.task instanceof PxerWorksRequest){
+    if(this.task.url instanceof Array){
         this.runtime.urlList =this.task.url.slice();
-    }else if(this.task instanceof PxerPageRequest){
+    }else if(typeof this.task.url === "string"){
         this.runtime.urlList =[this.task.url];
     }else{
         this.dispatch('error' ,`PxerThread#${this.id}.init: unknown task`);
@@ -93,24 +93,7 @@ PxerThread.prototype['init'] =function(task){
 PxerThread.prototype['sendRequest'] =function(url){
     this.state ='running';
     this.xhr.open('GET' ,url ,true);
-    // 单副漫画请求需要更改Referer头信息
-    if(
-        this.task instanceof PxerWorksRequest
-        && this.task.type ==='manga'
-        && this.task.isMultiple===false
-        && /mode=big/.test(url)
-    ){
-        var referer =this.task.url.find(item=>item.indexOf('mode=medium')!==-1);
-        var origin  =document.URL;
-        if(!referer){
-            this.dispatch('error','PxerThread.sendRequest: cannot find referer');
-        };
-        history.replaceState({} ,null ,referer);
-        this.xhr.send();
-        history.replaceState({} ,null ,origin);
-    }else{
-        this.xhr.send();
-    };
+    this.xhr.send();
 };
 /**运行线程*/
 PxerThread.prototype['run'] =function _self(){

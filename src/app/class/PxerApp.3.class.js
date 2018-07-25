@@ -79,6 +79,8 @@ class PxerApp extends PxerEvent{
 
         // 使用的PxerThreadManager实例
         this.ptm =null;
+        // 批量模式
+        this.batchMode =false;
 
         if(window['PXER_MODE']==='dev') window['PXER_APP']=this;
 
@@ -145,7 +147,7 @@ class PxerApp extends PxerEvent{
         ptm.on('load',()=>{
             var parseResult =[];
             for(let result of this.taskList){
-                result =PxerHtmlParser.parsePage(result);
+                result =PxerHtmlParser.parsePage(result, this.batchMode);
                 if(!result){
                     this.dispatch('error',window['PXER_ERROR']);
                     continue;
@@ -171,7 +173,7 @@ class PxerApp extends PxerEvent{
             this.dispatch('error','PxerApp.executeWroksTask: taskList is empty');
             return false;
         };
-        if(! tasks.every(request=>request instanceof PxerWorksRequest)){
+        if(! tasks.every(request=>(request instanceof PxerWorksRequest || request instanceof PxerBatchWorksRequest))){
             this.dispatch('error' ,'PxerApp.executeWroksTask: taskList is illegal');
             return false;
         };
@@ -207,19 +209,31 @@ class PxerApp extends PxerEvent{
             );
             for(let pwr of tl){
                 if(!pwr.completed)continue;//跳过未完成的任务
-                let pw =PxerHtmlParser.parseWorks(pwr);
-                if(!pw){
-                    pwr.completed=false;
-                    ptm.dispatch('fail',new PxerFailInfo({
-                        type :'parse',
-                        task :pwr,
-                        url  :pwr.url[0],
-                    }));
-                    this.dispatch('error',window['PXER_ERROR']);
-                    continue;
-                }
-                this.resultSet.push(pw);
+                switch (true) {
+                    case (pwr instanceof PxerWorksRequest): var pw =[PxerHtmlParser.parseWorks(pwr)]; break;
+                    case (pwr instanceof PxerBatchWorksRequest): var pw =PxerHtmlParser.parseBatchWorks(pwr); break;
+                    default: throw new Error("PxerApp.executeWroksTask: Unknown pwr type");
+                };
+                for (let work of pw) {
+                    if(!work){
+                        pwr.completed=false;
+                        ptm.dispatch('fail',new PxerFailInfo({
+                            type :'parse',
+                            task :pwr,
+                            url  :pwr.url[0],
+                        }));
+                        this.dispatch('error',window['PXER_ERROR']);
+                        continue;
+                    }
+                    this.resultSet.push(work);
+                };
             }
+            this.resultSet =this.resultSet.slice(
+                0,
+                this.taskOption.limit
+                ? this.taskOption.limit
+                :undefined
+            );
             this.dispatch('finishWorksTask' ,this.resultSet);
         });
         ptm.on('fail' ,pfi=>{

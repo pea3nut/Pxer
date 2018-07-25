@@ -10,9 +10,10 @@ class PxerHtmlParser{
 /**
  * 解析页码任务对象
  * @param {PxerPageRequest} task - 抓取后的页码任务对象
+ * @param {boolean} batchMode - 是否允许批量请求
  * @return {PxerWorksRequest[]|false} - 解析得到的作品任务对象
  * */
-PxerHtmlParser.parsePage = function (task) {
+PxerHtmlParser.parsePage = function (task, batchMode=false) {
     if (!(task instanceof PxerPageRequest)) {
         window['PXER_ERROR'] = 'PxerHtmlParser.parsePage: task is not PxerPageRequest';
         return false;
@@ -48,20 +49,31 @@ PxerHtmlParser.parsePage = function (task) {
         var elts = null;
         if (searchResult) {
             var searchData = JSON.parse(searchResult.getAttribute('data-items'));
-            for (var searchItem of searchData) {
-                var task = new PxerWorksRequest({
-                    html      : {},
-                    type      : searchItem.illustType == 2 ? 'ugoira'
-                              : searchItem.illustType == 1 ? 'manga'
-                              : 'illust'
-                              ,
-                    isMultiple: searchItem.pageCount > 1,
-                    id        : searchItem.illustId
+            if (batchMode) {
+                var batchtask = new PxerBatchWorksRequest({
+                    id: [],
+                    html: {},
                 });
-                task.url = PxerHtmlParser.getUrlList(task);
-
-                taskList.push(task);
-            };
+                for (var searchItem of searchData) {
+                    batchtask.id.push(searchItem.illustId);
+                };
+                batchtask.url = this.getUrlList(batchtask);
+                taskList.push(batchtask);
+            } else {
+                for (var searchItem of searchData) {
+                    var task = new PxerWorksRequest({
+                        html      : {},
+                        type      : searchItem.illustType == 2 ? 'ugoira'
+                                  : searchItem.illustType == 1 ? 'manga'
+                                  : 'illust'
+                                  ,
+                        isMultiple: searchItem.pageCount > 1,
+                        id        : searchItem.illustId
+                    });
+                    task.url = PxerHtmlParser.getUrlList(task);
+                    taskList.push(task);
+                };
+            }
         } else {
             elts = dom.body.querySelectorAll('a.work._work');
 
@@ -143,6 +155,48 @@ PxerHtmlParser.parseWorks =function(task){
 
 };
 
+/**
+ * 解析批量作品任务对象
+ * @param {PxerBatchWorksRequest} task - 抓取后的批量页码任务对象
+ * @return {PxerWorks} - 解析得到的作品任务对象
+ * */
+PxerHtmlParser.parseBatchWorks =function(task) {
+    let resultList =[];
+    var res =JSON.parse(task.html);
+    for (let workdata of res) {
+        var pw;
+        switch (true) {
+            case (workdata["illust_type"]==="2"): pw = new PxerUgoiraWorks(); break;
+            case (workdata["illust_page_count"]>"1"): pw = new PxerMultipleWorks(); break;
+            default: pw = new PxerWorks(); break;
+        }
+        switch (workdata["illust_type"]) {
+            case "0": pw.type = "illust"; break;
+            case "1": pw.type = "manga"; break;
+            case "2": pw.type = "ugoira"; break;
+        }
+        pw.id = workdata["illust_id"];
+        pw.tagList = workdata["tags"];
+        pw.viewCount = 1;
+        pw.ratedCount = 0;
+        if (pw instanceof PxerMultipleWorks) pw.multiple = parseInt(workdata["illust_page_count"]);
+        
+        switch (pw.type) {
+            case "ugoira":this.setUgoiraMeta(pw, {width:workdata["illust_width"], height:workdata["illust_height"]}); break;
+            default:
+                let src = workdata['url'];
+                let URLObj = parseURL(src);
+                
+                pw.domain = URLObj.domain;
+                pw.date = src.match(PxerHtmlParser.REGEXP['getDate'])[1];
+                pw.fileFormat =src.match(/\.(jpg|gif|png)$/)[1];  
+                break; 
+        }
+        resultList.push(pw);
+    }
+    return resultList;
+}
+
 
 
 /**
@@ -150,10 +204,12 @@ PxerHtmlParser.parseWorks =function(task){
  * @return {Array}
  * */
 PxerHtmlParser.getUrlList =function(task){
-
-        return ["https://www.pixiv.net/member_illust.php?mode=medium&illust_id="+task.id];
-
-    };
+    switch (true) {
+        case (task instanceof PxerWorksRequest):return ["https://www.pixiv.net/member_illust.php?mode=medium&illust_id="+task.id];
+        case (task instanceof PxerBatchWorksRequest):return [`https://www.pixiv.net/rpc/illust_list.php?illust_ids=${task.id.join("%2C")}&page=discover&exclude_muted_illusts=1`];
+        default:throw new Error("PxerHtmlParser.GetUrlList: Unknown task type");
+    }
+};
 
 PxerHtmlParser.parseMangaHtml =function({task,dom,url,pw}){
     pw.multiple =+(
@@ -179,20 +235,7 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
     
     
     if (pw.type ==="ugoira"){
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "https://www.pixiv.net/ajax/illust/"+ task.id + "/ugoira_meta", false);
-            xhr.send();
-            var meta = JSON.parse(xhr.responseText);
-            let src = meta['body']['originalSrc'];
-            let URLObj = parseURL(src);
-
-            pw.domain = URLObj.domain;
-            pw.date   =src.match(PxerHtmlParser.REGEXP['getDate'])[1];
-            pw.frames ={
-                framedef:meta['body']['frames'],
-                height:illustData.height,
-                width:illustData.width,
-            };
+            this.setUgoiraMeta(pw, illustData);
     } else {
             let src = illustData.urls.original;
             let URLObj = parseURL(src);
@@ -203,7 +246,22 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
     };
 
 };
+PxerHtmlParser.setUgoiraMeta =function(pw, illustData) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "https://www.pixiv.net/ajax/illust/"+ pw.id + "/ugoira_meta", false);
+    xhr.send();
+    var meta = JSON.parse(xhr.responseText);
+    let src = meta['body']['originalSrc'];
+    let URLObj = parseURL(src);
 
+    pw.domain = URLObj.domain;
+    pw.date   =src.match(PxerHtmlParser.REGEXP['getDate'])[1];
+    pw.frames ={
+        framedef:meta['body']['frames'],
+        height:illustData.height,
+        width:illustData.width,
+    };
+}
 
 PxerHtmlParser.REGEXP ={
     'getDate':/img\/((?:\d+\/){5}\d+)/,

@@ -37,6 +37,18 @@ class PxerWorksRequest extends PxerRequest{
         return denyNewAttr(this);
     }
 }
+/**
+ * 批量作品任务对象
+ * @constructor
+ * @extends {PxerRequest}
+ */
+class PxerBatchWorksRequest extends PxerRequest{
+    constructor({id=[], html={}, url=[]}={}) {
+        super({url, html});
+        this.id =id;
+        return denyNewAttr(this);
+    }
+}
 
 
 /**
