@@ -42,7 +42,10 @@ afterLoad(async function(){
         }},
         created(){
             this.$nextTick(() => {
-                this.locale = document.querySelector('html').lang;
+                this.setLocale(
+                    document.documentElement.lang,
+                    window.navigator.language,
+                )
             });
             window['PXER_VM'] =this;
             this.pxer.on('error',(err)=>{
@@ -136,22 +139,6 @@ afterLoad(async function(){
                     })
                 ;
             },
-            locale: {
-                get() {
-                    return this.$i18n.locale;
-                },
-                set(value) {
-                    var locale = languageMap[value];
-                    if (locale in this.$i18n.messages) {
-                        this.$i18n.locale = locale;
-                    } else {
-                        window.loadI18nResource(locale).then((data) => {
-                            this.$i18n.setLocaleMessage(locale, data);
-                            this.$i18n.locale = locale;
-                        }, (error) => console.error(error));
-                    }
-                }
-            }
         },
         watch:{
             state(newValue,oldValue){
@@ -236,6 +223,22 @@ afterLoad(async function(){
             },
             formatTime(s){
                 return `${~~(s/60)}:${(s%60>=10)?s%60:'0'+s%60}`
+            },
+            setLocale(...languages) {
+                for (var language of languages) {
+                    var locale = languageMap[language];
+                    if (locale) {
+                        if (locale in this.$i18n.messages) {
+                            this.$i18n.locale = locale;
+                        } else {
+                            window.loadI18nResource(locale).then((data) => {
+                                this.$i18n.setLocaleMessage(locale, data);
+                                this.$i18n.locale = locale;
+                            }, (error) => console.error(error));
+                        }
+                        break
+                    }
+                }
             },
         },
     })}).$mount(elt);
