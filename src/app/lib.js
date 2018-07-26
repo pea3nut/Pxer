@@ -16,16 +16,20 @@ window.setDefalut =function(obj ,key ,val){
 window.blinkTitle =function(addMsg ,spaceMsg){
     var addMsg =addMsg ||'[完成] ';
     var spaceMsg =spaceMsg ||'[　　] ';
-    var originalTitle =document.title;
+    document.title = spaceMsg + document.title;
     var counter =1;
     var timer =setInterval(()=>{
-        document.title =(counter ? addMsg : spaceMsg) + originalTitle;
         counter ^=1;
-    },500);
-    window.addEventListener('mousemove' ,function(){
+        if (counter) {
+            document.title = document.title.replace(addMsg, spaceMsg);
+        } else {
+            document.title = document.title.replace(spaceMsg, addMsg);
+        };
+    }, 500);
+    window.addEventListener("mousemove", () => {
         clearInterval(timer);
-        document.title =originalTitle;
-    },{once:true});
+        document.title = document.title.replace(spaceMsg, "").replace(addMsg, "");
+    }, {once: true})
 };
 window.parseURL =function(url=document.URL){
     var arr  =url.match(/^(?:(https?)\:)?\/\/([\w\_\.]+)((?:\/[^\/?]*)*)\/?(?:\?(.+))?$/);
