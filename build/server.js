@@ -143,7 +143,7 @@ addFile(path.resolve(PROJECT_PATH, "jsonp.js"), "/jsonp.js", ANALYTICS?(req, res
 if (ANALYTICS) {
     registerClientAnalytics("pxer.app.created","info");
     registerClientAnalytics("pxer.app.load", "info", ['page_type']);
-    registerClientAnalytics("pxer.app.load", "info", ['ptm_config','task_option','vm_state']);
+    registerClientAnalytics("pxer.app.start", "info", ['ptm_config','task_option','vm_state']);
     registerClientAnalytics("pxer.app.finish", "info", ['result_count', 'ptm_config', 'task_option', 'failures']);
     registerClientAnalytics("pxer.app.halt", "info", ['task_count','finish_count']);
     registerClientAnalytics("pxer.app.print", "info", ['result_count', 'pp_config', 'pf_config', 'task_option']);
