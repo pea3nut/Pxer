@@ -40,7 +40,7 @@ afterLoad(function(){
             },
             showLoadBtn:true,
             errmsg:'',
-            analytics:window['PXER_LOAD_ANALYTICS']? new PxerAnalytics():null,
+            analytics:new PxerAnalytics(),
         }},
         created(){
             window['PXER_VM'] =this;

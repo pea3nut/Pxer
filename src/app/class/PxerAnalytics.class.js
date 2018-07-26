@@ -12,6 +12,7 @@ class PxerAnalytics{
                       +Math.random().toString(36).replace(/[^a-z]+/g, '');
             window.localStorage.setItem("PXER_UID", this.uid);
         }
+        this.enabled = window['PXER_LOAD_ANALYTICS'];
     };
     /**
      * 
@@ -19,6 +20,7 @@ class PxerAnalytics{
      * @param {Object} data - 发送的数据（uid|pxer_mode|referer自动添加）
      */
     postData(event, data){
+        if (!this.enabled) return;
         data.uid = this.uid;
         data.pxer_mode = window['PXER_MODE'];
         data.referer = document.URL;
