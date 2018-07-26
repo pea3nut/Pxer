@@ -129,11 +129,15 @@ PxerHtmlParser.parseWorks =function(task){
                     PxerHtmlParser.parseMangaHtml(data);
                     break;
                 default:
-                    return false;
-                    window['PXER_ERROR'] =`PxerHtmlParser.parsePage: count not parse task url "${url}"`;
+                    throw new Error(`PxerHtmlParser.parsePage: count not parse task url "${url}"`);
             };
         }catch(e){
             window['PXER_ERROR'] =`${task.id}:${e.message}`;
+            if(window['PXER_ANALYTICS'])window['PXER_ANALYTICS'].postData("pxer.parser.error", {
+                error_url:url,
+                error_msg:e.mesage,
+                error_stack:e.stack,
+            });
             if(window['PXER_MODE']==='dev')console.error(task ,e);
             return false;
         }

@@ -40,12 +40,34 @@ afterLoad(function(){
             },
             showLoadBtn:true,
             errmsg:'',
+            analytics:window['PXER_LOAD_ANALYTICS']? new PxerAnalytics():null,
         }},
         created(){
             window['PXER_VM'] =this;
+            window['PXER_ANALYTICS'] =this.analytics;
+            this.analytics.postData("pxer.app.created", {});
             this.pxer.on('error',(err)=>{
                 this.errmsg =err;
             });
+            this.pxer.on('finishWorksTask',(result) =>{
+                var errors = this.pxer.failList.slice();
+                if (errors.length>1) {
+                    // 大量错误只发送一个html样本
+                    // P站灰度更新时可以参考
+                    for (var i=1; i<errors.length; i++) {
+                        var err={};
+                        err = JSON.parse(JSON.stringify(errors[i]));
+                        err.task.html = "omitted";
+                        errors[i] = err;
+                    }
+                }
+                this.analytics.postData("pxer.app.finish", {
+                    result_count: result.length,
+                    ptm_config:this.pxer.ptmConfig,
+                    task_option:this.pxer.taskOption,
+                    failures:errors,
+                });
+            })
             this.pxer.on('finishWorksTask',function(){
                 window.blinkTitle();
             });
@@ -168,8 +190,16 @@ afterLoad(function(){
                     this.state='init';
                     this.pxer.init().then(()=>this.state='ready');
                 }
+                this.analytics.postData("pxer.app.load", {
+                    page_type:this.pxer.pageType,
+                });
             },
             run(){
+                this.analytics.postData("pxer.app.start", {
+                    ptm_config:this.pxer.ptmConfig,
+                    task_option:this.pxer.taskOption,
+                    vm_state:this.state,
+                });
                 if(this.state==='ready'){
                     this.state='page';
                     this.pxer.initPageTask();
@@ -194,12 +224,28 @@ afterLoad(function(){
             stop(){
                 this.state='stop';
                 this.pxer.stop();
+                this.analytics.postData("pxer.app.halt", {
+                    task_count:this.taskCount,
+                    finish_count:this.finishCount,
+                });
             },
             count(){
                 this.taskInfo =this.pxer.getWorksInfo()
             },
+            printWorks(){
+                this.pxer.printWorks();
+                this.analytics.postData("pxer.app.print", {
+                    result_count: result.length,
+                    pp_config:this.pxer.ppConfig,
+                    pf_config:this.pxer.pfConfig,
+                    task_option:this.pxer.taskOption,
+                });
+            },
             useTaskOption(){
                 this.showTaskOption=false;
+                this.analytics.postData("pxer.app.taskoption", {
+                    task_option: this.taskOption,
+                });
                 Object.assign(this.pxer.taskOption ,this.taskOption);
             },
             formatFailType(type){
@@ -224,6 +270,9 @@ afterLoad(function(){
             },
             tryCheckedPfi(){
                 this.tryFailWroksList.push(...this.checkedFailWorksList);
+                this.analytics.postData("pxer.app.reready", {
+                    checked_works:this.checkedFailWorksList,
+                });
                 this.checkedFailWorksList=[];
                 this.state='re-ready';
             },

@@ -5,6 +5,7 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const program = require('commander');
+const bodyParser = require('body-parser');
 const PxerUtility =require('./pxer-utility.js');
 
 const PROJECT_PATH = path.resolve(__dirname, "../");
@@ -16,11 +17,13 @@ program
     .option('--cert <cert>', "certificate file (omit for http)")
     .option('--key <key>', "private key (omit for http)")
     .option('--ca <chain>', "cert chain file (optional)")
+    .option('--analytics', "enable analytics output")
 
 program.parse(process.argv);
 
 const ADDR = program.addr;
 const PORT = parseInt(program.port);
+const ANALYTICS = program.analytics;
 switch (true) {
     case program.cache === "no": program.cache = "0"; break;
     case program.cache === "yes": program.cache = "1200"; break; // 20m
@@ -32,6 +35,24 @@ switch (true) {
 }
 const CACHE_TIME = program.cache;
 
+/**
+ * 
+ * @param {String} section - [client|server]
+ * @param {String} severity - [info|notice|warning|severe]
+ * @param {String} event - 事件名称
+ * @param {Array}  data - 接受的键值
+ */
+const writeJSONLog = function(section, severity, event, data) {
+    var logdata = {
+        section:section,
+        severity:severity,
+        event:event,
+        time:new Date().toISOString(),
+        data:data,
+    }
+    console.log(JSON.stringify(logdata))
+}
+
 const credentials = {
 	key: program.key ? fs.readFileSync(program.key, 'utf-8') :undefined,
 	cert: program.cert? fs.readFileSync(program.cert, 'utf-8') :undefined,
@@ -40,23 +61,31 @@ const credentials = {
 
 var serveHttps = credentials.key && credentials.cert;
 var app = express();
+app.use(bodyParser.json({limit: '1mb'}));
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next()
+});
 
 app.get('/', (req, res) => res.status(303).send("http://pxer.pea3nut.org/"));
 
-const addFile =function(fpath, uri) {
+const addFile =function(fpath, uri, middleware=null) {
     fpath = path.normalize(fpath);
     var options = {
         dotfiles: 'deny',
         cacheControl: true,
         headers : {
-            "Access-Control-Allow-Origin": "*",
             "Cache-Control"              : "max-age="+CACHE_TIME,
         },
     };
-    app.get(uri, (req, res)=>res.sendFile(fpath, options));
+    app.get(uri, (req, res)=>{
+        if (middleware) middleware(req, res);
+        res.sendFile(fpath, options);
+    });
 }
 
-const addFolder = function _self(fpath, uri) {
+const addFolder = function _self(fpath, uri, middleware=null) {
     fs.readdir(fpath, function (err, filelist) {
         if (err) {
             console.log("Error while preloading folder:" + err.message);
@@ -70,18 +99,57 @@ const addFolder = function _self(fpath, uri) {
                     return;
                 }
                 switch (true) {
-                    case info.isDirectory(): _self(filepath, uri + fn + "/"); break;
-                    case info.isFile(): addFile(filepath, uri + fn); break;
+                    case info.isDirectory(): _self(filepath, uri + fn + "/", middleware); break;
+                    case info.isFile(): addFile(filepath, uri + fn, middleware); break;
                 }
             })
         })
     })
 }
+/**
+ * 注册客户端统计接口
+ * @param {String} event - 事件名称
+ * @param {String} severity - [info|notice|warning|severe]
+ * @param {Array} fields - 接受的键值
+ */
+const registerClientAnalytics =function(event="pxer.generic", severity="info", fields=[]){
+    for (presetkey of ['uid', 'pxer_mode', 'referer']) {
+        if (fields.indexOf(presetkey)===-1) fields.push(presetkey);
+    }
+    url = `/stats/${event.replace(/\./g,"/")}`;
+    app.post(url, (req,res)=>{
+        var decodeddata = req.body;
+        decodeddata.source_addr = req.ip;
+        logdata = {};
+        for (key of fields) {
+            logdata[key] = decodeddata[key];
+        }
+        writeJSONLog("client", severity, event, logdata);
+        res.end("OK");
+    });
+}
+
 addFolder(path.resolve(PROJECT_PATH, "src/"), "/src/");
 addFolder(path.resolve(PROJECT_PATH, "dist/"), "/dist/");
-addFile(path.resolve(PROJECT_PATH, "jsonp.js"), "/jsonp.js");
 addFile(path.resolve(PROJECT_PATH, "pxer-dev.user.js"), "/pxer-dev.user.js");
 addFile(path.resolve(PROJECT_PATH, "pxer-master.user.js"), "/pxer-master.user.js");
+addFile(path.resolve(PROJECT_PATH, "jsonp.js"), "/jsonp.js", ANALYTICS?(req, res)=>{
+    writeJSONLog("client","info","pxer.preload", {
+        referer: req.get("Referer"),
+        source_addr:req.ip,
+    });
+}:null);
+
+if (ANALYTICS) {
+    registerClientAnalytics("pxer.app.created","info");
+    registerClientAnalytics("pxer.app.load", "info", ['page_type']);
+    registerClientAnalytics("pxer.app.load", "info", ['ptm_config','task_option','vm_state']);
+    registerClientAnalytics("pxer.app.finish", "info", ['result_count', 'ptm_config', 'task_option', 'failures']);
+    registerClientAnalytics("pxer.app.halt", "info", ['task_count','finish_count']);
+    registerClientAnalytics("pxer.app.print", "info", ['result_count', 'pp_config', 'pf_config', 'task_option']);
+    registerClientAnalytics("pxer.app.taskoption", "info", ['task_option']);
+    registerClientAnalytics("pxer.parser.error", "notice", ['error_msg','error_url','error_stack']);
+};
 
 app.get('/pxer-dev-local.user.js', (req, res) => {
     res.setHeader("Content-Type", "application/javascript");

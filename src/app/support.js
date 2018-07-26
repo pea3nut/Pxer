@@ -11,16 +11,20 @@ if(URLData.domain ==='www.pixiv.net'){
     if(supportType.indexOf(getPageType())!==-1){
         window['PXER_SUPPORT']=true;
         window['PXER_LOAD_APP']=true;
+        window['PXER_LOAD_ANALYTICS']=true;
     }else{
         window['PXER_SUPPORT']=true;
         window['PXER_LOAD_APP']=false;
+        window['PXER_LOAD_ANALYTICS']=true;
     }
 }else if(URLData.domain==='127.0.0.1'||URLData.domain==='localhost'){
     window['PXER_SUPPORT']=true;
     window['PXER_LOAD_APP']=true;
+    window['PXER_LOAD_ANALYTICS']=false;
 }else{
     window['PXER_SUPPORT']=false;
     window['PXER_LOAD_APP']=false;
+    window['PXER_LOAD_ANALYTICS']=false;
     return;//退出整个程序
 };
 
@@ -31,6 +35,7 @@ const appClass      =/**/[
         "src/app/class/PxerEvent.-1.class.js"
     ],
     [
+        "src/app/class/PxerAnalytics.class.js",
         "src/app/class/PxerFilter.class.js",
         "src/app/class/PxerHtmlParser.class.js",
         "src/app/class/PxerPrinter.class.js"
