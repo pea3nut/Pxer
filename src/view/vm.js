@@ -235,7 +235,7 @@ afterLoad(function(){
             printWorks(){
                 this.pxer.printWorks();
                 this.analytics.postData("pxer.app.print", {
-                    result_count: result.length,
+                    result_count: this.pxer.getWorksInfo(),
                     pp_config:this.pxer.ppConfig,
                     pf_config:this.pxer.pfConfig,
                     task_option:this.pxer.taskOption,

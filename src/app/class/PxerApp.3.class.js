@@ -255,7 +255,6 @@ class PxerApp extends PxerEvent{
     };
     /**
      * 输出抓取到的作品
-     * @return {string}
      * */
     printWorks(){
         var pp =new PxerPrinter(this.ppConfig);
