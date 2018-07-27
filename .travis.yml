@@ -1,0 +1,20 @@
+sudo: true
+addons:
+  chrome: stable
+  firefox: latest
+language: python
+python:
+  - "3.6"
+install:
+  - wget https://github.com/mozilla/geckodriver/releases/download/v0.21.0/geckodriver-v0.21.0-linux64.tar.gz
+  - mkdir geckodriver
+  - tar -xzf geckodriver-v0.21.0-linux64.tar.gz -C geckodriver
+  - export PATH=$PATH:$PWD/geckodriver
+  - export MOZ_HEADLESS=1
+  - export DISPLAY=:10
+  - sudo apt-get install chromium-chromedriver
+  - pip install selenium
+  - pip install beautifulsoup4
+  - pip install html5lib
+  - export PATH=$PATH:/usr/lib/chromium-browser/
+script: python3 ./src/test/test.py

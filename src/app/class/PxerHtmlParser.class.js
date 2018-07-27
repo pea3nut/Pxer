@@ -12,65 +12,81 @@ class PxerHtmlParser{
  * @param {PxerPageRequest} task - 抓取后的页码任务对象
  * @return {PxerWorksRequest[]|false} - 解析得到的作品任务对象
  * */
-PxerHtmlParser.parsePage =function(task){
-    if(!(task instanceof PxerPageRequest)){
-        window['PXER_ERROR'] ='PxerHtmlParser.parsePage: task is not PxerPageRequest';
+PxerHtmlParser.parsePage = function (task) {
+    if (!(task instanceof PxerPageRequest)) {
+        window['PXER_ERROR'] = 'PxerHtmlParser.parsePage: task is not PxerPageRequest';
         return false;
     }
-    if(!task.url || !task.html){
-        window['PXER_ERROR'] ='PxerHtmlParser.parsePage: task illegal';
+    if (!task.url || !task.html) {
+        window['PXER_ERROR'] = 'PxerHtmlParser.parsePage: task illegal';
         return false;
     }
 
-    var URLData =parseURL(task.url);
-    var dom =PxerHtmlParser.HTMLParser(task.html);
-
-    // old method
-    var taskList =[];
-    
-    var searchResult =dom.body.querySelector("input#js-mount-point-search-result-list");
-    var elts =null;
-    if (searchResult) {
-        var searchData = JSON.parse(searchResult.getAttribute('data-items'));
-        for (var searchItem of searchData) {
-            var task =new PxerWorksRequest({
-                html    :{},
-                type    :searchItem.illustType==2?'ugoira'
-                        :searchItem.illustType==1?'manga'
-                        :'illust'
-                        ,
-                isMultiple  :searchItem.pageCount>1,
-                id  :searchItem.illustId
-            });
-            task.url =PxerHtmlParser.getUrlList(task);
+    var URLData = parseURL(task.url);
+    var taskList = [];
+    if (task.html.startsWith("{") || task.html.startsWith("[")) {
+        var data = JSON.parse(task.html);
+        for (var task of data['contents']) {
             
+            var task = new PxerWorksRequest({
+                html      : {},
+                type      : task['illust_type'] === "0" ? 'illust'
+                          : task['illust_type'] === "1" ? 'manga'
+                          : 'ugoira'
+                          ,
+                isMultiple: task['illust_page_count'] > 1,
+                id        : String(task['illust_id'])
+            });
+            task.url = PxerHtmlParser.getUrlList(task);
+
             taskList.push(task);
-        };
+        }
     } else {
-        elts =dom.body.querySelectorAll('a.work._work');
-    
-        for(let elt of elts){
-            var task =new PxerWorksRequest({
-                html        :{},
-                type        :elt.matches('.ugoku-illust')?'ugoira'
-                            :elt.matches(".manga")?'manga'
-                            :"illust"
-                            ,
-                isMultiple  :elt.matches(".multiple"),
-                id          :elt.getAttribute('href').match(/illust_id=(\d+)/)[1]
-           });
-    
-           task.url =PxerHtmlParser.getUrlList(task);
-    
-           taskList.push(task);
-        };
-    }
+        var dom = PxerHtmlParser.HTMLParser(task.html);
 
-    if ( (elts !== null && elts.length === 0) && !searchResult) {
-        window['PXER_ERROR'] ='PxerHtmlParser.parsePage: result empty';
-        return false;
-    }
+        var searchResult = dom.body.querySelector("input#js-mount-point-search-result-list");
+        var elts = null;
+        if (searchResult) {
+            var searchData = JSON.parse(searchResult.getAttribute('data-items'));
+            for (var searchItem of searchData) {
+                var task = new PxerWorksRequest({
+                    html      : {},
+                    type      : searchItem.illustType == 2 ? 'ugoira'
+                              : searchItem.illustType == 1 ? 'manga'
+                              : 'illust'
+                              ,
+                    isMultiple: searchItem.pageCount > 1,
+                    id        : searchItem.illustId
+                });
+                task.url = PxerHtmlParser.getUrlList(task);
 
+                taskList.push(task);
+            };
+        } else {
+            elts = dom.body.querySelectorAll('a.work._work');
+
+            for (let elt of elts) {
+                var task = new PxerWorksRequest({
+                    html: {},
+                    type: elt.matches('.ugoku-illust') ? 'ugoira'
+                        : elt.matches(".manga") ? 'manga'
+                            : "illust"
+                    ,
+                    isMultiple: elt.matches(".multiple"),
+                    id: elt.getAttribute('href').match(/illust_id=(\d+)/)[1]
+                });
+
+                task.url = PxerHtmlParser.getUrlList(task);
+
+                taskList.push(task);
+            };
+        }
+
+        if ((elts !== null && elts.length === 0) && !searchResult) {
+            window['PXER_ERROR'] = 'PxerHtmlParser.parsePage: result empty';
+            return false;
+        }
+    }
     return taskList;
 
 };
@@ -172,7 +188,11 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
 
             pw.domain = URLObj.domain;
             pw.date   =src.match(PxerHtmlParser.REGEXP['getDate'])[1];
-            pw.frames =meta['body']['frames'];
+            pw.frames ={
+                framedef:meta['body']['frames'],
+                height:illustData.height,
+                width:illustData.width,
+            };
     } else {
             let src = illustData.urls.original;
             let URLObj = parseURL(src);

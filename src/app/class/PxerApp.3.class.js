@@ -31,8 +31,9 @@ class PxerApp extends PxerEvent{
         /**
          * 页面的作品数量
          * @type {number|null}
+         * @see PxerApp.init
          * */
-        this.worksNum =PxerApp.getWorksNum();
+        this.worksNum =null;
 
 
         /**
@@ -84,6 +85,14 @@ class PxerApp extends PxerEvent{
 
     };
 
+
+    /**
+     * 初始化时的耗时任务
+     */
+    async init(){
+        this.worksNum = await PxerApp.getWorksNum(document);
+    }
+
     /**
      * 停止执行当前任务
      * 调用后仍会触发对应的finish*事件
@@ -100,7 +109,7 @@ class PxerApp extends PxerEvent{
             return false;
         };
 
-        let onePageWorksNumber =this.pageType==='search'?40:20;
+        let onePageWorksNumber = getOnePageWorkCount(this.pageType);
 
         var pageNum =Math.ceil(
             this.taskOption.limit
@@ -109,9 +118,10 @@ class PxerApp extends PxerEvent{
         )/onePageWorksNumber;
 
         var separator =/\?/.test(document.URL)?"&":"?";
+        var extraparam = this.pageType==='rank'? "&format=json" : "";
         for(var i=0 ;i<pageNum ;i++){
             this.taskList.push(new PxerPageRequest({
-                url:document.URL+separator+"p="+(i+1),
+                url:document.URL+separator+"p="+(i+1)+extraparam,
             }));
         };
 
@@ -293,9 +303,53 @@ PxerApp.prototype['getThis'] =function(){
  * @return {number} - 作品数
  * */
 PxerApp.getWorksNum =function(dom=document){
-    var elt =dom.querySelector(".count-badge");
-    if(!elt) return null;
-    return parseInt(elt.innerHTML);
+    return new Promise((resolve, reject)=>{
+        if (getPageType() === "rank") {
+            var queryurl = dom.URL + "&format=json";
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", queryurl);
+            xhr.onload = (e) => resolve(JSON.parse(xhr.responseText)['rank_total']);
+            xhr.send();
+        } else if (getPageType() === "bookmark_new") {
+            // 关注的新作品页数最多100页
+            // 因为一般用户关注的用户数作品都足够填满100页，所以从100开始尝试页数
+            // 如果没有100页进行一次二分查找
+            var currpage = parseInt(dom.querySelector("ul.page-list>li.current").innerHTML);
+            this.getFollowingBookmarkWorksNum(currpage, 100, 100).then((res) => resolve(res));
+        } else {
+            var elt = dom.querySelector(".count-badge");
+            if (!elt) resolve(null);
+            resolve(parseInt(elt.innerHTML));
+        }
+    })
 };
 
-
+/**
+ * 获取关注的新作品页的总作品数
+ * @param {number} min - 最小页数
+ * @param {number} max - 最大页数
+ * @param {number} cur - 当前页数
+ * @return {number} - 作品数
+ */
+PxerApp.getFollowingBookmarkWorksNum =function(min, max, cur){
+    return new Promise((resolve, reject) => {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "https://www.pixiv.net/bookmark_new_illust.php?p=" + cur);
+        xhr.onload = (e) => {
+            var html = xhr.response;
+            var el = document.createElement("div");
+            el.innerHTML = html;
+            if (min === max) {
+                var lastworkcount = JSON.parse(el.querySelector("div#js-mount-point-latest-following").getAttribute("data-items")).length;
+                resolve((min - 1) * 20 + lastworkcount);
+            } else {
+                if (!!el.querySelector("div._no-item")) {
+                    this.getFollowingBookmarkWorksNum(min, cur - 1, parseInt((min + cur) / 2)).then((res) => resolve(res));
+                } else {
+                    this.getFollowingBookmarkWorksNum(cur, max, parseInt((cur + max + 1) / 2)).then((res) => resolve(res));
+                }
+            }
+        }
+        xhr.send();
+    })
+}
