@@ -292,7 +292,7 @@ PxerApp.prototype['getThis'] =function(){
     }
     pwr.url =PxerHtmlParser.getUrlList(pwr);
     // 添加执行
-    this.taskList.push(pwr);
+    this.taskList = [pwr];
     this.one('finishWorksTask',()=>this.printWorks());
     this.executeWroksTask();
 };

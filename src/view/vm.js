@@ -46,9 +46,6 @@ afterLoad(function(){
             this.pxer.on('error',(err)=>{
                 this.errmsg =err;
             });
-            this.pxer.on('finishWorksTask',function(){
-                window.blinkTitle();
-            });
         },
         computed:{
             pageType(){
@@ -167,6 +164,9 @@ afterLoad(function(){
                 }else{
                     this.state='init';
                     this.pxer.init().then(()=>this.state='ready');
+                    this.pxer.on('finishWorksTask',()=>{
+                        window.blinkTitle();
+                    });
                 }
             },
             run(){
