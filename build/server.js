@@ -40,7 +40,7 @@ const CACHE_TIME = program.cache;
  * @param {String} section - [client|server]
  * @param {String} severity - [info|notice|warning|severe]
  * @param {String} event - 事件名称
- * @param {Array}  data - 接受的键值
+ * @param {Array}  data - 附加的数据
  */
 const writeJSONLog = function(section, severity, event, data) {
     var logdata = {
@@ -113,7 +113,7 @@ const addFolder = function _self(fpath, uri, middleware=null) {
  * @param {Array} fields - 接受的键值
  */
 const registerClientAnalytics =function(event="pxer.generic", severity="info", fields=[]){
-    for (presetkey of ['uid', 'pxer_mode', 'referer']) {
+    for (presetkey of ['uid', 'pxer_mode', 'source_addr']) {
         if (fields.indexOf(presetkey)===-1) fields.push(presetkey);
     }
     url = `/stats/${event.replace(/\./g,"/")}`;
@@ -135,7 +135,6 @@ addFile(path.resolve(PROJECT_PATH, "pxer-dev.user.js"), "/pxer-dev.user.js");
 addFile(path.resolve(PROJECT_PATH, "pxer-master.user.js"), "/pxer-master.user.js");
 addFile(path.resolve(PROJECT_PATH, "jsonp.js"), "/jsonp.js", ANALYTICS?(req, res)=>{
     writeJSONLog("client","info","pxer.preload", {
-        referer: req.get("Referer"),
         source_addr:req.ip,
     });
 }:null);
@@ -144,11 +143,10 @@ if (ANALYTICS) {
     registerClientAnalytics("pxer.app.created","info");
     registerClientAnalytics("pxer.app.load", "info", ['page_type']);
     registerClientAnalytics("pxer.app.start", "info", ['ptm_config','task_option','vm_state']);
-    registerClientAnalytics("pxer.app.finish", "info", ['result_count', 'ptm_config', 'task_option', 'failures']);
+    registerClientAnalytics("pxer.app.finish", "info", ['ptm_config', 'task_option', 'error_count']);
     registerClientAnalytics("pxer.app.halt", "info", ['task_count','finish_count']);
     registerClientAnalytics("pxer.app.print", "info", ['result_count', 'pp_config', 'pf_config', 'task_option']);
     registerClientAnalytics("pxer.app.taskoption", "info", ['task_option']);
-    registerClientAnalytics("pxer.parser.error", "notice", ['error_msg','error_url','error_stack']);
 };
 
 app.get('/pxer-dev-local.user.js', (req, res) => {

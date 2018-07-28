@@ -23,7 +23,6 @@ class PxerAnalytics{
         if (!this.enabled) return;
         data.uid = this.uid;
         data.pxer_mode = window['PXER_MODE'];
-        data.referer = document.URL;
         
         var xhr = new XMLHttpRequest();
         xhr.open("POST", window['PXER_URL']+"stats/"+event.replace(/\./g, "/"), true);

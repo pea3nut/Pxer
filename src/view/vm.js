@@ -50,22 +50,11 @@ afterLoad(function(){
                 this.errmsg =err;
             });
             this.pxer.on('finishWorksTask',(result) =>{
-                var errors = this.pxer.failList.slice();
-                if (errors.length>1) {
-                    // 大量错误只发送一个html样本
-                    // P站灰度更新时可以参考
-                    for (var i=1; i<errors.length; i++) {
-                        var err={};
-                        err = JSON.parse(JSON.stringify(errors[i]));
-                        err.task.html = "omitted";
-                        errors[i] = err;
-                    }
-                }
                 this.analytics.postData("pxer.app.finish", {
-                    result_count: result.length,
+                    result_count:result.length,
                     ptm_config:this.pxer.ptmConfig,
                     task_option:this.pxer.taskOption,
-                    failures:errors,
+                    error_count:this.pxer.failList.length,
                 });
             })
             this.pxer.on('finishWorksTask',function(){
@@ -234,10 +223,13 @@ afterLoad(function(){
             },
             printWorks(){
                 this.pxer.printWorks();
+                var sanitizedpfConfig = {};
+                for (key in this.pxer.pfConfig) {
+                    sanitizedpfConfig[key] = this.pxer.pfConfig[key].length?this.pxer.pfConfig[key].length:this.pxer.pfConfig[key];
+                }
                 this.analytics.postData("pxer.app.print", {
-                    result_count: this.pxer.getWorksInfo(),
                     pp_config:this.pxer.ppConfig,
-                    pf_config:this.pxer.pfConfig,
+                    pf_config:sanitizedpfConfig,
                     task_option:this.pxer.taskOption,
                 });
             },

@@ -133,11 +133,6 @@ PxerHtmlParser.parseWorks =function(task){
             };
         }catch(e){
             window['PXER_ERROR'] =`${task.id}:${e.message}`;
-            if(window['PXER_ANALYTICS'])window['PXER_ANALYTICS'].postData("pxer.parser.error", {
-                error_url:url,
-                error_msg:e.mesage,
-                error_stack:e.stack,
-            });
             if(window['PXER_MODE']==='dev')console.error(task ,e);
             return false;
         }
