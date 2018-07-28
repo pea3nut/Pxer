@@ -158,11 +158,14 @@ PxerHtmlParser.parseWorks =function(task){
 /**
  * 解析批量作品任务对象
  * @param {PxerBatchWorksRequest} task - 抓取后的批量页码任务对象
- * @return {PxerWorks} - 解析得到的作品任务对象
+ * @return {PxerWorks[]} - 解析得到的作品任务对象
  * */
 PxerHtmlParser.parseBatchWorks =function(task) {
     let resultList =[];
-    var res =JSON.parse(task.html);
+    var res=[];
+    for (var url in task.html) {
+        res.push(...JSON.parse(task.html[url]));
+    }
     for (let workdata of res) {
         var pw;
         switch (true) {

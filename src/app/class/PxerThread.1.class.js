@@ -150,7 +150,7 @@ PxerThread.prototype['run'] =function _self(){
         };
 
         // 执行成功回调
-        if(this.task instanceof PxerWorksRequest){
+        if(this.task instanceof PxerWorksRequest ||this.task instanceof PxerBatchWorksRequest){
             this.task.html[URL] =XHR.responseText;
         }else{
             this.task.html =XHR.responseText;
