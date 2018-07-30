@@ -35,7 +35,6 @@ const appClass      =/**/[
         "src/app/class/PxerEvent.-1.class.js"
     ],
     [
-        "src/app/class/PxerAnalytics.class.js",
         "src/app/class/PxerFilter.class.js",
         "src/app/class/PxerHtmlParser.class.js",
         "src/app/class/PxerPrinter.class.js"
@@ -53,6 +52,7 @@ const appClass      =/**/[
 const viewTpl       =/**/"src/view/template.html";//*/'';
 const viewStyles    =/**/"src/view/style.css";//*/[];
 const viewScripts   =/**/[
+    "src/view/PxerAnalytics.class.js",
     "src/view/vue.dev.js",
     "src/view/vm.js"
 ];//*/[];
