@@ -129,7 +129,7 @@ class PxerApp extends PxerEvent{
                 type:this.pageType,
             }));
         } else {
-            var separator =/\?/.test(document.URL)?"&":"?";
+            var separator =document.URL.includes("?")?"&":"?";
             var extraparam = this.pageType==='rank'? "&format=json" : "";
             for(var i=0 ;i<pageNum ;i++){
                 this.taskList.push(new PxerPageRequest({

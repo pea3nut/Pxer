@@ -31,10 +31,13 @@ PxerHtmlParser.parsePage = function (task) {
             for (let elt of elts) {
                 var task = new PxerWorksRequest({
                     html: {},
-                    type: elt.matches('.ugoku-illust') ? 'ugoira'
-                        : elt.matches(".manga") ? 'manga'
-                            : "illust"
-                    ,
+                    type: function(elt) {
+                        switch (true) {
+                            case elt.matches('.ugoku-illust'): return "ugoira";
+                            case elt.matches('.manga'): return "manga";
+                            default: return "illust";
+                        }
+                    }(elt),
                     isMultiple: elt.matches(".multiple"),
                     id: elt.getAttribute('href').match(/illust_id=(\d+)/)[1]
                 });
@@ -50,12 +53,9 @@ PxerHtmlParser.parsePage = function (task) {
 
                 var task = new PxerWorksRequest({
                     html: {},
-                    type: task['illust_type'] === "0" ? 'illust'
-                        : task['illust_type'] === "1" ? 'manga'
-                            : 'ugoira'
-                    ,
+                    type: this.parseIllustType(task['illust_type']),
                     isMultiple: task['illust_page_count'] > 1,
-                    id: String(task['illust_id'])
+                    id: task['illust_id'].toString(),
                 });
                 task.url = PxerHtmlParser.getUrlList(task);
 
@@ -69,7 +69,7 @@ PxerHtmlParser.parsePage = function (task) {
                     html: {},
                     type: null,
                     isMultiple: null,
-                    id  : String(id),
+                    id  : id.toString(),
                 });
                 task.url = PxerHtmlParser.getUrlList(task);
                 
@@ -83,10 +83,7 @@ PxerHtmlParser.parsePage = function (task) {
             for (var searchItem of searchData) {
                 var task = new PxerWorksRequest({
                     html: {},
-                    type: searchItem.illustType == 2 ? 'ugoira'
-                        : searchItem.illustType == 1 ? 'manga'
-                            : 'illust'
-                    ,
+                    type: this.parseIllustType(searchItem.illustType),
                     isMultiple: searchItem.pageCount > 1,
                     id: searchItem.illustId
                 });
@@ -100,12 +97,9 @@ PxerHtmlParser.parsePage = function (task) {
                 
                 var task = new PxerWorksRequest({
                     html      : {},
-                    type      : task['illust_type'] === "0" ? 'illust'
-                            : task['illust_type'] === "1" ? 'manga'
-                            : 'ugoira'
-                            ,
+                    type      : this.parseIllustType(task['illust_type']),
                     isMultiple: task['illust_page_count'] > 1,
-                    id        : String(task['illust_id'])
+                    id        : task['illust_id'].toString(),
                 });
                 task.url = PxerHtmlParser.getUrlList(task);
 
@@ -190,12 +184,8 @@ PxerHtmlParser.parseMediumHtml =function({task,dom}){
         default: pw = new PxerWorks(); break;
     }
 
-    pw.id           =task.id;
-    switch (illustData.illustType) {
-        case 0: pw.type = "illust"; break;
-        case 1: pw.type = "manga"; break;
-        case 2: pw.type = "ugoira"; break;
-    }
+    pw.id = task.id;
+    pw.type = this.parseIllustType(illustData.illustType);
     pw.tagList = illustData.tags.tags.map(e=>e.tag);
     pw.viewCount = illustData.viewCount;
     pw.ratedCount = illustData.bookmarkCount;
@@ -230,6 +220,20 @@ PxerHtmlParser.parseMediumHtml =function({task,dom}){
     return pw;
 };
 
+PxerHtmlParser.parseIllustType =function(type){
+    switch (type.toString()) {
+        case "0":
+        case "illust":
+            return "illust";
+        case "1":
+        case "manga":
+            return "manga";
+        case "2":
+        case "ugoira":
+            return "ugoira";
+    }
+    return null;
+}
 
 PxerHtmlParser.REGEXP ={
     'getDate':/img\/((?:\d+\/){5}\d+)/,
