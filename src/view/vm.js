@@ -227,17 +227,16 @@ afterLoad(async function(){
             setLocale(...languages) {
                 for (var language of languages) {
                     var locale = languageMap[language];
-                    if (locale) {
-                        if (locale in this.$i18n.messages) {
+                    if (!locale) continue;
+                    if (locale in this.$i18n.messages) {
+                        this.$i18n.locale = locale;
+                    } else {
+                        window.loadI18nResource(locale).then((data) => {
+                            this.$i18n.setLocaleMessage(locale, data);
                             this.$i18n.locale = locale;
-                        } else {
-                            window.loadI18nResource(locale).then((data) => {
-                                this.$i18n.setLocaleMessage(locale, data);
-                                this.$i18n.locale = locale;
-                            }, (error) => console.error(error));
-                        }
-                        break
+                        }, (error) => console.error(error));
                     }
+                    break;
                 }
             },
         },
