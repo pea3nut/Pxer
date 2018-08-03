@@ -267,6 +267,7 @@ class PxerApp extends PxerEvent{
     };
     /**抓取页码完成后，初始化，准备抓取作品*/
     switchPage2Works(len=this.resultSet.length){
+        this.worksNum =this.resultSet.length;
         this.taskList =this.resultSet.slice(0 ,len);
         this.resultSet =[];
     };

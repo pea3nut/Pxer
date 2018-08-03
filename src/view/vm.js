@@ -69,7 +69,7 @@ afterLoad(function(){
             },
             taskCount(){
                 var pageWorkCount = getOnePageWorkCount(this.pxer.pageType);
-                return Math.ceil(this.worksNum/pageWorkCount)+ +this.worksNum;
+                return (this.state==='works'?this.pxer.taskList.length/getOnePageWorkCount(this.pxer.pageType):Math.ceil(this.worksNum/pageWorkCount))+ +this.worksNum;
             },
             finishCount(){
                 if(this.state==='page'){
@@ -77,7 +77,7 @@ afterLoad(function(){
                 }else if(this.state==='works'){
                     return (
                         this.pxer.taskList.filter(pr=>pr.completed).map(pr=>pr.id instanceof Array? pr.id.length:1).reduce((total, curr)=>total+curr, 0)
-                        +~~(this.worksNum/getOnePageWorkCount(this.pxer.pageType))
+                        +~~(this.pxer.taskList.length/getOnePageWorkCount(this.pxer.pageType))
                         +this.pxer.failList.length
                     );
                 }else{
