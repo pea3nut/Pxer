@@ -12,7 +12,7 @@ class PxerAnalytics{
                       +Math.random().toString(36).replace(/[^a-z]+/g, '');
             window.localStorage.setItem("PXER_UID", this.uid);
         }
-        this.enabled = window['PXER_LOAD_ANALYTICS'];
+        this.enabled = window['PXER_LOAD_ANALYTICS'] && (!window.localStorage.getItem("PXER_OPT_OUT_ANALYTICS"));
     };
     /**
      * 
