@@ -113,8 +113,9 @@ PxerHtmlParser.parsePage = function (task, batchMode=false) {
             };
             break;
         case "search":
+        case "bookmark_new":
             var dom = PxerHtmlParser.HTMLParser(task.html);
-            var searchResult = dom.body.querySelector("input#js-mount-point-search-result-list");
+            var searchResult = dom.body.querySelector("input#js-mount-point-search-result-list") || dom.body.querySelector("div#js-mount-point-latest-following");
             var searchData = JSON.parse(searchResult.getAttribute('data-items'));
             if (batchMode) {
                 var pwr = new PxerBatchWorksRequest({
@@ -135,35 +136,6 @@ PxerHtmlParser.parsePage = function (task, batchMode=false) {
                         id: searchItem.illustId
                     });
                     task.url = PxerHtmlParser.getUrlList(task);
-                    taskList.push(task);
-                };
-            };
-            break;
-        case "bookmark_new":
-            var elt = document.createElement("div");
-            elt.innerHTML = task.html;
-            var data = JSON.parse(elt.querySelector("div#js-mount-point-latest-following").getAttribute('data-items'));
-            if (batchMode) {
-                var pwr = new PxerBatchWorksRequest({
-                    id  :[],
-                    html:{},
-                });
-                for (var task of data) {
-                    pwr.id.push(task['illustId']);
-                }
-                pwr.url = this.getUrlList(pwr);
-                taskList.push(pwr);
-            } else {
-                for (var task of data) {
-                
-                    var task = new PxerWorksRequest({
-                        html      : {},
-                        type      : this.parseIllustType(task['illust_type']),
-                        isMultiple: task['illust_page_count'] > 1,
-                        id        : task['illustId'],
-                    });
-                    task.url = PxerHtmlParser.getUrlList(task);
-    
                     taskList.push(task);
                 };
             };
