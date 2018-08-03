@@ -29,82 +29,143 @@ PxerHtmlParser.parsePage = function (task, batchMode=false) {
         case "member_works":
             var dom = PxerHtmlParser.HTMLParser(task.html);
             var elts = dom.body.querySelectorAll('a.work._work');
-            for (let elt of elts) {
-                var task = new PxerWorksRequest({
-                    html: {},
-                    type: function(elt) {
-                        switch (true) {
-                            case elt.matches('.ugoku-illust'): return "ugoira";
-                            case elt.matches('.manga'): return "manga";
-                            default: return "illust";
-                        }
-                    }(elt),
-                    isMultiple: elt.matches(".multiple"),
-                    id: elt.getAttribute('href').match(/illust_id=(\d+)/)[1]
+            if (batchMode) {
+                var pwr = new PxerBatchWorksRequest({
+                    id :[],
+                    html:{},
                 });
-
-                task.url = PxerHtmlParser.getUrlList(task);
-
-                taskList.push(task);
-            };
+                for (let elt of elts) {
+                    pwr.id.push(elt.getAttribute("href").match(/illust_id=(\d+)/)[1]);
+                }
+                pwr.url = this.getUrlList(pwr);
+                taskList.push(pwr);
+            } else {
+                for (let elt of elts) {
+                    var task = new PxerWorksRequest({
+                        html: {},
+                        type: function(elt) {
+                            switch (true) {
+                                case elt.matches('.ugoku-illust'): return "ugoira";
+                                case elt.matches('.manga'): return "manga";
+                                default: return "illust";
+                            }
+                        }(elt),
+                        isMultiple: elt.matches(".multiple"),
+                        id: elt.getAttribute('href').match(/illust_id=(\d+)/)[1]
+                    });
+    
+                    task.url = PxerHtmlParser.getUrlList(task);
+    
+                    taskList.push(task);
+                };
+            }
             break;
         case "rank":
             var data = JSON.parse(task.html);
-            for (var task of data['contents']) {
-
-                var task = new PxerWorksRequest({
+            if (batchMode) {
+                var pwr = new PxerBatchWorksRequest({
                     html: {},
-                    type: this.parseIllustType(task['illust_type']),
-                    isMultiple: task['illust_page_count'] > 1,
-                    id: task['illust_id'].toString(),
-                });
-                task.url = PxerHtmlParser.getUrlList(task);
+                    id  : [],
+                })
+                for (var task of data['contents']) {
+                    pwr.id.push(task['illust_id'].toString());
+                }
+                pwr.url = this.getUrlList(pwr);
+                taskList.push(pwr);
+            } else {
+                for (var task of data['contents']) {
 
-                taskList.push(task);
+                    var pwr = new PxerWorksRequest({
+                        html: {},
+                        type: this.parseIllustType(task['illust_type']),
+                        isMultiple: task['illust_page_count'] > 1,
+                        id: task['illust_id'].toString(),
+                    });
+                    pwr.url = PxerHtmlParser.getUrlList(pwr);
+                    taskList.push(pwr);
+                };
             };
             break;
         case "discovery":
             var data =JSON.parse(task.html);
-            for (var id of data.recommendations) {
-                var task = new PxerWorksRequest({
-                    html: {},
-                    type: null,
-                    isMultiple: null,
-                    id  : id.toString(),
-                });
-                task.url = PxerHtmlParser.getUrlList(task);
-                
-                taskList.push(task);
+            if (batchMode) {
+                for (var i=0;i<data.recommendations.length;i+=70) {
+                    var pwr = new PxerBatchWorksRequest({
+                        id  :[],
+                        html:{},
+                    });
+                    pwr.id.push(...data.recommendations.slice(i,i+70));
+                };
+                pwr.url = this.getUrlList(pwr);
+                taskList.push(pwr);
+            } else {
+                for (var id of data.recommendations) {
+                    var task = new PxerWorksRequest({
+                        html: {},
+                        type: null,
+                        isMultiple: null,
+                        id  : id.toString(),
+                    });
+                    task.url = PxerHtmlParser.getUrlList(task);
+                    
+                    taskList.push(task);
+                };
             };
             break;
         case "search":
             var dom = PxerHtmlParser.HTMLParser(task.html);
             var searchResult = dom.body.querySelector("input#js-mount-point-search-result-list");
             var searchData = JSON.parse(searchResult.getAttribute('data-items'));
-            for (var searchItem of searchData) {
-                var task = new PxerWorksRequest({
-                    html: {},
-                    type: this.parseIllustType(searchItem.illustType),
-                    isMultiple: searchItem.pageCount > 1,
-                    id: searchItem.illustId
-                });
-                task.url = PxerHtmlParser.getUrlList(task);
-                taskList.push(task);
+            if (batchMode) {
+                var pwr = new PxerBatchWorksRequest({
+                    id  :[],
+                    html:{},
+                })
+                for (var searchItem of searchData) {
+                    pwr.id.push(searchItem.illustId);
+                };
+                pwr.url = this.getUrlList(pwr);
+                taskList.push(pwr);
+            } else {
+                for (var searchItem of searchData) {
+                    var task = new PxerWorksRequest({
+                        html: {},
+                        type: this.parseIllustType(searchItem.illustType),
+                        isMultiple: searchItem.pageCount > 1,
+                        id: searchItem.illustId
+                    });
+                    task.url = PxerHtmlParser.getUrlList(task);
+                    taskList.push(task);
+                };
             };
             break;
         case "bookmark_new":
-            var data = JSON.parse(task.html);
-            for (var task of data['contents']) {
-                
-                var task = new PxerWorksRequest({
-                    html      : {},
-                    type      : this.parseIllustType(task['illust_type']),
-                    isMultiple: task['illust_page_count'] > 1,
-                    id        : task['illust_id'].toString(),
+            var elt = document.createElement("div");
+            elt.innerHTML = task.html;
+            var data = JSON.parse(elt.querySelector("div#js-mount-point-latest-following").getAttribute('data-items'));
+            if (batchMode) {
+                var pwr = new PxerBatchWorksRequest({
+                    id  :[],
+                    html:{},
                 });
-                task.url = PxerHtmlParser.getUrlList(task);
-
-                taskList.push(task);
+                for (var task of data) {
+                    pwr.id.push(task['illustId']);
+                }
+                pwr.url = this.getUrlList(pwr);
+                taskList.push(pwr);
+            } else {
+                for (var task of data) {
+                
+                    var task = new PxerWorksRequest({
+                        html      : {},
+                        type      : this.parseIllustType(task['illust_type']),
+                        isMultiple: task['illust_page_count'] > 1,
+                        id        : task['illustId'],
+                    });
+                    task.url = PxerHtmlParser.getUrlList(task);
+    
+                    taskList.push(task);
+                };
             };
             break;
         default:
