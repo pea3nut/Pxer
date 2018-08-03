@@ -8,7 +8,7 @@ import sys
 import time
 import json
 
-TEST_COUNT = 21
+TEST_COUNT = 22
 HERE = os.path.dirname(os.path.abspath(__file__))
 HAVE_FAIL = False
 
