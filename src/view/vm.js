@@ -157,12 +157,15 @@ afterLoad(function(){
         },
         methods:{
             load(){
+                this.state='init';
                 if(this.pxer.pageType==='works_medium'){
-                    this.pxer.getThis();
                     this.showLoadBtn=false;
-                    this.pxer.one('finishWorksTask',()=>this.showLoadBtn=true);
+                    this.pxer.one('finishWorksTask',()=>{
+                        this.showLoadBtn=true;
+                        this.state='standby';
+                    });
+                    this.pxer.getThis();
                 }else{
-                    this.state='init';
                     this.pxer.init().then(()=>this.state='ready');
                     this.pxer.on('finishWorksTask',()=>{
                         window.blinkTitle();

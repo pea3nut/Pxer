@@ -333,5 +333,5 @@ PxerHtmlParser.getKeyFromStringObjectLiteral =function(s, key) {
     for (var pair of resolvedpairs) {
         if (pair[0] ===key) return pair[1];
     }
-    throw new Error("Key not found.");
+    return false;
 }
