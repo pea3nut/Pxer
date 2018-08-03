@@ -23,67 +23,22 @@ PxerHtmlParser.parsePage = function (task, batchMode=false) {
         return false;
     }
 
-    var URLData = parseURL(task.url);
     var taskList = [];
-    if (task.html.startsWith("{") || task.html.startsWith("[")) {
-        var data = JSON.parse(task.html);
-        for (var task of data['contents']) {
-            
-            var task = new PxerWorksRequest({
-                html      : {},
-                type      : task['illust_type'] === "0" ? 'illust'
-                          : task['illust_type'] === "1" ? 'manga'
-                          : 'ugoira'
-                          ,
-                isMultiple: task['illust_page_count'] > 1,
-                id        : String(task['illust_id'])
-            });
-            task.url = PxerHtmlParser.getUrlList(task);
-
-            taskList.push(task);
-        }
-    } else {
-        var dom = PxerHtmlParser.HTMLParser(task.html);
-
-        var searchResult = dom.body.querySelector("input#js-mount-point-search-result-list");
-        var elts = null;
-        if (searchResult) {
-            var searchData = JSON.parse(searchResult.getAttribute('data-items'));
-            if (batchMode) {
-                var batchtask = new PxerBatchWorksRequest({
-                    id: [],
-                    html: {},
-                });
-                for (var searchItem of searchData) {
-                    batchtask.id.push(searchItem.illustId);
-                };
-                batchtask.url = this.getUrlList(batchtask);
-                taskList.push(batchtask);
-            } else {
-                for (var searchItem of searchData) {
-                    var task = new PxerWorksRequest({
-                        html      : {},
-                        type      : searchItem.illustType == 2 ? 'ugoira'
-                                  : searchItem.illustType == 1 ? 'manga'
-                                  : 'illust'
-                                  ,
-                        isMultiple: searchItem.pageCount > 1,
-                        id        : searchItem.illustId
-                    });
-                    task.url = PxerHtmlParser.getUrlList(task);
-                    taskList.push(task);
-                };
-            }
-        } else {
-            elts = dom.body.querySelectorAll('a.work._work');
-
+    switch (task.type) {
+        case "bookmark_works":
+        case "member_works":
+            var dom = PxerHtmlParser.HTMLParser(task.html);
+            var elts = dom.body.querySelectorAll('a.work._work');
             for (let elt of elts) {
                 var task = new PxerWorksRequest({
                     html: {},
-                    type: elt.matches('.ugoku-illust') ? 'ugoira'
-                        : elt.matches(".manga") ? 'manga'
-                            : "illust"
-                    ,
+                    type: function(elt) {
+                        switch (true) {
+                            case elt.matches('.ugoku-illust'): return "ugoira";
+                            case elt.matches('.manga'): return "manga";
+                            default: return "illust";
+                        }
+                    }(elt),
                     isMultiple: elt.matches(".multiple"),
                     id: elt.getAttribute('href').match(/illust_id=(\d+)/)[1]
                 });
@@ -92,13 +47,75 @@ PxerHtmlParser.parsePage = function (task, batchMode=false) {
 
                 taskList.push(task);
             };
-        }
+            break;
+        case "rank":
+            var data = JSON.parse(task.html);
+            for (var task of data['contents']) {
 
-        if ((elts !== null && elts.length === 0) && !searchResult) {
-            window['PXER_ERROR'] = 'PxerHtmlParser.parsePage: result empty';
-            return false;
-        }
-    }
+                var task = new PxerWorksRequest({
+                    html: {},
+                    type: this.parseIllustType(task['illust_type']),
+                    isMultiple: task['illust_page_count'] > 1,
+                    id: task['illust_id'].toString(),
+                });
+                task.url = PxerHtmlParser.getUrlList(task);
+
+                taskList.push(task);
+            };
+            break;
+        case "discovery":
+            var data =JSON.parse(task.html);
+            for (var id of data.recommendations) {
+                var task = new PxerWorksRequest({
+                    html: {},
+                    type: null,
+                    isMultiple: null,
+                    id  : id.toString(),
+                });
+                task.url = PxerHtmlParser.getUrlList(task);
+                
+                taskList.push(task);
+            };
+            break;
+        case "search":
+            var dom = PxerHtmlParser.HTMLParser(task.html);
+            var searchResult = dom.body.querySelector("input#js-mount-point-search-result-list");
+            var searchData = JSON.parse(searchResult.getAttribute('data-items'));
+            for (var searchItem of searchData) {
+                var task = new PxerWorksRequest({
+                    html: {},
+                    type: this.parseIllustType(searchItem.illustType),
+                    isMultiple: searchItem.pageCount > 1,
+                    id: searchItem.illustId
+                });
+                task.url = PxerHtmlParser.getUrlList(task);
+                taskList.push(task);
+            };
+            break;
+        case "bookmark_new":
+            var data = JSON.parse(task.html);
+            for (var task of data['contents']) {
+                
+                var task = new PxerWorksRequest({
+                    html      : {},
+                    type      : this.parseIllustType(task['illust_type']),
+                    isMultiple: task['illust_page_count'] > 1,
+                    id        : task['illust_id'].toString(),
+                });
+                task.url = PxerHtmlParser.getUrlList(task);
+
+                taskList.push(task);
+            };
+            break;
+        default:
+            throw new Error(`Unknown PageWorks type ${task.type}`);
+    };
+    
+    if (taskList.length<1) {
+        window['PXER_ERROR'] = 'PxerHtmlParser.parsePage: result empty';
+        return false;
+    };
+
     return taskList;
 
 };
@@ -113,36 +130,23 @@ PxerHtmlParser.parseWorks =function(task){
         window['PXER_ERROR'] ='PxerHtmlParser.parseWorks: task is not PxerWorksRequest';
         return false;
     }
-    if(!task.url.every(item=>task.html[item]) || !task.type){
-        window['PXER_ERROR'] ='PxerHtmlParser.parsePage: task illegal';
+    if(!task.url.every(item=>task.html[item])){
+        window['PXER_ERROR'] ='PxerHtmlParser.parseWorks: task illegal';
         return false;
     }
-
-    var pw;
-    if(task.type ==='ugoira'){
-        pw =new PxerUgoiraWorks();
-    }else if(task.isMultiple){
-        pw =new PxerMultipleWorks();
-    }else{
-        pw =new PxerWorks();
-    };
 
     for(let url in task.html){
         let data ={
             dom :PxerHtmlParser.HTMLParser(task.html[url]),
-            url,pw,task,
+            task: task,
         };
         try{
             switch (true){
                 case url.indexOf('mode=medium')!==-1:
-                    PxerHtmlParser.parseMediumHtml(data);
-                    break;
-                case url.indexOf('mode=manga')!==-1:
-                    PxerHtmlParser.parseMangaHtml(data);
+                    var pw=PxerHtmlParser.parseMediumHtml(data);
                     break;
                 default:
-                    return false;
-                    window['PXER_ERROR'] =`PxerHtmlParser.parsePage: count not parse task url "${url}"`;
+                    throw new Error(`PxerHtmlParser.parsePage: count not parse task url "${url}"`);
             };
         }catch(e){
             window['PXER_ERROR'] =`${task.id}:${e.message}`;
@@ -150,7 +154,6 @@ PxerHtmlParser.parseWorks =function(task){
             return false;
         }
     };
-
     return pw;
 
 };
@@ -214,21 +217,23 @@ PxerHtmlParser.getUrlList =function(task){
     }
 };
 
-PxerHtmlParser.parseMangaHtml =function({task,dom,url,pw}){
-    pw.multiple =+(
-        dom.body.querySelector('img[data-src]')
-    ).innerHTML;
-};
-PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
-    pw.id           =task.id;
-    pw.type         =task.type;
-    
+
+PxerHtmlParser.parseMediumHtml =function({task,dom}){
     var illustData = dom.head.innerHTML.match(this.REGEXP['getInitData'])[0];
     illustData = this.getKeyFromStringObjectLiteral(illustData, "preload");
     illustData = this.getKeyFromStringObjectLiteral(illustData, 'illust');
-    illustData = this.getKeyFromStringObjectLiteral(illustData, pw.id);
+    illustData = this.getKeyFromStringObjectLiteral(illustData, task.id);
     illustData = JSON.parse(illustData);
 
+    var pw;
+    switch (true) {
+        case illustData.illustType===2: pw = new PxerUgoiraWorks(); break;
+        case illustData.pageCount>1: pw = new PxerMultipleWorks(); break;
+        default: pw = new PxerWorks(); break;
+    }
+
+    pw.id = task.id;
+    pw.type = this.parseIllustType(illustData.illustType);
     pw.tagList = illustData.tags.tags.map(e=>e.tag);
     pw.viewCount = illustData.viewCount;
     pw.ratedCount = illustData.bookmarkCount;
@@ -247,7 +252,7 @@ PxerHtmlParser.parseMediumHtml =function({task,dom,url,pw}){
             pw.date = src.match(PxerHtmlParser.REGEXP['getDate'])[1];
             pw.fileFormat =src.match(/\.(jpg|gif|png)$/)[1];    
     };
-
+    return pw;
 };
 PxerHtmlParser.setUgoiraMeta =function(pw, illustData) {
     var xhr = new XMLHttpRequest();
@@ -264,6 +269,21 @@ PxerHtmlParser.setUgoiraMeta =function(pw, illustData) {
         height:illustData.height,
         width:illustData.width,
     };
+};
+
+PxerHtmlParser.parseIllustType =function(type){
+    switch (type.toString()) {
+        case "0":
+        case "illust":
+            return "illust";
+        case "1":
+        case "manga":
+            return "manga";
+        case "2":
+        case "ugoira":
+            return "ugoira";
+    }
+    return null;
 }
 
 PxerHtmlParser.REGEXP ={
@@ -395,4 +415,4 @@ PxerHtmlParser.getKeyFromStringObjectLiteral =function(s, key) {
         if (pair[0] ===key) return pair[1];
     }
     throw new Error("Key not found.");
-}
+};

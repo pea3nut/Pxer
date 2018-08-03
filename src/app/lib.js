@@ -112,6 +112,9 @@ window.execPromise =function(taskList,call){
  * - member_works   自己/其他人作品列表页
  * - search         检索页
  * - index          首页
+ * - discovery      探索
+ * - rank           排行榜
+ * - bookmark_new   关注的新作品
  * - unknown        未知
  * @param {string} url
  * @return {string} - 页面类型
@@ -158,6 +161,8 @@ window.getPageType =function(url=document.URL){
         }
     }else if(URLData.path==='/search.php'){
         type ='search';
+    }else if(URLData.path==='/discovery'){
+        type ='discovery';
     }else if(URLData.path==='/'){
         type ='index';
     }else{
@@ -174,6 +179,7 @@ window.getOnePageWorkCount =function(type) {
     switch (type) {
         case "search":return 40
         case "rank":return 50
+        case "discovery":return 3000
         default:return 20
     };
 }

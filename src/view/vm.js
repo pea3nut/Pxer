@@ -46,9 +46,6 @@ afterLoad(function(){
             this.pxer.on('error',(err)=>{
                 this.errmsg =err;
             });
-            this.pxer.on('finishWorksTask',function(){
-                window.blinkTitle();
-            });
         },
         computed:{
             pageType(){
@@ -58,6 +55,7 @@ afterLoad(function(){
                     'bookmark_works'   :'收藏列表页',
                     'rank'             :'排行榜',
                     'bookmark_new'     :'关注的新作品',
+                    'discovery'        :'探索',
                     'unknown'          :'未知',
                 };
                 return map[this.pxer.pageType];
@@ -167,6 +165,9 @@ afterLoad(function(){
                 }else{
                     this.state='init';
                     this.pxer.init().then(()=>this.state='ready');
+                    this.pxer.on('finishWorksTask',()=>{
+                        window.blinkTitle();
+                    });
                 }
             },
             run(){
