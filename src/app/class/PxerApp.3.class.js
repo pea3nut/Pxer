@@ -117,14 +117,27 @@ class PxerApp extends PxerEvent{
             : this.worksNum
         )/onePageWorksNumber;
 
-        var separator =/\?/.test(document.URL)?"&":"?";
-        var extraparam = this.pageType==='rank'? "&format=json" : "";
-        for(var i=0 ;i<pageNum ;i++){
+        if (this.pageType==="discovery") {
+            var mode;
+            switch (true) {
+                case document.URL.match(/mode=(r18|safe|all)/)===null: mode = "all"; break;
+                default: mode = document.URL.match(/mode=(r18|safe|all)/)[1]; break;
+            }
+            var recomCount = (this.taskOption.limit? this.taskOption.limit: this.worksNum);
             this.taskList.push(new PxerPageRequest({
-                url:document.URL+separator+"p="+(i+1)+extraparam,
+                url : `https://www.pixiv.net/rpc/recommender.php?type=illust&sample_illusts=auto&num_recommendations=${recomCount}&page=discovery&mode=${mode}&tt=${pixiv.context.token}`,
+                type:this.pageType,
             }));
+        } else {
+            var separator =document.URL.includes("?")?"&":"?";
+            var extraparam = this.pageType==='rank'? "&format=json" : "";
+            for(var i=0 ;i<pageNum ;i++){
+                this.taskList.push(new PxerPageRequest({
+                    type:this.pageType,
+                    url :document.URL+separator+"p="+(i+1)+extraparam,
+                }));
+            };
         };
-
     };
     /**抓取页码*/
     executePageTask(){
@@ -316,6 +329,8 @@ PxerApp.getWorksNum =function(dom=document){
             // 如果没有100页进行一次二分查找
             var currpage = parseInt(dom.querySelector("ul.page-list>li.current").innerHTML);
             this.getFollowingBookmarkWorksNum(currpage, 100, 100).then((res) => resolve(res));
+        } else if (getPageType() === "discovery"){
+            resolve(3000);
         } else {
             var elt = dom.querySelector(".count-badge");
             if (!elt) resolve(null);

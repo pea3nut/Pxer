@@ -20,6 +20,7 @@ class PxerRequest{
 class PxerPageRequest extends PxerRequest{
     constructor(...argn){
         super(...argn);
+        this.type = argn[0].type;
         return denyNewAttr(this);
     }
 }
