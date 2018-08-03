@@ -1,4 +1,5 @@
 const Path =require('path');
+const NodeSass =require('node-sass');
 const Join =Path.resolve;
 const Fs =require('fs');
 const Fse = require('fs-extra');
@@ -18,6 +19,11 @@ PxerUtility.babelCopy(
     Join(__dirname,'../dist/lib.js')
 );
 
+// 编译Sass
+for (path of [Join(__dirname,'../src/view/style.scss')]) {
+    var result =NodeSass.renderSync({file : path});
+    Fs.writeFileSync(path.replace(/\.scss$/,'.css'),result.css);
+};
 
 // 拷贝View
 Fse.copySync(Join(__dirname,'../src/view/template.html') ,Join(__dirname,'../dist/view/template.html'));
