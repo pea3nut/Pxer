@@ -94,6 +94,17 @@ app.get('/pxer-dev-local.user.js', (req, res) => {
                 pxerURL: (serveHttps ? "https://" : "http://") + ADDR + ":" + PORT + "/"
             }));
 });
+app.get('/pxer-local.user.js', (req, res) => {
+    res.setHeader("Content-Type", "application/javascript");
+    res.send(
+        PxerUtility.reader(
+            fs.readFileSync(path.resolve(PROJECT_PATH, 'build/user.jstpl.ejs')).toString(),
+            {
+                isLocal: true,
+                isDev: false,
+                pxerURL: (serveHttps ? "https://" : "http://") + ADDR + ":" + PORT + "/"
+            }));
+});
 
 var server = null;
 
@@ -109,5 +120,7 @@ if (serveHttps) {
 
 server.listen(PORT, ADDR, function () {
     console.log('Server running at ' + ADDR + ":" + PORT);
-    console.log('Please install local Pxer script from ' + (serveHttps? "https://" : "http://") + ADDR + ":" + PORT + "/pxer-dev-local.user.js");
+    console.log('\x1b[33mPlease install local Pxer script:');
+    console.log("dev   : "+(serveHttps? "https://" : "http://") + ADDR + ":" + PORT + "/pxer-dev-local.user.js");
+    console.log("master: "+(serveHttps? "https://" : "http://") + ADDR + ":" + PORT + "/pxer-local.user.js");
 });

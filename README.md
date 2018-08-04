@@ -97,19 +97,16 @@ pxer-app
 npm i
 ```
 
-2. 运行本地开发服务器
+2. 运行本地开发服务器，监视文件改动并自动编译css和释出文件
 ```bash
-npm run server
+npm run dev
 ```
 
 3. 修改入口文件
 - 方法一：在Tampermonkey中修改入口文件的PXER_URL为本地服务器地址（默认为http://127.0.0.1:8125/ ）
-- 方法二(推荐)：访问http://127.0.0.1:8125/pxer-dev-local.user.js 安装自动生成的本地开发入口文件
+- 方法二(推荐)：访问 http://127.0.0.1:8125/pxer-dev-local.user.js (开发版) http://127.0.0.1:8125/pxer-local.user.js (稳定版) 安装自动生成的本地开发入口文件
 
-4. 监视Sass改动并自动编译css(如果不修改Sass和css可以跳过)
-```bash
-npm run dev
-```
+
 
 ### 构建释出文件（稳定版）
 

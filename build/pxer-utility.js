@@ -24,7 +24,7 @@ module.exports.getAllFile =function(path){
     var fileName =null;
     while(fileName =stack.shift()){
         if(Fs.statSync(Path.join(path,fileName)).isDirectory()){
-            stack.push(...Fs.readdirSync(path+fileName).map(item=>Path.join(fileName,item)))
+            stack.push(...Fs.readdirSync(Path.join(path,fileName)).map(item=>Path.join(fileName,item)))
         }else{
             fileList.push(Path.join(path,fileName));
         };
