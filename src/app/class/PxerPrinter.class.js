@@ -180,6 +180,7 @@ PxerPrinter.getWorksKey =function(works){
 PxerPrinter.prototype['generateUgoiraScript'] =function(frames) {
     var lines=[];
     var resstring;
+    var ffmpeg;
     var isWindows = ['Win32', 'Win64', 'Windows', 'WinCE'].indexOf(navigator.platform)!==-1;
     switch (this.config.ugoira_zip) {
         case "max": resstring = "1920x1080"; break;
@@ -188,12 +189,15 @@ PxerPrinter.prototype['generateUgoiraScript'] =function(frames) {
     var slashstr = "";
     if (isWindows) {
         slashstr="^";
+        ffmpeg="ffmpeg";
         lines.push("@echo off");
         lines.push("set /p ext=请输入输出文件扩展名(mp4/gif/...):");
     } else {
         slashstr="\\";
+        ffmpeg="$ffmpeg";
         lines.push("#!/bin/bash");
         lines.push("");
+        lines.push("{ hash ffmpeg 2>/dev/null && ffmpeg=ffmpeg;} || { [ -x ./ffmpeg ] && ffmpeg=./ffmpeg;} || { echo >&2 \"Failed to locate ffmpeg executable. Aborting.\"; exit 1;}");
         lines.push("read -p '请输入输出文件扩展名(mp4/gif/...):' ext");
     }
     for (key in frames) {
@@ -213,10 +217,10 @@ PxerPrinter.prototype['generateUgoiraScript'] =function(frames) {
         }
         lines.push("echo file "+ slashstr + "'" +frames[key].framedef[frames[key].framedef.length-1]['file'] + slashstr + "' >> "+confpath);
         lines.push(isWindows? "if %ext%==gif (":"if [ $ext == \"gif\"]; then");
-        lines.push("ffmpeg -f concat -i "+confpath+" -vf palettegen "+foldername+"/palette.png");
-        lines.push("ffmpeg -f concat -i "+confpath+" -i "+foldername+"/palette.png -lavfi paletteuse -framerate 30 -vsync -1 -s "+width+"x"+height+" "+foldername+"/remux." + (isWindows? "%ext%":"$ext"));
+        lines.push(ffmpeg+" -f concat -i "+confpath+" -vf palettegen "+foldername+"/palette.png");
+        lines.push(ffmpeg+" -f concat -i "+confpath+" -i "+foldername+"/palette.png -lavfi paletteuse -framerate 30 -vsync -1 -s "+width+"x"+height+" "+foldername+"/remux." + (isWindows? "%ext%":"$ext"));
         lines.push(isWindows? ") else (":"else");
-        lines.push("ffmpeg -f concat -i "+confpath+" -framerate 30 -vsync -1 -s "+width+"x"+height+" "+foldername+"/remux." + (isWindows? "%ext%":"$ext"));
+        lines.push(ffmpeg+" -f concat -i "+confpath+" -framerate 30 -vsync -1 -s "+width+"x"+height+" "+foldername+"/remux." + (isWindows? "%ext%":"$ext"));
         lines.push(isWindows? ")":"fi");
     }
     if (isWindows) {
