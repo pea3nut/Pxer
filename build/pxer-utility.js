@@ -1,6 +1,5 @@
 const Path =require('path');
 const Fs =require('fs');
-const Babel = require('babel-core');
 
 module.exports.pxerURL ='https://pxer-app.pea3nut.org/';
 module.exports.rootPath ='../';
@@ -87,6 +86,7 @@ module.exports.reader =function(tpl,data){
 };
 
 module.exports.babelCopy =function(origin,target){
+    const Babel = require('babel-core');
     Fs.writeFileSync(
         target,
         Babel.transformFileSync(origin ,{
@@ -98,6 +98,7 @@ module.exports.babelCopy =function(origin,target){
     );
 };
 module.exports.babelTransform =function(string){
+    const Babel = require('babel-core');
     if(Buffer.isBuffer(string)) string =string.toString();
     return Babel.transform(string ,{
         presets: [
