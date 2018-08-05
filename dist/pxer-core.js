@@ -12,6 +12,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -54,6 +56,7 @@ var PxerPageRequest = function (_PxerRequest) {
 
         var _this = _possibleConstructorReturn(this, (_ref2 = PxerPageRequest.__proto__ || Object.getPrototypeOf(PxerPageRequest)).call.apply(_ref2, [this].concat(argn)));
 
+        _this.type = argn[0].type;
         return _ret = denyNewAttr(_this), _possibleConstructorReturn(_this, _ret);
     }
 
@@ -530,96 +533,217 @@ PxerHtmlParser.parsePage = function (task) {
         return false;
     }
 
-    var URLData = parseURL(task.url);
-    var dom = PxerHtmlParser.HTMLParser(task.html);
-
-    // old method
     var taskList = [];
+    switch (task.type) {
+        case "bookmark_works":
+        case "member_works":
+            var dom = PxerHtmlParser.HTMLParser(task.html);
+            var elts = dom.body.querySelectorAll('a.work._work');
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
 
-    var searchResult = dom.body.querySelector("input#js-mount-point-search-result-list");
-    var elts = null;
-    if (searchResult) {
-        var searchData = JSON.parse(searchResult.getAttribute('data-items'));
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-            for (var _iterator = searchData[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                var searchItem = _step.value;
-
-                var task = new PxerWorksRequest({
-                    html: {},
-                    type: searchItem.illustType == 2 ? 'ugoira' : searchItem.illustType == 1 ? 'manga' : 'illust',
-
-                    isMultiple: searchItem.pageCount > 1,
-                    id: searchItem.illustId
-                });
-                task.url = PxerHtmlParser.getUrlList(task);
-
-                taskList.push(task);
-            }
-        } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
-        } finally {
             try {
-                if (!_iteratorNormalCompletion && _iterator.return) {
-                    _iterator.return();
+                for (var _iterator = elts[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var elt = _step.value;
+
+                    var task = new PxerWorksRequest({
+                        html: {},
+                        type: function (elt) {
+                            switch (true) {
+                                case elt.matches('.ugoku-illust'):
+                                    return "ugoira";
+                                case elt.matches('.manga'):
+                                    return "manga";
+                                default:
+                                    return "illust";
+                            }
+                        }(elt),
+                        isMultiple: elt.matches(".multiple"),
+                        id: elt.getAttribute('href').match(/illust_id=(\d+)/)[1]
+                    });
+
+                    task.url = PxerHtmlParser.getUrlList(task);
+
+                    taskList.push(task);
                 }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
             } finally {
-                if (_didIteratorError) {
-                    throw _iteratorError;
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
                 }
             }
-        }
 
-        ;
-    } else {
-        elts = dom.body.querySelectorAll('a.work._work');
+            ;
+            break;
+        case "rank":
+            var data = JSON.parse(task.html);
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
 
-        var _iteratorNormalCompletion2 = true;
-        var _didIteratorError2 = false;
-        var _iteratorError2 = undefined;
-
-        try {
-            for (var _iterator2 = elts[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                var elt = _step2.value;
-
-                var task = new PxerWorksRequest({
-                    html: {},
-                    type: elt.matches('.ugoku-illust') ? 'ugoira' : elt.matches(".manga") ? 'manga' : "illust",
-
-                    isMultiple: elt.matches(".multiple"),
-                    id: elt.getAttribute('href').match(/illust_id=(\d+)/)[1]
-                });
-
-                task.url = PxerHtmlParser.getUrlList(task);
-
-                taskList.push(task);
-            }
-        } catch (err) {
-            _didIteratorError2 = true;
-            _iteratorError2 = err;
-        } finally {
             try {
-                if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                    _iterator2.return();
+                for (var _iterator2 = data['contents'][Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var task = _step2.value;
+
+
+                    var task = new PxerWorksRequest({
+                        html: {},
+                        type: this.parseIllustType(task['illust_type']),
+                        isMultiple: task['illust_page_count'] > 1,
+                        id: task['illust_id'].toString()
+                    });
+                    task.url = PxerHtmlParser.getUrlList(task);
+
+                    taskList.push(task);
                 }
+            } catch (err) {
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
             } finally {
-                if (_didIteratorError2) {
-                    throw _iteratorError2;
+                try {
+                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                        _iterator2.return();
+                    }
+                } finally {
+                    if (_didIteratorError2) {
+                        throw _iteratorError2;
+                    }
                 }
             }
-        }
 
-        ;
-    }
+            ;
+            break;
+        case "discovery":
+            var data = JSON.parse(task.html);
+            var _iteratorNormalCompletion3 = true;
+            var _didIteratorError3 = false;
+            var _iteratorError3 = undefined;
 
-    if (elts !== null && elts.length === 0 && !searchResult) {
+            try {
+                for (var _iterator3 = data.recommendations[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                    var id = _step3.value;
+
+                    var task = new PxerWorksRequest({
+                        html: {},
+                        type: null,
+                        isMultiple: null,
+                        id: id.toString()
+                    });
+                    task.url = PxerHtmlParser.getUrlList(task);
+
+                    taskList.push(task);
+                }
+            } catch (err) {
+                _didIteratorError3 = true;
+                _iteratorError3 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                        _iterator3.return();
+                    }
+                } finally {
+                    if (_didIteratorError3) {
+                        throw _iteratorError3;
+                    }
+                }
+            }
+
+            ;
+            break;
+        case "search":
+            var dom = PxerHtmlParser.HTMLParser(task.html);
+            var searchResult = dom.body.querySelector("input#js-mount-point-search-result-list");
+            var searchData = JSON.parse(searchResult.getAttribute('data-items'));
+            var _iteratorNormalCompletion4 = true;
+            var _didIteratorError4 = false;
+            var _iteratorError4 = undefined;
+
+            try {
+                for (var _iterator4 = searchData[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                    var searchItem = _step4.value;
+
+                    var task = new PxerWorksRequest({
+                        html: {},
+                        type: this.parseIllustType(searchItem.illustType),
+                        isMultiple: searchItem.pageCount > 1,
+                        id: searchItem.illustId
+                    });
+                    task.url = PxerHtmlParser.getUrlList(task);
+                    taskList.push(task);
+                }
+            } catch (err) {
+                _didIteratorError4 = true;
+                _iteratorError4 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                        _iterator4.return();
+                    }
+                } finally {
+                    if (_didIteratorError4) {
+                        throw _iteratorError4;
+                    }
+                }
+            }
+
+            ;
+            break;
+        case "bookmark_new":
+            var dom = PxerHtmlParser.HTMLParser(task.html);
+            var data = JSON.parse(dom.body.querySelector("div#js-mount-point-latest-following").getAttribute("data-items"));
+            var _iteratorNormalCompletion5 = true;
+            var _didIteratorError5 = false;
+            var _iteratorError5 = undefined;
+
+            try {
+                for (var _iterator5 = data[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                    var task = _step5.value;
+
+
+                    var task = new PxerWorksRequest({
+                        html: {},
+                        type: this.parseIllustType(task.illustType),
+                        isMultiple: task.pageCount > 1,
+                        id: task.illustId.toString()
+                    });
+                    task.url = PxerHtmlParser.getUrlList(task);
+
+                    taskList.push(task);
+                }
+            } catch (err) {
+                _didIteratorError5 = true;
+                _iteratorError5 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                        _iterator5.return();
+                    }
+                } finally {
+                    if (_didIteratorError5) {
+                        throw _iteratorError5;
+                    }
+                }
+            }
+
+            ;
+            break;
+        default:
+            throw new Error('Unknown PageWorks type ' + task.type);
+    };
+
+    if (taskList.length < 1) {
         window['PXER_ERROR'] = 'PxerHtmlParser.parsePage: result empty';
         return false;
-    }
+    };
 
     return taskList;
 };
@@ -636,36 +760,23 @@ PxerHtmlParser.parseWorks = function (task) {
     }
     if (!task.url.every(function (item) {
         return task.html[item];
-    }) || !task.type) {
-        window['PXER_ERROR'] = 'PxerHtmlParser.parsePage: task illegal';
+    })) {
+        window['PXER_ERROR'] = 'PxerHtmlParser.parseWorks: task illegal';
         return false;
     }
-
-    var pw;
-    if (task.type === 'ugoira') {
-        pw = new PxerUgoiraWorks();
-    } else if (task.isMultiple) {
-        pw = new PxerMultipleWorks();
-    } else {
-        pw = new PxerWorks();
-    };
 
     for (var url in task.html) {
         var data = {
             dom: PxerHtmlParser.HTMLParser(task.html[url]),
-            url: url, pw: pw, task: task
+            task: task
         };
         try {
             switch (true) {
                 case url.indexOf('mode=medium') !== -1:
-                    PxerHtmlParser.parseMediumHtml(data);
-                    break;
-                case url.indexOf('mode=manga') !== -1:
-                    PxerHtmlParser.parseMangaHtml(data);
+                    var pw = PxerHtmlParser.parseMediumHtml(data);
                     break;
                 default:
-                    return false;
-                    window['PXER_ERROR'] = 'PxerHtmlParser.parsePage: count not parse task url "' + url + '"';
+                    throw new Error('PxerHtmlParser.parsePage: count not parse task url "' + url + '"');
             };
         } catch (e) {
             window['PXER_ERROR'] = task.id + ':' + e.message;
@@ -673,7 +784,6 @@ PxerHtmlParser.parseWorks = function (task) {
             return false;
         }
     };
-
     return pw;
 };
 
@@ -686,29 +796,28 @@ PxerHtmlParser.getUrlList = function (task) {
     return ["https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + task.id];
 };
 
-PxerHtmlParser.parseMangaHtml = function (_ref8) {
+PxerHtmlParser.parseMediumHtml = function (_ref8) {
     var task = _ref8.task,
-        dom = _ref8.dom,
-        url = _ref8.url,
-        pw = _ref8.pw;
-
-    pw.multiple = +dom.body.querySelector('img[data-src]').innerHTML;
-};
-PxerHtmlParser.parseMediumHtml = function (_ref9) {
-    var task = _ref9.task,
-        dom = _ref9.dom,
-        url = _ref9.url,
-        pw = _ref9.pw;
-
-    pw.id = task.id;
-    pw.type = task.type;
+        dom = _ref8.dom;
 
     var illustData = dom.head.innerHTML.match(this.REGEXP['getInitData'])[0];
     illustData = this.getKeyFromStringObjectLiteral(illustData, "preload");
     illustData = this.getKeyFromStringObjectLiteral(illustData, 'illust');
-    illustData = this.getKeyFromStringObjectLiteral(illustData, pw.id);
+    illustData = this.getKeyFromStringObjectLiteral(illustData, task.id);
     illustData = JSON.parse(illustData);
 
+    var pw;
+    switch (true) {
+        case illustData.illustType === 2:
+            pw = new PxerUgoiraWorks();break;
+        case illustData.pageCount > 1:
+            pw = new PxerMultipleWorks();break;
+        default:
+            pw = new PxerWorks();break;
+    }
+
+    pw.id = task.id;
+    pw.type = this.parseIllustType(illustData.illustType);
     pw.tagList = illustData.tags.tags.map(function (e) {
         return e.tag;
     });
@@ -728,7 +837,11 @@ PxerHtmlParser.parseMediumHtml = function (_ref9) {
 
         pw.domain = URLObj.domain;
         pw.date = src.match(PxerHtmlParser.REGEXP['getDate'])[1];
-        pw.frames = meta['body']['frames'];
+        pw.frames = {
+            framedef: meta['body']['frames'],
+            height: illustData.height,
+            width: illustData.width
+        };
     } else {
         var _src = illustData.urls.original;
         var _URLObj = parseURL(_src);
@@ -737,6 +850,22 @@ PxerHtmlParser.parseMediumHtml = function (_ref9) {
         pw.date = _src.match(PxerHtmlParser.REGEXP['getDate'])[1];
         pw.fileFormat = _src.match(/\.(jpg|gif|png)$/)[1];
     };
+    return pw;
+};
+
+PxerHtmlParser.parseIllustType = function (type) {
+    switch (type.toString()) {
+        case "0":
+        case "illust":
+            return "illust";
+        case "1":
+        case "manga":
+            return "manga";
+        case "2":
+        case "ugoira":
+            return "ugoira";
+    }
+    return null;
 };
 
 PxerHtmlParser.REGEXP = {
@@ -874,32 +1003,32 @@ PxerHtmlParser.parseObjectLiteral = function () {
 
 PxerHtmlParser.getKeyFromStringObjectLiteral = function (s, key) {
     var resolvedpairs = this.parseObjectLiteral(s);
-    var _iteratorNormalCompletion3 = true;
-    var _didIteratorError3 = false;
-    var _iteratorError3 = undefined;
+    var _iteratorNormalCompletion6 = true;
+    var _didIteratorError6 = false;
+    var _iteratorError6 = undefined;
 
     try {
-        for (var _iterator3 = resolvedpairs[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-            var pair = _step3.value;
+        for (var _iterator6 = resolvedpairs[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+            var pair = _step6.value;
 
             if (pair[0] === key) return pair[1];
         }
     } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
+        _didIteratorError6 = true;
+        _iteratorError6 = err;
     } finally {
         try {
-            if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                _iterator3.return();
+            if (!_iteratorNormalCompletion6 && _iterator6.return) {
+                _iterator6.return();
             }
         } finally {
-            if (_didIteratorError3) {
-                throw _iteratorError3;
+            if (_didIteratorError6) {
+                throw _iteratorError6;
             }
         }
     }
 
-    throw new Error("Key not found.");
+    return false;
 };
 
 var PxerPrinter = function () {
@@ -955,15 +1084,15 @@ var PxerPrinter = function () {
  * @return {void}
  * */
 PxerPrinter.prototype['fillAddress'] = function (worksList) {
-    var _iteratorNormalCompletion4 = true;
-    var _didIteratorError4 = false;
-    var _iteratorError4 = undefined;
+    var _iteratorNormalCompletion7 = true;
+    var _didIteratorError7 = false;
+    var _iteratorError7 = undefined;
 
     try {
-        for (var _iterator4 = worksList[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+        for (var _iterator7 = worksList[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
             var _address;
 
-            var works = _step4.value;
+            var works = _step7.value;
 
             var configKey = PxerPrinter.getWorksKey(works);
             if (configKey === 'ugoira_zip' && this.config['ugoira_frames'] === 'yes') {
@@ -974,16 +1103,16 @@ PxerPrinter.prototype['fillAddress'] = function (worksList) {
             (_address = this.address).push.apply(_address, _toConsumableArray(PxerPrinter.countAddress(works, this.config[configKey])));
         }
     } catch (err) {
-        _didIteratorError4 = true;
-        _iteratorError4 = err;
+        _didIteratorError7 = true;
+        _iteratorError7 = err;
     } finally {
         try {
-            if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                _iterator4.return();
+            if (!_iteratorNormalCompletion7 && _iterator7.return) {
+                _iterator7.return();
             }
         } finally {
-            if (_didIteratorError4) {
-                throw _iteratorError4;
+            if (_didIteratorError7) {
+                throw _iteratorError7;
             }
         }
     }
@@ -1005,13 +1134,13 @@ PxerPrinter.prototype['fillTaskInfo'] = function (worksList) {
         worksNum = _fill2[5],
         address = _fill2[6];
 
-    var _iteratorNormalCompletion5 = true;
-    var _didIteratorError5 = false;
-    var _iteratorError5 = undefined;
+    var _iteratorNormalCompletion8 = true;
+    var _didIteratorError8 = false;
+    var _iteratorError8 = undefined;
 
     try {
-        for (var _iterator5 = worksList[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-            var works = _step5.value;
+        for (var _iterator8 = worksList[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+            var works = _step8.value;
 
             var configKey = PxerPrinter.getWorksKey(works);
             if (this.config[configKey] === 'no') continue;
@@ -1047,16 +1176,16 @@ PxerPrinter.prototype['fillTaskInfo'] = function (worksList) {
             };
         }
     } catch (err) {
-        _didIteratorError5 = true;
-        _iteratorError5 = err;
+        _didIteratorError8 = true;
+        _iteratorError8 = err;
     } finally {
         try {
-            if (!_iteratorNormalCompletion5 && _iterator5.return) {
-                _iterator5.return();
+            if (!_iteratorNormalCompletion8 && _iterator8.return) {
+                _iterator8.return();
             }
         } finally {
-            if (_didIteratorError5) {
-                throw _iteratorError5;
+            if (_didIteratorError8) {
+                throw _iteratorError8;
             }
         }
     }
@@ -1076,7 +1205,15 @@ PxerPrinter.prototype['print'] = function () {
             alert('Pxer:\n浏览器拦截了弹出窗口，请检查浏览器提示，设置允许此站点的弹出式窗口。');
             return;
         };
-        var str = ['<pre>', '/** 这个页面是动图压缩包的动画参数，目前Pxer还无法将动图压缩包打包成GIF，请寻找其他第三方软件 */', JSON.stringify(this.ugoiraFrames, null, 4), '</pre>'];
+
+        var scriptname = "";
+        switch (navigator.platform) {
+            case "Win32":
+                scriptname = "bat批处理";break;
+            default:
+                scriptname = "bash";break;
+        }
+        var str = ['<p>/** 这个页面是自动生成的使用FFmpeg自行合成动图的' + scriptname + '脚本，详细使用教程见<a href="http://pxer.pea3nut.org/md/ugoira_concat" target="_blank" >http://pxer.pea3nut.org/md/ugoira_concat</a> */</p>', '<textarea style="height:100%; width:100%" readonly>'].concat(_toConsumableArray(this.generateUgoiraScript(this.ugoiraFrames)), ['</textarea>']);
         win.document.write(str.join('\n'));
     };
 
@@ -1087,7 +1224,7 @@ PxerPrinter.prototype['print'] = function () {
             alert('Pxer:\n浏览器拦截了弹出窗口，请检查浏览器提示，设置允许此站点的弹出式窗口。');
             return;
         };
-        var _str = ['<pre>', '/** 这个页面是抓取到的下载地址，你可以将它们复制到第三方下载工具如QQ旋风中下载 */', '/**', this.taskInfo.replace(/\<br \/\>/g, ''), '*/', this.address.join('\n'), '</pre>'];
+        var _str = ['<p>', '/** 这个页面是抓取到的下载地址，你可以将它们复制到第三方下载工具如QQ旋风中下载 */<br />', this.taskInfo, '</p>', '<textarea style="height:100%; width:100%" readonly>', this.address.join('\n'), '</textarea>'];
         _win.document.write(_str.join('\n'));
     }
 };
@@ -1107,6 +1244,91 @@ PxerPrinter.getWorksKey = function (works) {
     };
     return configKey;
 };
+
+/**
+ * 根据动图参数，生成ffmpeg脚本
+ * @param 动图参数
+ * @return {String[]} 生成的脚本行
+ * @see PxerPrinter.prototype['print']
+ */
+PxerPrinter.prototype['generateUgoiraScript'] = function (frames) {
+    var lines = [];
+    var resstring;
+    var ffmpeg;
+    var isWindows = ['Win32', 'Win64', 'Windows', 'WinCE'].indexOf(navigator.platform) !== -1;
+    switch (this.config.ugoira_zip) {
+        case "max":
+            resstring = "1920x1080";break;
+        case "600p":
+            resstring = "600x338";break;
+    }
+    var slashstr = "";
+    if (isWindows) {
+        slashstr = "^";
+        ffmpeg = "ffmpeg";
+        lines.push("@echo off");
+        lines.push("set /p ext=请输入输出文件扩展名(mp4/gif/...):");
+    } else {
+        slashstr = "\\";
+        ffmpeg = "$ffmpeg";
+        lines.push("#!/bin/bash");
+        lines.push("");
+        lines.push("{ hash ffmpeg 2>/dev/null && ffmpeg=ffmpeg;} || { [ -x ./ffmpeg ] && ffmpeg=./ffmpeg;} || { echo >&2 \"Failed to locate ffmpeg executable. Aborting.\"; exit 1;}");
+        lines.push("read -p '请输入输出文件扩展名(mp4/gif/...):' ext");
+    }
+    for (var key in frames) {
+        var foldername = key + "_ugoira" + resstring;
+        var confpath = foldername + "/config.txt";
+        var height = frames[key].height;
+        var width = frames[key].width;
+        if (this.config.ugoira_zip === "600p") {
+            var scale = Math.max(height, width) / 600;
+            height = parseInt(height / scale);
+            width = parseInt(width / scale);
+        }
+        lines.push(isWindows ? "del " + foldername + "\\config.txt >nul 2>nul" : "rm " + foldername + "/config.txt &> /dev/null");
+        var _iteratorNormalCompletion9 = true;
+        var _didIteratorError9 = false;
+        var _iteratorError9 = undefined;
+
+        try {
+            for (var _iterator9 = frames[key].framedef[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+                var frame = _step9.value;
+
+                lines.push("echo file " + slashstr + "'" + frame['file'] + slashstr + "' >> " + confpath);
+                lines.push("echo duration " + frame['delay'] / 1000 + " >> " + confpath);
+            }
+        } catch (err) {
+            _didIteratorError9 = true;
+            _iteratorError9 = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion9 && _iterator9.return) {
+                    _iterator9.return();
+                }
+            } finally {
+                if (_didIteratorError9) {
+                    throw _iteratorError9;
+                }
+            }
+        }
+
+        lines.push("echo file " + slashstr + "'" + frames[key].framedef[frames[key].framedef.length - 1]['file'] + slashstr + "' >> " + confpath);
+        lines.push(isWindows ? "if %ext%==gif (" : "if [ $ext == \"gif\"]; then");
+        lines.push(ffmpeg + " -f concat -i " + confpath + " -vf palettegen " + foldername + "/palette.png");
+        lines.push(ffmpeg + " -f concat -i " + confpath + " -i " + foldername + "/palette.png -lavfi paletteuse -framerate 30 -vsync -1 -s " + width + "x" + height + " " + foldername + "/remux." + (isWindows ? "%ext%" : "$ext"));
+        lines.push(isWindows ? ") else (" : "else");
+        lines.push(ffmpeg + " -f concat -i " + confpath + " -framerate 30 -vsync -1 -s " + width + "x" + height + " " + foldername + "/remux." + (isWindows ? "%ext%" : "$ext"));
+        lines.push(isWindows ? ")" : "fi");
+    }
+    if (isWindows) {
+        lines.push("echo 完成 & pause");
+    } else {
+        lines.push("read  -n 1 -p \"完成，按任意键退出\" m && echo");
+    }
+    return lines;
+};
+
 /**返回默认的配置对象*/
 PxerPrinter.defaultConfig = function () {
     return {
@@ -1233,9 +1455,9 @@ var PxerThread = function (_PxerEvent) {
      * @param {Object} config 线程的配置信息
      * */
     function PxerThread() {
-        var _ref10 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-            id = _ref10.id,
-            config = _ref10.config;
+        var _ref9 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+            id = _ref9.id,
+            config = _ref9.config;
 
         _classCallCheck(this, PxerThread);
 
@@ -1433,13 +1655,13 @@ var PxerThreadManager = function (_PxerEvent2) {
      * @param {number} thread  - 线程数
      * */
     function PxerThreadManager() {
-        var _ref11 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-            _ref11$timeout = _ref11.timeout,
-            timeout = _ref11$timeout === undefined ? 5000 : _ref11$timeout,
-            _ref11$retry = _ref11.retry,
-            retry = _ref11$retry === undefined ? 3 : _ref11$retry,
-            _ref11$thread = _ref11.thread,
-            thread = _ref11$thread === undefined ? 8 : _ref11$thread;
+        var _ref10 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+            _ref10$timeout = _ref10.timeout,
+            timeout = _ref10$timeout === undefined ? 5000 : _ref10$timeout,
+            _ref10$retry = _ref10.retry,
+            retry = _ref10$retry === undefined ? 3 : _ref10$retry,
+            _ref10$thread = _ref10.thread,
+            thread = _ref10$thread === undefined ? 8 : _ref10$thread;
 
         _classCallCheck(this, PxerThreadManager);
 
@@ -1529,13 +1751,13 @@ PxerThreadManager.prototype['run'] = function () {
         return false;
     };
 
-    var _iteratorNormalCompletion6 = true;
-    var _didIteratorError6 = false;
-    var _iteratorError6 = undefined;
+    var _iteratorNormalCompletion10 = true;
+    var _didIteratorError10 = false;
+    var _iteratorError10 = undefined;
 
     try {
         var _loop = function _loop() {
-            var thread = _step6.value;
+            var thread = _step10.value;
 
 
             thread.on('load', function (data) {
@@ -1550,20 +1772,20 @@ PxerThreadManager.prototype['run'] = function () {
             next(_this8, thread);
         };
 
-        for (var _iterator6 = this.threads[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+        for (var _iterator10 = this.threads[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
             _loop();
         }
     } catch (err) {
-        _didIteratorError6 = true;
-        _iteratorError6 = err;
+        _didIteratorError10 = true;
+        _iteratorError10 = err;
     } finally {
         try {
-            if (!_iteratorNormalCompletion6 && _iterator6.return) {
-                _iterator6.return();
+            if (!_iteratorNormalCompletion10 && _iterator10.return) {
+                _iterator10.return();
             }
         } finally {
-            if (_didIteratorError6) {
-                throw _iteratorError6;
+            if (_didIteratorError10) {
+                throw _iteratorError10;
             }
         }
     }
@@ -1619,8 +1841,9 @@ var PxerApp = function (_PxerEvent3) {
         /**
          * 页面的作品数量
          * @type {number|null}
+         * @see PxerApp.init
          * */
-        _this9.worksNum = PxerApp.getWorksNum();
+        _this9.worksNum = null;
 
         /**
          * 任务队列
@@ -1672,13 +1895,46 @@ var PxerApp = function (_PxerEvent3) {
     }
 
     _createClass(PxerApp, [{
-        key: 'stop',
+        key: 'init',
 
+
+        /**
+         * 初始化时的耗时任务
+         */
+        value: function () {
+            var _ref11 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+                return regeneratorRuntime.wrap(function _callee$(_context) {
+                    while (1) {
+                        switch (_context.prev = _context.next) {
+                            case 0:
+                                _context.next = 2;
+                                return PxerApp.getWorksNum(document);
+
+                            case 2:
+                                this.worksNum = _context.sent;
+
+                            case 3:
+                            case 'end':
+                                return _context.stop();
+                        }
+                    }
+                }, _callee, this);
+            }));
+
+            function init() {
+                return _ref11.apply(this, arguments);
+            }
+
+            return init;
+        }()
 
         /**
          * 停止执行当前任务
          * 调用后仍会触发对应的finish*事件
          * */
+
+    }, {
+        key: 'stop',
         value: function stop() {
             this.dispatch('stop');
             this.ptm.stop();
@@ -1694,15 +1950,32 @@ var PxerApp = function (_PxerEvent3) {
                 return false;
             };
 
-            var onePageWorksNumber = this.pageType === 'search' ? 40 : 20;
+            var onePageWorksNumber = getOnePageWorkCount(this.pageType);
 
             var pageNum = Math.ceil(this.taskOption.limit ? this.taskOption.limit : this.worksNum) / onePageWorksNumber;
 
-            var separator = /\?/.test(document.URL) ? "&" : "?";
-            for (var i = 0; i < pageNum; i++) {
+            if (this.pageType === "discovery") {
+                var mode;
+                switch (true) {
+                    case document.URL.match(/mode=(r18|safe|all)/) === null:
+                        mode = "all";break;
+                    default:
+                        mode = document.URL.match(/mode=(r18|safe|all)/)[1];break;
+                }
+                var recomCount = this.taskOption.limit ? this.taskOption.limit : this.worksNum;
                 this.taskList.push(new PxerPageRequest({
-                    url: document.URL + separator + "p=" + (i + 1)
+                    url: 'https://www.pixiv.net/rpc/recommender.php?type=illust&sample_illusts=auto&num_recommendations=' + recomCount + '&page=discovery&mode=' + mode + '&tt=' + pixiv.context.token,
+                    type: this.pageType
                 }));
+            } else {
+                var separator = document.URL.includes("?") ? "&" : "?";
+                var extraparam = this.pageType === 'rank' ? "&format=json" : "";
+                for (var i = 0; i < pageNum; i++) {
+                    this.taskList.push(new PxerPageRequest({
+                        type: this.pageType,
+                        url: document.URL + separator + "p=" + (i + 1) + extraparam
+                    }));
+                };
             };
         }
     }, {
@@ -1742,13 +2015,13 @@ var PxerApp = function (_PxerEvent3) {
             });
             ptm.on('load', function () {
                 var parseResult = [];
-                var _iteratorNormalCompletion7 = true;
-                var _didIteratorError7 = false;
-                var _iteratorError7 = undefined;
+                var _iteratorNormalCompletion11 = true;
+                var _didIteratorError11 = false;
+                var _iteratorError11 = undefined;
 
                 try {
-                    for (var _iterator7 = _this10.taskList[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-                        var result = _step7.value;
+                    for (var _iterator11 = _this10.taskList[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
+                        var result = _step11.value;
 
                         result = PxerHtmlParser.parsePage(result);
                         if (!result) {
@@ -1758,16 +2031,16 @@ var PxerApp = function (_PxerEvent3) {
                         parseResult.push.apply(parseResult, _toConsumableArray(result));
                     }
                 } catch (err) {
-                    _didIteratorError7 = true;
-                    _iteratorError7 = err;
+                    _didIteratorError11 = true;
+                    _iteratorError11 = err;
                 } finally {
                     try {
-                        if (!_iteratorNormalCompletion7 && _iterator7.return) {
-                            _iterator7.return();
+                        if (!_iteratorNormalCompletion11 && _iterator11.return) {
+                            _iterator11.return();
                         }
                     } finally {
-                        if (_didIteratorError7) {
-                            throw _iteratorError7;
+                        if (_didIteratorError11) {
+                            throw _iteratorError11;
                         }
                     }
                 }
@@ -1842,13 +2115,13 @@ var PxerApp = function (_PxerEvent3) {
                 _this11.resultSet = [];
                 var tl = _this11.taskList.slice( //限制结果集条数
                 0, _this11.taskOption.limit ? _this11.taskOption.limit : undefined);
-                var _iteratorNormalCompletion8 = true;
-                var _didIteratorError8 = false;
-                var _iteratorError8 = undefined;
+                var _iteratorNormalCompletion12 = true;
+                var _didIteratorError12 = false;
+                var _iteratorError12 = undefined;
 
                 try {
-                    for (var _iterator8 = tl[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-                        var pwr = _step8.value;
+                    for (var _iterator12 = tl[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
+                        var pwr = _step12.value;
 
                         if (!pwr.completed) continue; //跳过未完成的任务
                         var pw = PxerHtmlParser.parseWorks(pwr);
@@ -1865,16 +2138,16 @@ var PxerApp = function (_PxerEvent3) {
                         _this11.resultSet.push(pw);
                     }
                 } catch (err) {
-                    _didIteratorError8 = true;
-                    _iteratorError8 = err;
+                    _didIteratorError12 = true;
+                    _iteratorError12 = err;
                 } finally {
                     try {
-                        if (!_iteratorNormalCompletion8 && _iterator8.return) {
-                            _iterator8.return();
+                        if (!_iteratorNormalCompletion12 && _iterator12.return) {
+                            _iterator12.return();
                         }
                     } finally {
-                        if (_didIteratorError8) {
-                            throw _iteratorError8;
+                        if (_didIteratorError12) {
+                            throw _iteratorError12;
                         }
                     }
                 }
@@ -1933,7 +2206,6 @@ var PxerApp = function (_PxerEvent3) {
 
         /**
          * 输出抓取到的作品
-         * @return {string}
          * */
         value: function printWorks() {
             var pp = new PxerPrinter(this.ppConfig);
@@ -1951,42 +2223,86 @@ var PxerApp = function (_PxerEvent3) {
 ;
 
 /**直接抓取本页面的作品*/
-PxerApp.prototype['getThis'] = function () {
+PxerApp.prototype['getThis'] = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
     var _this12 = this;
 
-    // 生成任务对象
-    var initdata = document.head.innerHTML.match(PxerHtmlParser.REGEXP['getInitData'])[0];
-    var id = document.URL.match(/illust_id=(\d+)/)[1];
+    var initdata, id, type, pageCount, pwr;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        while (1) {
+            switch (_context2.prev = _context2.next) {
+                case 0:
+                    // 生成任务对象
+                    initdata = document.head.innerHTML.match(PxerHtmlParser.REGEXP['getInitData'])[0];
+                    id = document.URL.match(/illust_id=(\d+)/)[1];
 
-    initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, "preload");
-    initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, 'illust');
-    initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, id);
-    initdata = JSON.parse(initdata);
 
-    var type = initdata.illustType;
-    var pageCount = initdata.pageCount;
-    var pwr = new PxerWorksRequest({
-        isMultiple: pageCount > 1,
-        id: id
-    }); //[manga|ugoira|illust]
-    switch (type) {
-        case 2:
-            pwr.type = 'ugoira';break;
-        case 1:
-            pwr.type = 'illust';break;
-        case 0:
-            pwr.type = 'manga';break;
-        default:
-            throw new Error("Unknown work type. id:" + id);
-    }
-    pwr.url = PxerHtmlParser.getUrlList(pwr);
-    // 添加执行
-    this.taskList.push(pwr);
-    this.one('finishWorksTask', function () {
-        return _this12.printWorks();
-    });
-    this.executeWroksTask();
-};
+                    initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, "preload");
+                    initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, 'illust');
+                    initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, id);
+
+                    if (!initdata) {
+                        _context2.next = 9;
+                        break;
+                    }
+
+                    initdata = JSON.parse(initdata);
+                    _context2.next = 14;
+                    break;
+
+                case 9:
+                    _context2.next = 11;
+                    return fetch("https://www.pixiv.net/ajax/illust/" + id);
+
+                case 11:
+                    _context2.next = 13;
+                    return _context2.sent.json();
+
+                case 13:
+                    initdata = _context2.sent['body'];
+
+                case 14:
+                    ;
+
+                    type = initdata.illustType;
+                    pageCount = initdata.pageCount;
+                    pwr = new PxerWorksRequest({
+                        isMultiple: pageCount > 1,
+                        id: id
+                    }); //[manga|ugoira|illust]
+
+                    _context2.t0 = type;
+                    _context2.next = _context2.t0 === 2 ? 21 : _context2.t0 === 1 ? 23 : _context2.t0 === 0 ? 25 : 27;
+                    break;
+
+                case 21:
+                    pwr.type = 'ugoira';return _context2.abrupt('break', 28);
+
+                case 23:
+                    pwr.type = 'illust';return _context2.abrupt('break', 28);
+
+                case 25:
+                    pwr.type = 'manga';return _context2.abrupt('break', 28);
+
+                case 27:
+                    throw new Error("Unknown work type. id:" + id);
+
+                case 28:
+                    pwr.url = PxerHtmlParser.getUrlList(pwr);
+                    // 添加执行
+                    this.taskList = [pwr];
+                    this.one('finishWorksTask', function () {
+                        return _this12.printWorks();
+                    });
+                    this.executeWroksTask();
+                    return _context2.abrupt('return', true);
+
+                case 33:
+                case 'end':
+                    return _context2.stop();
+            }
+        }
+    }, _callee2, this);
+}));
 
 /**
  * 获取当前页面的总作品数
@@ -1994,9 +2310,69 @@ PxerApp.prototype['getThis'] = function () {
  * @return {number} - 作品数
  * */
 PxerApp.getWorksNum = function () {
+    var _this13 = this;
+
     var dom = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : document;
 
-    var elt = dom.querySelector(".count-badge");
-    if (!elt) return null;
-    return parseInt(elt.innerHTML);
+    return new Promise(function (resolve, reject) {
+        if (getPageType() === "rank") {
+            var queryurl = dom.URL + "&format=json";
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", queryurl);
+            xhr.onload = function (e) {
+                return resolve(JSON.parse(xhr.responseText)['rank_total']);
+            };
+            xhr.send();
+        } else if (getPageType() === "bookmark_new") {
+            // 关注的新作品页数最多100页
+            // 因为一般用户关注的用户数作品都足够填满100页，所以从100开始尝试页数
+            // 如果没有100页进行一次二分查找
+            var currpage = parseInt(dom.querySelector("ul.page-list>li.current").innerHTML);
+            _this13.getFollowingBookmarkWorksNum(currpage, 100, 100).then(function (res) {
+                return resolve(res);
+            });
+        } else if (getPageType() === "discovery") {
+            resolve(3000);
+        } else {
+            var elt = dom.querySelector(".count-badge");
+            if (!elt) resolve(null);
+            resolve(parseInt(elt.innerHTML));
+        }
+    });
+};
+
+/**
+ * 获取关注的新作品页的总作品数
+ * @param {number} min - 最小页数
+ * @param {number} max - 最大页数
+ * @param {number} cur - 当前页数
+ * @return {number} - 作品数
+ */
+PxerApp.getFollowingBookmarkWorksNum = function (min, max, cur) {
+    var _this14 = this;
+
+    return new Promise(function (resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "https://www.pixiv.net/bookmark_new_illust.php?p=" + cur);
+        xhr.onload = function (e) {
+            var html = xhr.response;
+            var el = document.createElement("div");
+            el.innerHTML = html;
+            if (min === max) {
+                var lastworkcount = JSON.parse(el.querySelector("div#js-mount-point-latest-following").getAttribute("data-items")).length;
+                resolve((min - 1) * 20 + lastworkcount);
+            } else {
+                if (!!el.querySelector("div._no-item")) {
+                    _this14.getFollowingBookmarkWorksNum(min, cur - 1, parseInt((min + cur) / 2)).then(function (res) {
+                        return resolve(res);
+                    });
+                } else {
+                    _this14.getFollowingBookmarkWorksNum(cur, max, parseInt((cur + max + 1) / 2)).then(function (res) {
+                        return resolve(res);
+                    });
+                }
+            }
+        };
+        xhr.send();
+    });
 };

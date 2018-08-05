@@ -17,9 +17,10 @@ afterLoad(function () {
                     return {
                         pxer: new PxerApp(),
                         showAll: false,
-                        state: 'loaded', //[loaded|ready|page|works|finish|re-ready|stop|error]
+                        state: 'standby', //[standby|init|ready|page|works|finish|re-ready|stop|error]
                         stateMap: {
-                            loaded: '初始完毕',
+                            standby: '待命',
+                            init: '初始化',
                             ready: '就绪',
                             page: '抓取页码中',
                             works: '抓取作品中',
@@ -41,18 +42,26 @@ afterLoad(function () {
                             stopId: ''
                         },
                         showLoadBtn: true,
-                        errmsg: ''
+                        errmsg: '',
+                        analytics: new PxerAnalytics()
                     };
                 },
                 created: function created() {
                     var _this = this;
 
                     window['PXER_VM'] = this;
+                    window['PXER_ANALYTICS'] = this.analytics;
+                    this.analytics.postData("pxer.app.created", {});
                     this.pxer.on('error', function (err) {
                         _this.errmsg = err;
                     });
-                    this.pxer.on('finishWorksTask', function () {
-                        window.blinkTitle();
+                    this.pxer.on('finishWorksTask', function (result) {
+                        _this.analytics.postData("pxer.app.finish", {
+                            result_count: result.length,
+                            ptm_config: _this.pxer.ptmConfig,
+                            task_option: _this.pxer.taskOption,
+                            error_count: _this.pxer.failList.length
+                        });
                     });
                 },
 
@@ -62,6 +71,9 @@ afterLoad(function () {
                             'member_works': '作品列表页',
                             'search': '检索页',
                             'bookmark_works': '收藏列表页',
+                            'rank': '排行榜',
+                            'bookmark_new': '关注的新作品',
+                            'discovery': '探索',
                             'unknown': '未知'
                         };
                         return map[this.pxer.pageType];
@@ -74,7 +86,8 @@ afterLoad(function () {
                         return this.pxer.taskOption.limit || this.pxer.worksNum;
                     },
                     taskCount: function taskCount() {
-                        return Math.ceil(this.worksNum / 20) + +this.worksNum;
+                        var pageWorkCount = getOnePageWorkCount(this.pxer.pageType);
+                        return Math.ceil(this.worksNum / pageWorkCount) + +this.worksNum;
                     },
                     finishCount: function finishCount() {
                         if (this.state === 'page') {
@@ -166,19 +179,34 @@ afterLoad(function () {
                     load: function load() {
                         var _this4 = this;
 
+                        this.state = 'init';
                         if (this.pxer.pageType === 'works_medium') {
-                            this.pxer.getThis();
                             this.showLoadBtn = false;
                             this.pxer.one('finishWorksTask', function () {
-                                return _this4.showLoadBtn = true;
+                                _this4.showLoadBtn = true;
+                                _this4.state = 'standby';
                             });
+                            this.pxer.getThis();
                         } else {
-                            this.state = 'ready';
+                            this.pxer.init().then(function () {
+                                return _this4.state = 'ready';
+                            });
+                            this.pxer.on('finishWorksTask', function () {
+                                window.blinkTitle();
+                            });
                         }
+                        this.analytics.postData("pxer.app.load", {
+                            page_type: this.pxer.pageType
+                        });
                     },
                     run: function run() {
                         var _this5 = this;
 
+                        this.analytics.postData("pxer.app.start", {
+                            ptm_config: this.pxer.ptmConfig,
+                            task_option: this.pxer.taskOption,
+                            vm_state: this.state
+                        });
                         if (this.state === 'ready') {
                             this.state = 'page';
                             this.pxer.initPageTask();
@@ -203,12 +231,31 @@ afterLoad(function () {
                     stop: function stop() {
                         this.state = 'stop';
                         this.pxer.stop();
+                        this.analytics.postData("pxer.app.halt", {
+                            task_count: this.taskCount,
+                            finish_count: this.finishCount
+                        });
                     },
                     count: function count() {
                         this.taskInfo = this.pxer.getWorksInfo();
                     },
+                    printWorks: function printWorks() {
+                        this.pxer.printWorks();
+                        var sanitizedpfConfig = {};
+                        for (var key in this.pxer.pfConfig) {
+                            sanitizedpfConfig[key] = this.pxer.pfConfig[key].length ? this.pxer.pfConfig[key].length : this.pxer.pfConfig[key];
+                        }
+                        this.analytics.postData("pxer.app.print", {
+                            pp_config: this.pxer.ppConfig,
+                            pf_config: sanitizedpfConfig,
+                            task_option: this.pxer.taskOption
+                        });
+                    },
                     useTaskOption: function useTaskOption() {
                         this.showTaskOption = false;
+                        this.analytics.postData("pxer.app.taskoption", {
+                            task_option: this.taskOption
+                        });
                         Object.assign(this.pxer.taskOption, this.taskOption);
                     },
                     formatFailType: function formatFailType(type) {
@@ -235,6 +282,9 @@ afterLoad(function () {
                         var _tryFailWroksList;
 
                         (_tryFailWroksList = this.tryFailWroksList).push.apply(_tryFailWroksList, _toConsumableArray(this.checkedFailWorksList));
+                        this.analytics.postData("pxer.app.reready", {
+                            checked_works: this.checkedFailWorksList
+                        });
                         this.checkedFailWorksList = [];
                         this.state = 're-ready';
                     },
