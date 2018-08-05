@@ -200,7 +200,7 @@ PxerPrinter.prototype['generateUgoiraScript'] =function(frames) {
         lines.push("{ hash ffmpeg 2>/dev/null && ffmpeg=ffmpeg;} || { [ -x ./ffmpeg ] && ffmpeg=./ffmpeg;} || { echo >&2 \"Failed to locate ffmpeg executable. Aborting.\"; exit 1;}");
         lines.push("read -p '请输入输出文件扩展名(mp4/gif/...):' ext");
     }
-    for (key in frames) {
+    for (let key in frames) {
         var foldername = key + "_ugoira" + resstring;
         var confpath = foldername + "/config.txt";
         var height = frames[key].height;
@@ -211,7 +211,7 @@ PxerPrinter.prototype['generateUgoiraScript'] =function(frames) {
             width = parseInt(width/scale);
         }
         lines.push(isWindows?("del "+ foldername + "\\config.txt >nul 2>nul"):("rm "+ foldername + "/config.txt &> /dev/null"));
-        for (frame of frames[key].framedef) {
+        for (let frame of frames[key].framedef) {
             lines.push("echo file "+slashstr+"'" + frame['file']+ slashstr +"' >> "+confpath);
             lines.push("echo duration " + frame['delay']/1000 + " >> "+ confpath);
         }

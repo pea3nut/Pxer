@@ -228,7 +228,7 @@ afterLoad(function(){
             printWorks(){
                 this.pxer.printWorks();
                 var sanitizedpfConfig = {};
-                for (key in this.pxer.pfConfig) {
+                for (let key in this.pxer.pfConfig) {
                     sanitizedpfConfig[key] = this.pxer.pfConfig[key].length?this.pxer.pfConfig[key].length:this.pxer.pfConfig[key];
                 }
                 this.analytics.postData("pxer.app.print", {
