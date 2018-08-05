@@ -1,5 +1,12 @@
 .pxer-app{
-    @import "bootstrap-4.0.0-alpha.6/diy";
+    @import "node_modules/bootstrap/scss/variables";
+    @import "node_modules/bootstrap/scss/mixins";
+    @import "node_modules/bootstrap/scss/custom";
+    @import "node_modules/bootstrap/scss/reboot";
+    @import "node_modules/bootstrap/scss/tables";
+    @import "node_modules/bootstrap/scss/forms";
+    @import "node_modules/bootstrap/scss/buttons";
+    
     max-width: 970px;
     width: 100%;
     margin: 0 auto;
