@@ -92,14 +92,15 @@ PxerHtmlParser.parsePage = function (task) {
             };
             break;
         case "bookmark_new":
-            var data = JSON.parse(task.html);
-            for (var task of data['contents']) {
+            var dom = PxerHtmlParser.HTMLParser(task.html);
+            var data = JSON.parse(dom.body.querySelector("div#js-mount-point-latest-following").getAttribute("data-items"));
+            for (var task of data) {
                 
                 var task = new PxerWorksRequest({
                     html      : {},
-                    type      : this.parseIllustType(task['illust_type']),
-                    isMultiple: task['illust_page_count'] > 1,
-                    id        : task['illust_id'].toString(),
+                    type      : this.parseIllustType(task.illustType),
+                    isMultiple: task.pageCount > 1,
+                    id        : task.illustId.toString(),
                 });
                 task.url = PxerHtmlParser.getUrlList(task);
 
