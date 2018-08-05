@@ -268,47 +268,39 @@ class PxerApp extends PxerEvent{
 };
 
 /**直接抓取本页面的作品*/
-PxerApp.prototype['getThis'] =function(){
+PxerApp.prototype['getThis'] =async function(){
     // 生成任务对象
-    return new Promise((resolve, reject)=>{
-        var initdata = document.head.innerHTML.match(PxerHtmlParser.REGEXP['getInitData'])[0];
-        var id = document.URL.match(/illust_id=(\d+)/)[1];
+    var initdata = document.head.innerHTML.match(PxerHtmlParser.REGEXP['getInitData'])[0];
+    var id = document.URL.match(/illust_id=(\d+)/)[1];
+
+    initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, "preload");
+    initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, 'illust');
+    initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, id);
     
-        initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, "preload");
-        initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, 'illust');
-        initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, id);
-        
-        let resolvedata =(data)=>{
-            var type = data.illustType;
-            var pageCount = data.pageCount;
-            var pwr =new PxerWorksRequest({
-                isMultiple  :pageCount>1,
-                id          :id,
-            });//[manga|ugoira|illust]
-            switch (type) {
-                case 2: pwr.type ='ugoira'; break;
-                case 1: pwr.type ='illust'; break;
-                case 0: pwr.type ='manga';  break;
-                default:throw new Error("Unknown work type. id:" +id);
-            }
-            pwr.url =PxerHtmlParser.getUrlList(pwr);
-            // 添加执行
-            this.taskList = [pwr];
-            this.one('finishWorksTask',()=>this.printWorks());
-            this.executeWroksTask();
-            resolve();
-        };
-        
-        if (initdata) {
-            resolvedata(JSON.parse(initdata));
-        } else {
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "https://www.pixiv.net/ajax/illust/"+ id);
-            xhr.onload =()=>resolvedata(JSON.parse(xhr.responseText)['body']);
-            xhr.onerror=()=>reject();
-            xhr.send();
-        };
-    });
+    if (initdata) {
+        initdata = JSON.parse(initdata);
+    } else {
+        initdata = (await (await fetch("https://www.pixiv.net/ajax/illust/"+ id)).json())['body'];
+    };
+
+    var type = initdata.illustType;
+    var pageCount = initdata.pageCount;
+    var pwr =new PxerWorksRequest({
+        isMultiple  :pageCount>1,
+        id          :id,
+    });//[manga|ugoira|illust]
+    switch (type) {
+        case 2: pwr.type ='ugoira'; break;
+        case 1: pwr.type ='illust'; break;
+        case 0: pwr.type ='manga';  break;
+        default:throw new Error("Unknown work type. id:" +id);
+    }
+    pwr.url =PxerHtmlParser.getUrlList(pwr);
+    // 添加执行
+    this.taskList = [pwr];
+    this.one('finishWorksTask',()=>this.printWorks());
+    this.executeWroksTask();
+    return true;
 };
 
 /**
