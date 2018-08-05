@@ -14,7 +14,7 @@ program
 
 program.parse(process.argv);
 const buildOnce =()=>{
-    console.log("\x1b[33mInitiated build")
+    console.log("\x1b[33mInitiated build\x1b[0m")
     // 拷贝public文件夹
     Fse.removeSync(Join(__dirname,'../dist/public'));
     Fse.copySync(
@@ -120,10 +120,10 @@ if (program.watch) {
     let buildWithError = ()=>{
         try {
             buildOnce()
-            console.log("\x1b[32mBuild Success.")
+            console.log("\x1b[32mBuild Success.\x1b[0m")
         } 
         catch (e) {
-            console.log("\x1b[31mBuild failed with error "+e.message);
+            console.log("\x1b[31mBuild failed with error\x1b[0m\n"+e.message);
         }
     }
     watcher
