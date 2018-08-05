@@ -7,22 +7,26 @@
     // 环境检测
     window['PXER_SUPPORT'] = true;
     window['PXER_LOAD_APP'] = false;
-    var supportType = ['bookmark_works', 'member_works', 'search', 'works_medium'];
+    var supportType = ['bookmark_works', 'member_works', 'search', 'works_medium', 'bookmark_new', 'rank', 'discovery'];
     var URLData = parseURL(document.URL);
     if (URLData.domain === 'www.pixiv.net') {
         if (supportType.indexOf(getPageType()) !== -1) {
             window['PXER_SUPPORT'] = true;
             window['PXER_LOAD_APP'] = true;
+            window['PXER_LOAD_ANALYTICS'] = true;
         } else {
             window['PXER_SUPPORT'] = true;
             window['PXER_LOAD_APP'] = false;
+            window['PXER_LOAD_ANALYTICS'] = true;
         }
     } else if (URLData.domain === '127.0.0.1' || URLData.domain === 'localhost') {
         window['PXER_SUPPORT'] = true;
         window['PXER_LOAD_APP'] = true;
+        window['PXER_LOAD_ANALYTICS'] = false;
     } else {
         window['PXER_SUPPORT'] = false;
         window['PXER_LOAD_APP'] = false;
+        window['PXER_LOAD_ANALYTICS'] = false;
         return; //退出整个程序
     };
 
@@ -30,7 +34,7 @@
     var appClass = /**/"dist/pxer-core.js"; //*/[];
     var viewTpl = /**/"dist/view/template.html"; //*/'';
     var viewStyles = /**/"dist/view/style.css"; //*/[];
-    var viewScripts = /**/["dist/view/vue.min.js", "dist/view/vm.js"]; //*/[];
+    var viewScripts = /**/["dist/view/PxerAnalytics.class.js", "dist/view/vue.min.js", "dist/view/vm.js"]; //*/[];
     var afterRun = /**/"dist/run.js"; //*/[];
     var linkResource = /**/["dist/public/favicon.ico"]; //*/[];
 
