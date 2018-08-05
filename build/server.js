@@ -92,7 +92,9 @@ app.get('/pxer-dev-local.user.js', (req, res) => {
                 isLocal: true,
                 isDev: true,
                 pxerURL: (serveHttps ? "https://" : "http://") + ADDR + ":" + PORT + "/"
-            }));
+            },
+        )
+    );
 });
 app.get('/pxer-local.user.js', (req, res) => {
     res.setHeader("Content-Type", "application/javascript");
@@ -103,7 +105,9 @@ app.get('/pxer-local.user.js', (req, res) => {
                 isLocal: true,
                 isDev: false,
                 pxerURL: (serveHttps ? "https://" : "http://") + ADDR + ":" + PORT + "/"
-            }));
+            },
+        )
+    );
 });
 
 var server = null;
