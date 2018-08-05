@@ -11,16 +11,20 @@ if(URLData.domain ==='www.pixiv.net'){
     if(supportType.indexOf(getPageType())!==-1){
         window['PXER_SUPPORT']=true;
         window['PXER_LOAD_APP']=true;
+        window['PXER_LOAD_ANALYTICS']=true;
     }else{
         window['PXER_SUPPORT']=true;
         window['PXER_LOAD_APP']=false;
+        window['PXER_LOAD_ANALYTICS']=true;
     }
 }else if(URLData.domain==='127.0.0.1'||URLData.domain==='localhost'){
     window['PXER_SUPPORT']=true;
     window['PXER_LOAD_APP']=true;
+    window['PXER_LOAD_ANALYTICS']=false;
 }else{
     window['PXER_SUPPORT']=false;
     window['PXER_LOAD_APP']=false;
+    window['PXER_LOAD_ANALYTICS']=false;
     return;//退出整个程序
 };
 
@@ -48,6 +52,7 @@ const appClass      =/**/[
 const viewTpl       =/**/"src/view/template.html";//*/'';
 const viewStyles    =/**/"src/view/style.css";//*/[];
 const viewScripts   =/**/[
+    "src/view/PxerAnalytics.class.js",
     "src/view/vue.dev.js",
     "src/view/vm.js"
 ];//*/[];
