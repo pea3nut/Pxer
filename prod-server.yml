@@ -3,6 +3,6 @@ apps:
     name       : 'pxer-server'
     instances  : 4
     args       : '-a 0.0.0.0 -p 443 -c yes --cert /path/to/your/cert.pem --key /path/to/your/privkey.pem --analytics'
-    watch      : true
+    watch      : false
     merge_logs : true
     output     : './pxer-server.log'
