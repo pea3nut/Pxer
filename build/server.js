@@ -190,7 +190,7 @@ if (serveHttps) {
 
 server.listen(PORT, ADDR, function () {
     console.log('Server running at ' + ADDR + ":" + PORT);
-    console.log('\x1b[33mPlease install local Pxer script:');
+    console.log('\x1b[33mPlease install local Pxer script:\x1b[0m');
     console.log("dev   : "+(serveHttps? "https://" : "http://") + ADDR + ":" + PORT + "/pxer-dev-local.user.js");
     console.log("master: "+(serveHttps? "https://" : "http://") + ADDR + ":" + PORT + "/pxer-local.user.js");
 });
