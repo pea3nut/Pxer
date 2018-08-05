@@ -281,7 +281,7 @@ class PxerApp extends PxerEvent{
 };
 
 /**直接抓取本页面的作品*/
-PxerApp.prototype['getThis'] =function(){
+PxerApp.prototype['getThis'] =async function(){
     // 生成任务对象
     var initdata = document.head.innerHTML.match(PxerHtmlParser.REGEXP['getInitData'])[0];
     var id = document.URL.match(/illust_id=(\d+)/)[1];
@@ -289,8 +289,13 @@ PxerApp.prototype['getThis'] =function(){
     initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, "preload");
     initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, 'illust');
     initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, id);
-    initdata = JSON.parse(initdata);
     
+    if (initdata) {
+        initdata = JSON.parse(initdata);
+    } else {
+        initdata = (await (await fetch("https://www.pixiv.net/ajax/illust/"+ id)).json())['body'];
+    };
+
     var type = initdata.illustType;
     var pageCount = initdata.pageCount;
     var pwr =new PxerWorksRequest({
@@ -308,6 +313,7 @@ PxerApp.prototype['getThis'] =function(){
     this.taskList = [pwr];
     this.one('finishWorksTask',()=>this.printWorks());
     this.executeWroksTask();
+    return true;
 };
 
 /**
