@@ -40,12 +40,23 @@ afterLoad(function(){
             },
             showLoadBtn:true,
             errmsg:'',
+            analytics:new PxerAnalytics(),
         }},
         created(){
             window['PXER_VM'] =this;
+            window['PXER_ANALYTICS'] =this.analytics;
+            this.analytics.postData("pxer.app.created", {});
             this.pxer.on('error',(err)=>{
                 this.errmsg =err;
             });
+            this.pxer.on('finishWorksTask',(result) =>{
+                this.analytics.postData("pxer.app.finish", {
+                    result_count:result.length,
+                    ptm_config:this.pxer.ptmConfig,
+                    task_option:this.pxer.taskOption,
+                    error_count:this.pxer.failList.length,
+                });
+            })
         },
         computed:{
             pageType(){
@@ -55,6 +66,7 @@ afterLoad(function(){
                     'bookmark_works'   :'收藏列表页',
                     'rank'             :'排行榜',
                     'bookmark_new'     :'关注的新作品',
+                    'discovery'        :'探索',
                     'unknown'          :'未知',
                 };
                 return map[this.pxer.pageType];
@@ -157,19 +169,30 @@ afterLoad(function(){
         },
         methods:{
             load(){
+                this.state='init';
                 if(this.pxer.pageType==='works_medium'){
-                    this.pxer.getThis();
                     this.showLoadBtn=false;
-                    this.pxer.one('finishWorksTask',()=>this.showLoadBtn=true);
+                    this.pxer.one('finishWorksTask',()=>{
+                        this.showLoadBtn=true;
+                        this.state='standby';
+                    });
+                    this.pxer.getThis();
                 }else{
-                    this.state='init';
                     this.pxer.init().then(()=>this.state='ready');
                     this.pxer.on('finishWorksTask',()=>{
                         window.blinkTitle();
                     });
                 }
+                this.analytics.postData("pxer.app.load", {
+                    page_type:this.pxer.pageType,
+                });
             },
             run(){
+                this.analytics.postData("pxer.app.start", {
+                    ptm_config:this.pxer.ptmConfig,
+                    task_option:this.pxer.taskOption,
+                    vm_state:this.state,
+                });
                 if(this.state==='ready'){
                     this.state='page';
                     this.pxer.initPageTask();
@@ -194,12 +217,31 @@ afterLoad(function(){
             stop(){
                 this.state='stop';
                 this.pxer.stop();
+                this.analytics.postData("pxer.app.halt", {
+                    task_count:this.taskCount,
+                    finish_count:this.finishCount,
+                });
             },
             count(){
                 this.taskInfo =this.pxer.getWorksInfo()
             },
+            printWorks(){
+                this.pxer.printWorks();
+                var sanitizedpfConfig = {};
+                for (key in this.pxer.pfConfig) {
+                    sanitizedpfConfig[key] = this.pxer.pfConfig[key].length?this.pxer.pfConfig[key].length:this.pxer.pfConfig[key];
+                }
+                this.analytics.postData("pxer.app.print", {
+                    pp_config:this.pxer.ppConfig,
+                    pf_config:sanitizedpfConfig,
+                    task_option:this.pxer.taskOption,
+                });
+            },
             useTaskOption(){
                 this.showTaskOption=false;
+                this.analytics.postData("pxer.app.taskoption", {
+                    task_option: this.taskOption,
+                });
                 Object.assign(this.pxer.taskOption ,this.taskOption);
             },
             formatFailType(type){
@@ -224,6 +266,9 @@ afterLoad(function(){
             },
             tryCheckedPfi(){
                 this.tryFailWroksList.push(...this.checkedFailWorksList);
+                this.analytics.postData("pxer.app.reready", {
+                    checked_works:this.checkedFailWorksList,
+                });
                 this.checkedFailWorksList=[];
                 this.state='re-ready';
             },

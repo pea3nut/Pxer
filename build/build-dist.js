@@ -41,6 +41,10 @@ const buildOnce =()=>{
         Join(__dirname,'../src/view/vm.js'),
         Join(__dirname,'../dist/view/vm.js')
     );
+    PxerUtility.babelCopy(
+        Join(__dirname,'../src/view/PxerAnalytics.class.js'),
+        Join(__dirname,'../dist/view/PxerAnalytics.class.js')
+    );
 
     // 合并run/为run.js
     Fs.writeFileSync(
