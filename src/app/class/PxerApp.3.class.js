@@ -292,7 +292,7 @@ PxerApp.prototype['getThis'] =async function(){
     if (initdata) {
         initdata = JSON.parse(initdata);
     } else {
-        initdata = (await (await fetch("https://www.pixiv.net/ajax/illust/"+ id)).json())['body'];
+        initdata = (await (await fetch("https://www.pixiv.net/ajax/illust/"+ id, {credentials:'include'})).json())['body'];
     };
 
     var type = initdata.illustType;
