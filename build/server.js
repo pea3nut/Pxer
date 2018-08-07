@@ -113,7 +113,7 @@ const addFolder = function _self(fpath, uri, middleware=null) {
  * @param {Array} fields - 接受的键值
  */
 const registerClientAnalytics =function(event="pxer.generic", severity="info", fields=[]){
-    for (presetkey of ['uid', 'pxer_mode', 'source_addr']) {
+    for (presetkey of ['uid', 'pxer_mode', 'pxer_version', 'source_addr']) {
         if (fields.indexOf(presetkey)===-1) fields.push(presetkey);
     }
     url = `/stats/${event.replace(/\./g,"/")}`;
