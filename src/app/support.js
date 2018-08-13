@@ -53,6 +53,7 @@ const viewTpl       =/**/"src/view/template.html";//*/'';
 const viewStyles    =/**/"src/view/style.css";//*/[];
 const viewScripts   =/**/[
     "src/view/PxerAnalytics.class.js",
+    "src/view/AutoSuggestControl.class.js",
     "src/view/vue.dev.js",
     "src/view/vm.js"
 ];//*/[];
