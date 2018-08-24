@@ -148,7 +148,7 @@ afterLoad(function(){
                     return this.pxer.pfConfig.no_tag_any.join(' ');
                 },
                 set(value){
-                    this.pxer.pfConfig.no_tag_any =value.split(' ');
+                    this.pxer.pfConfig.no_tag_any = value ? value.split(' ') : [];
                 },
             },
             no_tag_every:{
@@ -156,7 +156,7 @@ afterLoad(function(){
                     return this.pxer.pfConfig.no_tag_every.join(' ');
                 },
                 set(value){
-                    this.pxer.pfConfig.no_tag_every =value.split(' ');
+                    this.pxer.pfConfig.no_tag_every = value ? value.split(' ') : [];
                 },
             },
             has_tag_some:{
@@ -164,7 +164,7 @@ afterLoad(function(){
                     return this.pxer.pfConfig.has_tag_some.join(' ');
                 },
                 set(value){
-                    this.pxer.pfConfig.has_tag_some =value.split(' ');
+                    this.pxer.pfConfig.has_tag_some = value ? value.split(' ') : [];
                 },
             },
             has_tag_every:{
@@ -172,7 +172,7 @@ afterLoad(function(){
                     return this.pxer.pfConfig.has_tag_every.join(' ');
                 },
                 set(value){
-                    this.pxer.pfConfig.has_tag_every =value.split(' ');
+                    this.pxer.pfConfig.has_tag_every = value ? value.split(' ') : [];
                 },
             },
             showFailTaskList(){
