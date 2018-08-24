@@ -165,19 +165,19 @@
                 </div>
                 <div class="form-group">
                     <label>作品中<strong>不能</strong>含有以下<strong>任意一个</strong>标签</label>
-                    <input v-model="no_tag_any" type="text" class="form-control" placeholder="可以有多个，空格分割" />
+                    <input v-model="no_tag_any" id="no_tag_any" type="text" class="form-control" placeholder="可以有多个，空格分割" />
                 </div>
                 <div class="form-group">
                     <label>作品中<strong>不能同时</strong>含有以下<strong>所有</strong>标签</label>
-                    <input v-model="no_tag_every" type="text" class="form-control" placeholder="可以有多个，空格分割" />
+                    <input v-model="no_tag_every" id="no_tag_every" type="text" class="form-control" placeholder="可以有多个，空格分割" />
                 </div>
                 <div class="form-group">
                     <label>作品中<strong>必须</strong>含有以下<strong>任意一个</strong>标签</label>
-                    <input v-model="has_tag_some" type="text" class="form-control" placeholder="可以有多个，空格分割" />
+                    <input v-model="has_tag_some" id="has_tag_some" type="text" class="form-control" placeholder="可以有多个，空格分割" />
                 </div>
                 <div class="form-group">
                     <label>作品中<strong>必须同时</strong>含有以下<strong>所有</strong>标签</label>
-                    <input v-model="has_tag_every" type="text" class="form-control" placeholder="可以有多个，空格分割" />
+                    <input v-model="has_tag_every" id="has_tag_every" type="text" class="form-control" placeholder="可以有多个，空格分割" />
                 </div>
             </div>
         </div>

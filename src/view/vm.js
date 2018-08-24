@@ -58,6 +58,13 @@ afterLoad(function(){
                 });
             })
         },
+        mounted(){
+            var getResultList=()=>[].concat.apply([], this.pxer.resultSet.map((res)=>res.tagList));
+            new AutoSuggestControl("no_tag_any", getResultList);
+            new AutoSuggestControl("no_tag_every", getResultList);
+            new AutoSuggestControl("has_tag_some", getResultList);
+            new AutoSuggestControl("has_tag_every", getResultList);
+        },
         computed:{
             pageType(){
                 var map ={

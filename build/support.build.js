@@ -10,6 +10,7 @@ const renderData ={
         viewStyles  :PxerUtility.path2URL('../dist/view/style.css'),
         viewScripts :[
             '../dist/view/PxerAnalytics.class.js',
+            '../dist/view/AutoSuggestControl.class.js',
             '../dist/view/vue.min.js',
             '../dist/view/vm.js',
         ].map(path=>PxerUtility.path2URL(path)),
@@ -29,6 +30,7 @@ const renderData ={
         viewStyles  :PxerUtility.path2URL('../src/view/style.css'),
         viewScripts :[
             '../src/view/PxerAnalytics.class.js',
+            '../src/view/AutoSuggestControl.class.js',
             '../src/view/vue.dev.js',
             '../src/view/vm.js',
         ].map(path=>PxerUtility.path2URL(path)),
