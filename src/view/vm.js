@@ -61,7 +61,6 @@ afterLoad(function(){
             },
             showLoadBtn:true,
             errmsg:'',
-            analytics: {},
         }},
         created(){
             window['PXER_VM'] =this;
