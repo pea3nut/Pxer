@@ -1,3 +1,0 @@
-afterLoad(function(){
-
-});

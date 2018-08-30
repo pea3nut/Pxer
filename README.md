@@ -92,20 +92,12 @@ pxer-app
 
 ### 搭建本地开发环境
 
-1. 安装依赖
+Pxer需要本地https环境
+
+完成证书配置后
 ```bash
-npm i
+sudo node ./utils/server.js -p 443 --cert /path/to/your/cert.pem --key /path/to/your/key,pem
 ```
-
-2. 运行本地开发服务器，监视文件改动并自动编译css和释出文件
-```bash
-npm run dev
-```
-
-3. 修改入口文件
-- 方法一：在Tampermonkey中修改入口文件的PXER_URL为本地服务器地址（默认为http://127.0.0.1:8125/ ）
-- 方法二(推荐)：访问 http://127.0.0.1:8125/pxer-dev-local.user.js (开发版) http://127.0.0.1:8125/pxer-local.user.js (稳定版) 安装自动生成的本地开发入口文件
-
 
 
 ### 构建释出文件（稳定版）
@@ -134,5 +126,3 @@ npm run prod
 ## 开源协议
 
 [MIT](http://opensource.org/licenses/MIT)
-
-

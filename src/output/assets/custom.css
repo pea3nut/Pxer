@@ -1,0 +1,60 @@
+div.main {
+    padding: 50px 0 0;
+}
+input[type="checkbox"] {
+    opacity: 1;
+    position: relative;
+    align-self: baseline;
+    vertical-align: middle;
+    margin-bottom: 0;
+}
+input[type="number"] {
+    width: auto;
+}
+.align {
+    align-items: baseline;
+}
+.shy {
+    font-size: .75em;
+    font: italic;
+    color: gray;
+}
+table.primary {
+    width: 100%;
+}
+tr.checked {
+    background-color: rgba(90, 150, 248, 0.15);
+}
+tr.checked:nth-child(2n) {
+    background-color: rgba(104, 148, 219, 0.15);
+}
+.oneline {
+    white-space: nowrap;
+}
+th {
+    align-items: baseline;
+    background-color: #68b4f5;
+}
+th.sorting {
+    background-color: #298ce0;
+}
+th > * {
+    vertical-align : middle;
+}
+div.openup {
+    width: 30%;
+    height: 60%;
+    padding-top: 10px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+}
+div.openup ~ * {
+    vertical-align: middle;
+    width: max-content;
+}
+div.openup-more {
+    width: 60%;
+}
+textarea {
+    height: 70%;
+}

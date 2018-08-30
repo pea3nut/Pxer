@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "outDir": "dist/",
+        "allowJs": true,
+        "target": "es6",
+        "strict": true,
+        "jsx": "react",
+        "allowSyntheticDefaultImports": true,
+        "noImplicitAny": true,
+        "moduleResolution": "node"
+    },
+    "include": [
+        "./src/**/*.ts"
+    ]
+}
