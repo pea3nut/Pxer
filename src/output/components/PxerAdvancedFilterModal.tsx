@@ -1,8 +1,27 @@
 import React, { Component } from 'react';
 import AutoSuggestControl from '../AutoSuggestControl.class'
-
-class PxerAdvancedFilterModal extends Component {
-    constructor(props){
+import { PxerWorks } from '../../pxer/pxerapp/PxerWorksDef.-1';
+import { PxerImageDataLine } from './PxerImageData';
+interface IPxerAdvancedFilterModalState {
+    opened: boolean,
+    minLike: number,
+    minView: number,
+    minRate: number,
+    illust: boolean,
+    manga: boolean,
+    ugoira: boolean,
+    single: boolean,
+    multiple: boolean,
+    no_tag_any: string[],
+    has_tag_any: string[],
+    has_tag_all: string[],
+}
+interface IPxerAdvancedFilterModalProps {
+    filterReceiver: (filterfn: (work: PxerImageDataLine)=>boolean)=>void,
+    tagList: string[],
+}
+class PxerAdvancedFilterModal extends Component<IPxerAdvancedFilterModalProps, IPxerAdvancedFilterModalState> {
+    constructor(props: IPxerAdvancedFilterModalProps){
         super(props);
         this.state = {
             opened: false,
@@ -35,7 +54,7 @@ class PxerAdvancedFilterModal extends Component {
                         <form>
                             <div id="filter-params" className="oneline">
                                 点赞数 ≥
-                                <input type="number" defaultValue={0} onChange={e=>{
+                                <input type="number" defaultValue={"0"} onChange={e=>{
                                     var newValue = e.target.valueAsNumber || 0;
                                     this.setState(()=>{
                                             return {minLike: newValue};
@@ -44,7 +63,7 @@ class PxerAdvancedFilterModal extends Component {
                             </div>
                             <div id="filter-params" className="oneline">
                                 浏览数 ≥
-                                <input type="number" defaultValue={0} onChange={e=>{
+                                <input type="number" defaultValue={"0"} onChange={e=>{
                                     var newValue = e.target.valueAsNumber || 0;
                                     this.setState(()=>{
                                             return {minView: newValue};
@@ -53,7 +72,7 @@ class PxerAdvancedFilterModal extends Component {
                             </div>
                             <div id="filter-params" className="oneline">
                                 收藏数 ≥
-                                <input type="number" defaultValue={0} onChange={e=>{
+                                <input type="number" defaultValue={"0"} onChange={e=>{
                                     var newValue = e.target.valueAsNumber || 0;
                                     this.setState(()=>{
                                             return {minRate: newValue};
@@ -137,22 +156,26 @@ class PxerAdvancedFilterModal extends Component {
         )
     }
     onApply(){
-        this.state.no_tag_any = this.refs.no_tag_any.value? this.refs.no_tag_any.value.split(" "): [];
-        this.state.has_tag_any = this.refs.has_tag_any.value? this.refs.has_tag_any.value.split(" "): [];
-        this.state.has_tag_all = this.refs.has_tag_all.value? this.refs.has_tag_all.value.split(" "): [];
-        this.state.opened = false;
-        this.forceUpdate();
-        this.props.filterReceiver((work)=>{
-            if (work.props.likeCount<this.state.minLike) return false;
-            if (work.props.viewCount<this.state.minView) return false;
-            if (work.props.rateCount<this.state.minRate) return false;
-            if (!this.state[work.props.illustType]) return false;
-            if (this.state.no_tag_any.length>0  &&  !this.state.no_tag_any.every(notag=>work.props.tagList.indexOf(notag)===-1)) return false;
-            if (this.state.has_tag_any.length>0 && this.state.has_tag_any.every(hastag=>work.props.tagList.indexOf(hastag)===-1)) return false;
-            if (this.state.has_tag_all.length>0 && !this.state.has_tag_all.every(hastag=>work.props.tagList.indexOf(hastag)!==-1)) return false;
-            if (!this.state.multiple && work.props.pageCount>1) return false;
-            if (!this.state.single && work.props.pageCount==1) return false;
-            return true;
+        this.setState(prev=>{
+            return {
+                no_tag_any: (this.refs.no_tag_any as HTMLInputElement).value? (this.refs.no_tag_any as HTMLInputElement).value.split(" "): [],
+                has_tag_any: (this.refs.has_tag_any as HTMLInputElement).value? (this.refs.has_tag_any as HTMLInputElement).value.split(" "): [],
+                has_tag_all: (this.refs.has_tag_all as HTMLInputElement).value? (this.refs.has_tag_all as HTMLInputElement).value.split(" "): [],
+                opened: false,
+            }
+        }, ()=>{
+            this.props.filterReceiver((work)=>{
+                if (work.props.likeCount<this.state.minLike) return false;
+                if (work.props.viewCount<this.state.minView) return false;
+                if (work.props.rateCount<this.state.minRate) return false;
+                if (!((this.state as any)[work.props.illustType] as boolean)) return false;
+                if (this.state.no_tag_any.length>0  &&  !this.state.no_tag_any.every(notag=>work.props.tagList.indexOf(notag)===-1)) return false;
+                if (this.state.has_tag_any.length>0 && this.state.has_tag_any.every(hastag=>work.props.tagList.indexOf(hastag)===-1)) return false;
+                if (this.state.has_tag_all.length>0 && !this.state.has_tag_all.every(hastag=>work.props.tagList.indexOf(hastag)!==-1)) return false;
+                if (!this.state.multiple && work.props.pageCount>1) return false;
+                if (!this.state.single && work.props.pageCount==1) return false;
+                return true;
+            })
         })
     }
 }

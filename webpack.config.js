@@ -3,7 +3,7 @@ var path = require('path');
 module.exports = {
     entry: {
         pxer: './src/pxer/index.tsx',
-        pxer_output: './src/output/index.js'
+        pxer_output: './src/output/index.tsx'
     },
     output: {
         path: path.join(__dirname, '/dist'),

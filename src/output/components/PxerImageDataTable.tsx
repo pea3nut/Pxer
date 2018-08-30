@@ -1,14 +1,26 @@
 import React, { Component } from 'react';
-import {PxerImageDataHead, PxerImageDataLine} from './PxerImageData';
-class PxerImageDataTable extends Component {
-    constructor(props){
+import {PxerImageDataHead, PxerImageDataLine, IPxerImageDataLineState} from './PxerImageData';
+import { PxerWorks } from '../../pxer/pxerapp/PxerWorksDef.-1';
+import { PxerIndeterminatableBoxState } from './lib';
+interface IPxerImageDataTableProps {
+    workData: PxerWorks[],
+    tagFoldLength: number,
+    onRef: (ref: PxerImageDataTable)=>void,
+    onChange: ()=>void,
+}
+interface IWorkDataLineElem {
+    elem: React.ReactElement<PxerImageDataLine>,
+    ref: PxerImageDataLine|null,
+}
+class PxerImageDataTable extends Component<IPxerImageDataTableProps> {
+    workDataLine : IWorkDataLineElem[]
+    constructor(props: IPxerImageDataTableProps){
         super(props);
         this.state = {};
-        this.workDataLine = [];
+        this.workDataLine= [];
         for (let work of this.props.workData) {
-
             this.workDataLine.push((()=>{
-                var obj = {
+                var obj : IWorkDataLineElem= {
                     elem:   <PxerImageDataLine
                                 key={work.id}
                                 illustId={work.id}
@@ -24,7 +36,8 @@ class PxerImageDataTable extends Component {
                                 onRef={ref=>{obj.ref=ref}}
                                 onChange={this.props.onChange}
                                 tagFoldLength={this.props.tagFoldLength}
-                            />
+                            />,
+                    ref: null,
                 }
                 return obj;
             })())
@@ -35,11 +48,8 @@ class PxerImageDataTable extends Component {
         this.changeAllSelection = this.changeAllSelection.bind(this);
         this.getAllWorksRef = this.getAllWorksRef.bind(this);
     }
-    componentDidMount() {
+    componentWillMount(){
         this.props.onRef(this)
-    }
-    componentWillUnmount() {
-        this.props.onRef(undefined)
     }
     render(){
         return (
@@ -53,11 +63,11 @@ class PxerImageDataTable extends Component {
                                 var len = this.gatherSelectedWorksInfo().length
                                 switch (len) {
                                     case 0:
-                                    return "none"
+                                    return PxerIndeterminatableBoxState.none
                                     case this.props.workData.length:
-                                    return "all"
+                                    return PxerIndeterminatableBoxState.all
                                     default:
-                                    return "indeterminate"
+                                    return PxerIndeterminatableBoxState.indeterminate
                                 }
                             })()
                         }
@@ -69,26 +79,26 @@ class PxerImageDataTable extends Component {
             </table>
         )
     }
-    gatherSelectedWorksInfo(){
-        var res = [];
+    gatherSelectedWorksInfo(): React.ReactElement<PxerImageDataLine>[]{
+        var res :React.ReactElement<PxerImageDataLine>[] = [];
         for (let dl of this.workDataLine) {
             if (dl.ref && !dl.ref.state.checked) continue;
             res.push(dl.elem);
         }
         return res;
     }
-    getAllWorksRef(){
-        return this.workDataLine.map(wk=>wk.ref)
+    getAllWorksRef(): PxerImageDataLine[]{
+        return this.workDataLine.map(wk=>(wk.ref as PxerImageDataLine))
     }
-    sortWithKey(key, reverse=false){
+    sortWithKey(key: keyof IPxerImageDataLineState, reverse=false){
         this.workDataLine.sort((a,b)=>(
-            ((a.ref.state[key]>b.ref.state[key]) ^ reverse)?1:-1
-        ))
+            ((((a.ref as PxerImageDataLine).state[key]) as any) > (((b.ref as PxerImageDataLine).state[key]) as any)) !== reverse)?1:-1
+        )
         this.forceUpdate();
     }
-    changeAllSelection(opt){
+    changeAllSelection(opt: boolean){
         this.workDataLine.forEach(el=>{
-            el.ref.setState(prev=>{
+            (el.ref as PxerImageDataLine).setState(prev=>{
                 return {checked: opt}
             })
         })

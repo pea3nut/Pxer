@@ -1,7 +1,16 @@
-import React, { Component } from 'react';
-
-class PxerSortableTH extends Component {
-    constructor(props){
+import React, { Component, ChangeEvent } from 'react';
+import { PxerWorkType } from '../../pxer/pxerapp/PxerData.-1';
+import { PxerWorkUrl } from '../../pxer/pxerapp/PxerWorksDef.-1';
+import {PxerIndeterminatableBoxState} from './lib'
+interface IPxerSortableTHProps {
+    sortFunc: (key: keyof IPxerImageDataLineState)=>void,
+    sortKey: keyof IPxerImageDataLineState,
+    currentKey: string|null,
+    innerContent: string|JSX.Element,
+    reverse: boolean,
+}
+class PxerSortableTH extends Component<IPxerSortableTHProps> {
+    constructor(props: IPxerSortableTHProps){
         super(props);
     }
     render(){
@@ -24,9 +33,19 @@ class PxerSortableTH extends Component {
     }
 }
 
-
-class PxerImageDataHead extends Component {
-    constructor(props){
+interface IPxerImageDataHeadProps {
+    boxState: PxerIndeterminatableBoxState,
+    onSort: (key: keyof IPxerImageDataLineState, reverse: boolean)=>void,
+    onSetAllSelectedState: (newstate: boolean)=>void,
+}
+interface IPxerImageDataHeadState {
+    sortKey: string|null,
+    sortReverse: boolean,
+    selectAll: boolean,
+    inDeterminate: boolean,
+}
+class PxerImageDataHead extends Component<IPxerImageDataHeadProps,IPxerImageDataHeadState> {
+    constructor(props: IPxerImageDataHeadProps){
         super(props);
         this.state = {
             sortKey: null,
@@ -37,19 +56,19 @@ class PxerImageDataHead extends Component {
         this.doSort = this.doSort.bind(this);
         this.handleCheckedState = this.handleCheckedState.bind(this);
     }
-    static getDerivedStateFromProps(props, state) {
+    static getDerivedStateFromProps(props: IPxerImageDataHeadProps, state: IPxerImageDataHeadState) {
         switch (props.boxState) {
-        case "all":
+        case PxerIndeterminatableBoxState.all:
             return {
                 selectAll: true,
                 inDeterminate: false,
             }
-        case "indeterminate":
+        case PxerIndeterminatableBoxState.indeterminate:
             return {
                 selectAll: false,
                 inDeterminate: true,
             }
-        case "none":
+        case PxerIndeterminatableBoxState.none:
             return{
                 selectAll: false,
                 inDeterminate: false,
@@ -57,7 +76,7 @@ class PxerImageDataHead extends Component {
         }
     }
     componentDidUpdate(){
-        this.refs.selall.indeterminate = this.state.inDeterminate;
+        (this.refs.selall as HTMLInputElement).indeterminate = this.state.inDeterminate;
     }
     render(){
         return (
@@ -124,7 +143,7 @@ class PxerImageDataHead extends Component {
             </tr>
         )
     }
-    doSort(key){
+    doSort(key: keyof IPxerImageDataLineState){
         var reverse = this.state.sortKey===key?!this.state.sortReverse:true;
         this.props.onSort(key, reverse)
         this.setState(prev=>{
@@ -134,7 +153,7 @@ class PxerImageDataHead extends Component {
             }
         })
     }
-    handleCheckedState(e){
+    handleCheckedState(){
         this.setState(prev=>{
             this.props.onSetAllSelectedState(!prev.selectAll);
             return {selectAll: !prev.selectAll}
@@ -142,8 +161,36 @@ class PxerImageDataHead extends Component {
     }
 }
 
-class PxerImageDataLine extends Component {
-    constructor(props){
+interface IPxerImageDataLineProps {
+    illustId: string,
+    illustType: PxerWorkType,
+    urls: PxerWorkUrl,
+    tagList: string[],
+    likeCount: number,
+    viewCount: number,
+    rateCount: number,
+    workTitle: string,
+    pageCount: number,
+    workDate: Date,
+    tagFoldLength: number,
+    onChange: ()=>void,
+    onRef: (ref: PxerImageDataLine|null)=>void,
+}
+interface IPxerImageDataLineState {
+    checked: boolean,
+    illustId: string,
+    illustType: PxerWorkType,
+    imgSrc: string,
+    tagList: string[],
+    LikeCount: number,
+    ViewCount: number,
+    RateCount: number,
+    WorkTitle: string,
+    PageCount: number,
+    Date: Date,
+}
+class PxerImageDataLine extends Component<IPxerImageDataLineProps,IPxerImageDataLineState> {
+    constructor(props: IPxerImageDataLineProps){
         super(props);
         this.state = {
             checked: true,
@@ -165,7 +212,7 @@ class PxerImageDataLine extends Component {
         this.props.onRef(this)
     }
     componentWillUnmount() {
-        this.props.onRef(undefined)
+        this.props.onRef(null)
     }
     componentDidUpdate(){
         this.props.onChange();
@@ -198,8 +245,8 @@ class PxerImageDataLine extends Component {
             </tr>
         )
     }
-    handleCheckedState(e){
-        var nowstate = e.target.checked;
+    handleCheckedState(e: ChangeEvent<HTMLInputElement>){
+        var nowstate = (e.target).checked;
         this.setState(prev=>{
             return {checked: nowstate}
         });
@@ -211,4 +258,4 @@ class PxerImageDataLine extends Component {
     }
 }
 
-export {PxerImageDataHead, PxerImageDataLine}
+export {PxerImageDataHead, PxerImageDataLine, IPxerImageDataLineState}

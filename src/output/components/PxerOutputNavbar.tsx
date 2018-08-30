@@ -1,12 +1,27 @@
 import React, { Component } from 'react';
 
-class PxerOutputNavbar extends Component {
-    constructor(props){
+enum PxerCopyPromistStatus {
+    standby,
+    ongoing,
+    error,
+    success,
+}
+interface IPxerOutputNavBarProps {
+    onCopy: ()=>Promise<any>;
+    onOutputConfig: ()=>void;
+    onAdvancedFilter: ()=>void;
+    linkCount: number;
+}
+interface IPxerOutputNavBarState {
+    copyPromiseStatus: PxerCopyPromistStatus,
+    lastSuccessCount: number
+}
+class PxerOutputNavbar extends Component<IPxerOutputNavBarProps, IPxerOutputNavBarState> {
+    constructor(props: IPxerOutputNavBarProps){
         super(props);
         this.state = {
-            activeindex: -1,
-            copyPromiseStatus: "standby",
-            lastSucessCount: 0,
+            copyPromiseStatus: PxerCopyPromistStatus.standby,
+            lastSuccessCount: 0,
         }
         
         this.doCopy = this.doCopy.bind(this);
@@ -21,14 +36,14 @@ class PxerOutputNavbar extends Component {
                         {
                             (()=>{
                                 switch (this.state.copyPromiseStatus) {
-                                    case "ongoing":
+                                    case PxerCopyPromistStatus.ongoing:
                                         return <a className="button disabled">...</a>
-                                    case "standby":
+                                    case PxerCopyPromistStatus.standby:
                                         return <a className="button" onClick={this.doCopy}>复制{this.props.linkCount}个作品的链接</a>
-                                    case "error":
+                                    case PxerCopyPromistStatus.error:
                                         return <a className="button warning">错误</a>
-                                    case "success":
-                                        return <a className="button success">成功复制{this.state.lastSucessCount}个链接</a>
+                                    case PxerCopyPromistStatus.success:
+                                        return <a className="button success">成功复制{this.state.lastSuccessCount}个链接</a>
                                 }
                             })()
                         }
@@ -39,27 +54,33 @@ class PxerOutputNavbar extends Component {
     doCopy(){
         this.setState(prev=>{
             return {
-                copyPromiseStatus: "ongoing",
+                copyPromiseStatus: PxerCopyPromistStatus.ongoing,
             }
         })
         this.props.onCopy().then(count=>{
             this.setState(prev=>{
                 return {
-                    copyPromiseStatus: "success",
-                    lastSucessCount: count,
+                    copyPromiseStatus: PxerCopyPromistStatus.success,
+                    lastSuccessCount: count,
                 }
             })
-        }).catch(()=>{
-            this.setState(prev=>{
-                return {
-                    copyPromiseStatus: "error",
-                }
-            })
-        }).finally(()=>{
             setTimeout(()=>{
                 this.setState(prev=>{
                     return {
-                        copyPromiseStatus: "standby",
+                        copyPromiseStatus: PxerCopyPromistStatus.standby,
+                    }
+                })
+            }, 2000)
+        }).catch(()=>{
+            this.setState(prev=>{
+                return {
+                    copyPromiseStatus: PxerCopyPromistStatus.error,
+                }
+            })
+            setTimeout(()=>{
+                this.setState(prev=>{
+                    return {
+                        copyPromiseStatus: PxerCopyPromistStatus.standby,
                     }
                 })
             }, 2000)

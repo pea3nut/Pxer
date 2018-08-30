@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 
-class PxerCopyFallBackModal extends Component{
-    constructor(props){
+class PxerCopyFallBackModal extends Component<{getText: ()=>string},{
+    error: string,
+    opened: boolean,
+}>{
+    constructor(props: {getText: ()=>string}){
         super(props)
         this.state ={
             opened: false,
@@ -25,11 +28,11 @@ class PxerCopyFallBackModal extends Component{
             </div>
         )
     }
-    toggle(e){
+    toggle(reason: any){
         this.setState(prev=>{
             return {
                 opened: !prev.opened,
-                error: e.toString(),
+                error: reason.toString(),
             }
         })
     }

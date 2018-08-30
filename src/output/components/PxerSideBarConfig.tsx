@@ -1,21 +1,32 @@
 import React, { Component } from 'react';
+import { PxerWorks, PxerWorkUrl, PxerUgoiraWorksUrl } from '../../pxer/pxerapp/PxerWorksDef.-1';
 
-class PxerSideBarConfig extends Component {
-    constructor(props){
+interface IPxerSideBarConfigProps {
+    onRef: (ref: PxerSideBarConfig|null)=>void;
+}
+interface IPxerSideBarConfigState {
+    illust_single: keyof PxerWorkUrl
+    illust_multiple: keyof PxerWorkUrl
+    manga_single: keyof PxerWorkUrl
+    manga_multiple: keyof PxerWorkUrl
+    ugoira: keyof PxerUgoiraWorksUrl
+}
+class PxerSideBarConfig extends Component<IPxerSideBarConfigProps, IPxerSideBarConfigState> {
+    constructor(props: IPxerSideBarConfigProps){
         super(props)
         this.state = {
             illust_single: "original",
             illust_multiple: "original",
             manga_single: "original",
             manga_multiple: "original",
-            ugoira: "master",
+            ugoira: "ugoira_master",
         }
     }
     componentDidMount() {
         this.props.onRef(this)
     }
     componentWillUnmount() {
-        this.props.onRef(undefined)
+        this.props.onRef(null)
     }
     render(){
         return (
@@ -25,7 +36,7 @@ class PxerSideBarConfig extends Component {
                     <select onChange={e=>{
                         var newvalue = e.target.value;
                         this.setState(prev=>({
-                            illust_single: newvalue,
+                            illust_single: newvalue as keyof PxerWorkUrl,
                         }))
                     }}>
                         <option value="original">Original</option>
@@ -41,7 +52,7 @@ class PxerSideBarConfig extends Component {
                     <select onChange={e=>{
                         var newvalue = e.target.value;
                         this.setState(prev=>({
-                            illust_multiple: newvalue,
+                            illust_multiple: newvalue as keyof PxerWorkUrl,
                         }))
                     }}>
                         <option value="original">Original</option>
@@ -57,7 +68,7 @@ class PxerSideBarConfig extends Component {
                     <select onChange={e=>{
                         var newvalue = e.target.value;
                         this.setState(prev=>({
-                            manga_single: newvalue,
+                            manga_single: newvalue as keyof PxerWorkUrl,
                         }))
                     }}>
                         <option value="original">Original</option>
@@ -73,7 +84,7 @@ class PxerSideBarConfig extends Component {
                     <select onChange={e=>{
                         var newvalue = e.target.value;
                         this.setState(prev=>({
-                            manga_multiple: newvalue,
+                            manga_multiple: newvalue as keyof PxerWorkUrl,
                         }))
                     }}>
                         <option value="original">Original</option>
@@ -89,7 +100,7 @@ class PxerSideBarConfig extends Component {
                     <select onChange={e=>{
                         var newvalue = e.target.value;
                         this.setState(prev=>({
-                            ugoira: newvalue,
+                            ugoira: newvalue as keyof PxerUgoiraWorksUrl,
                         }))
                     }}>
                         <option value="ugoira_master">Original</option>
@@ -106,4 +117,4 @@ class PxerSideBarConfig extends Component {
         )
     }
 }
-export default PxerSideBarConfig
+export {PxerSideBarConfig, IPxerSideBarConfigProps, IPxerSideBarConfigState}
