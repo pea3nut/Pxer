@@ -15,6 +15,7 @@ function afterLoad(fn: ()=>void){
 afterLoad(()=>{
     if (document.getElementById("pxer-output")){
         console.log("output page. not loading.")
+        return;
     }
     var pxer = new PxerApp();
     if (pxer.isSupported()) {
