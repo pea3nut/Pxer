@@ -322,6 +322,7 @@ class PxerApp extends PxerEvent{
             alert('Pxer:\n浏览器拦截了弹出窗口，请检查浏览器提示，设置允许此站点的弹出式窗口。');
             return;
         };
+        (<any>win).resultData = JSON.parse(JSON.stringify(this.workResultSet));
         let str =[
             "<body>",
             "<div id=\"pxer-output\"></div>",
@@ -329,7 +330,6 @@ class PxerApp extends PxerEvent{
             "</body>",
         ];
         win.document.write(str.join('\n'));
-        (<any>win).resultData = JSON.parse(JSON.stringify(this.workResultSet));
         win.document.close();
     };
     /**
