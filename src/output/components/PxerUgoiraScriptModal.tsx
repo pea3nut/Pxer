@@ -1,16 +1,21 @@
-﻿import {PxerMode, PxerWorkType, PxerPageType, PxerRequest, PxerPageRequest, PxerWorksRequest, PxerFailType, PxerFailInfo} from './PxerData.-1'
-import {IPxerWorks, IPxerSingleWorks, IPxerMultipleWorks, IPxerUgoiraWorks, IPxerUgoiraFrameData, PxerWorks, PxerSingleWorks, PxerMultipleWorks, PxerUgoiraWorks} from './PxerWorksDef.-1'
+import React from 'react'
+import {IPxerUgoiraFrameData, PxerUgoiraWorksUrl, PxerUgoiraWorks} from '../../pxer/pxerapp/PxerWorksDef.-1'
+import PxerTextModal from './PxerTextModal';
+import { PxerSelectableWorks } from '../lib';
+import { PxerWorkType } from '../../pxer/pxerapp/PxerData.-1';
 
 class PxerScriptor {
-    static generateUgoiraScript(frames :{[id :string]:IPxerUgoiraFrameData}){
+    static isWindows() {
+        return ['Win32', 'Win64', 'Windows', 'WinCE'].indexOf(navigator.platform)!==-1
+    }
+    static generateUgoiraScript(frames :{[id :string]:IPxerUgoiraFrameData}, outputType: keyof PxerUgoiraWorksUrl){
         var lines=[];
         var resstring;
         var ffmpeg;
-        var isWindows = ['Win32', 'Win64', 'Windows', 'WinCE'].indexOf(navigator.platform)!==-1;
-        var outputtype = "max";
-        switch (outputtype) {
-            case "max": resstring = "1920x1080"; break;
-            case "600p": resstring = "600x338"; break;
+        var isWindows = this.isWindows();
+        switch (outputType) {
+            case "ugoira_600p": resstring = "1920x1080"; break;
+            case "ugoira_master": resstring = "600x338"; break;
         }
         var slashstr = "";
         if (isWindows) {
@@ -31,7 +36,7 @@ class PxerScriptor {
             var confpath = foldername + "/config.txt";
             var height = frames[key].height;
             var width = frames[key].width;
-            if (outputtype==="600p") {
+            if (outputType==="ugoira_600p") {
                 var scale = Math.max(height, width)/600;
                 height = Math.ceil(height/scale);
                 width = Math.ceil(width/scale);
@@ -57,4 +62,32 @@ class PxerScriptor {
         return lines;
     };
 };
-export default PxerScriptor
+
+function PxerUgoiraScriptModal(props: {
+    works: PxerSelectableWorks[],
+    urlType: keyof PxerUgoiraWorksUrl,
+    onClose: ()=>void,
+    opened: boolean,
+}){
+    var ugoiraFrames: {[id :string]:IPxerUgoiraFrameData} = {};
+    for (var work of props.works) {
+        if (work.checked && work.type==PxerWorkType.Ugoira){
+            ugoiraFrames[work.id] = (work as {checked: boolean} & PxerUgoiraWorks).frames
+        }
+    }
+    return (
+        <PxerTextModal
+            headElem={
+                <p>这个页面是自动生成的使用FFmpeg自行合成动图的{PxerScriptor.isWindows()?"批处理":"bash"}脚本，详细使用教程见<a href="http://pxer.pea3nut.org/md/ugoira_concat" target="_blank" >http://pxer.pea3nut.org/md/ugoira_concat</a></p>
+            }
+            text={
+                Object.keys(ugoiraFrames).length===0?"未选择任何动图":
+                PxerScriptor.generateUgoiraScript(ugoiraFrames, props.urlType).join("\n")
+            }
+            opened={props.opened}
+            onClose={props.onClose}
+        />
+    )
+}
+
+export default PxerUgoiraScriptModal

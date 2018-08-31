@@ -10,7 +10,9 @@ interface IPxerOutputNavBarProps {
     onCopy: ()=>Promise<any>;
     onOutputConfig: ()=>void;
     onAdvancedFilter: ()=>void;
+    onUgoiraScript: ()=>void;
     linkCount: number;
+    showUgoiraScript: boolean;
 }
 interface IPxerOutputNavBarState {
     copyPromiseStatus: PxerCopyPromistStatus,
@@ -33,6 +35,11 @@ class PxerOutputNavbar extends Component<IPxerOutputNavBarProps, IPxerOutputNavB
                 <div className="menu">
                     <a className="pseudo button" onClick={this.props.onAdvancedFilter}>高级筛选</a>
                     <a className="pseudo button" onClick={this.props.onOutputConfig}>输出配置</a>
+                    {
+                        this.props.showUgoiraScript?
+                        <a className="pseudo button" onClick={this.props.onUgoiraScript}>动图合成</a>
+                        :null
+                    }
                         {
                             (()=>{
                                 switch (this.state.copyPromiseStatus) {

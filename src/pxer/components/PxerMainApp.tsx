@@ -7,7 +7,6 @@ import PxerPTMControl from './PxerPTMControl'
 
 import PxerApp from '../pxerapp/PxerApp.3.class'
 import PxerAnalytics from '../../analytics/PxerAnalytics.class'
-import PxerScriptor from '../pxerapp/PxerScriptor.class'
 import {PxerMode, PxerWorkType, PxerPageType, PxerRequest, PxerPageRequest, PxerWorksRequest, PxerFailType, PxerFailInfo} from '../pxerapp/PxerData.-1'
 import PxerThreadManager from '../pxerapp/PxerThreadManager.2.class';
 

@@ -5,7 +5,7 @@ import {parseURL, getPageType} from './common';
 import {PxerHtmlParser, JsObjStringLiteralParser} from './PxerHtmlParser.class';
 import {PxerMode, PxerWorkType, PxerPageType, PxerRequest, PxerPageRequest, PxerWorksRequest, PxerFailType, PxerFailInfo} from './PxerData.-1'
 import {IPxerWorks, IPxerSingleWorks, IPxerMultipleWorks, IPxerUgoiraWorks, IPxerUgoiraFrameData, PxerWorks, PxerSingleWorks, PxerMultipleWorks, PxerUgoiraWorks} from './PxerWorksDef.-1'
-//import PxerScriptor from './PxerScriptor.class'
+
 /**
  * Pxer主程序对象，与所有模块都是强耦合关系
  * 若你想阅读源码，建议不要从这个类开始

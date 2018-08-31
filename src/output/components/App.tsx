@@ -12,6 +12,7 @@ import PxerCopyFallbackModal from './PxerCopyFallbackModal';
 
 import {PxerSelectableWorks, IPxerOutputConfig} from '../lib'
 import { PxerWorkType } from '../../pxer/pxerapp/PxerData.-1';
+import PxerUgoiraScriptModal from './PxerUgoiraScriptModal';
 
 interface IPxerOutputAppProps {
     resultData: PxerSelectableWorks[];
@@ -19,14 +20,20 @@ interface IPxerOutputAppProps {
 interface IPxerOutputAppState {
     configsidebarOpen: boolean,
     outputConfig: IPxerOutputConfig,
+    copyFallBackModalOpen: boolean,
+    ugoiraScriptModalOpen: boolean,
+    copyErrMsg: string,
 }
 
 class PxerOutputApp extends Component<IPxerOutputAppProps, IPxerOutputAppState> {
     tags: string[];
+    hasUgoira: boolean;
     constructor(props: IPxerOutputAppProps){
         super(props);
         this.state = {
             configsidebarOpen: false,
+            copyFallBackModalOpen: false,
+            ugoiraScriptModalOpen: false,
             outputConfig: {
                 illust_single: "original",
                 illust_multiple: "original",
@@ -34,14 +41,17 @@ class PxerOutputApp extends Component<IPxerOutputAppProps, IPxerOutputAppState> 
                 manga_multiple: "original",
                 ugoira: "ugoira_master",
             },
+            copyErrMsg: "",
         }
         this.onSetSidebarOpen = this.onSetSidebarOpen.bind(this);
         this.copyLinks = this.copyLinks.bind(this);
         this.onAdvancedFilter = this.onAdvancedFilter.bind(this);
         this.applyWorkFilter = this.applyWorkFilter.bind(this);
         this.getLinks = this.getLinks.bind(this);
+        this.onUgoiraScript = this.onUgoiraScript.bind(this);
         
         this.tags = [].concat.apply([], this.props.resultData.map((res)=>res.tagList));;
+        this.hasUgoira = !this.props.resultData.every(work=>work.type!==PxerWorkType.Ugoira)
     }
     onSetSidebarOpen() {
         this.setState(prev=>{
@@ -74,6 +84,8 @@ class PxerOutputApp extends Component<IPxerOutputAppProps, IPxerOutputAppState> 
                             onOutputConfig={this.onSetSidebarOpen}
                             onAdvancedFilter={this.onAdvancedFilter}
                             linkCount={this.props.resultData.filter(wk=>wk.checked).length}
+                            onUgoiraScript={this.onUgoiraScript}
+                            showUgoiraScript={this.hasUgoira}
                         />
                         <PxerAdvancedFilterModal 
                             ref="filtermodal"
@@ -82,7 +94,19 @@ class PxerOutputApp extends Component<IPxerOutputAppProps, IPxerOutputAppState> 
                         />
                         <PxerCopyFallbackModal
                             getText={()=>this.getLinks().join("\n")}
-                            ref="copyfallback"
+                            opened={this.state.copyFallBackModalOpen}
+                            onClose={()=>this.setState(prev=>{
+                                return {copyFallBackModalOpen: false}
+                            })}
+                            errorDef={this.state.copyErrMsg}
+                        />
+                        <PxerUgoiraScriptModal
+                            works={this.props.resultData}
+                            urlType={this.state.outputConfig.ugoira}
+                            opened={this.state.ugoiraScriptModalOpen}
+                            onClose={()=>this.setState(prev=>{
+                                return {ugoiraScriptModalOpen: false};
+                            })}
                         />
                     </div>
                     <main>
@@ -130,7 +154,10 @@ class PxerOutputApp extends Component<IPxerOutputAppProps, IPxerOutputAppState> 
             clipboard.writeText(urls.join("\n")).then(()=>{
                 res(urls.length);
             }).catch(e=>{
-                (this.refs.copyfallback as PxerCopyFallbackModal).toggle(e);
+                this.setState({
+                    copyErrMsg: e.toString(),
+                    copyFallBackModalOpen: true,
+                })
                 rej(e);
             });
         })
@@ -138,6 +165,11 @@ class PxerOutputApp extends Component<IPxerOutputAppProps, IPxerOutputAppState> 
     onAdvancedFilter(){
         (this.refs.filtermodal as PxerAdvancedFilterModal).setState(prev=>{
             return {opened: !prev.opened}
+        })
+    }
+    onUgoiraScript(){
+        this.setState({
+            ugoiraScriptModalOpen: true,
         })
     }
     applyWorkFilter(filterfn: (wk: PxerSelectableWorks)=>boolean){
