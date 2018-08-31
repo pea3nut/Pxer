@@ -6,10 +6,12 @@ interface IPxerNavBarProps {
     onRun: ()=>void,
     onStop: ()=>void,
     onShowErr: ()=>void,
+    onReset: ()=>void,
     onPrint: ()=>void,
     showButton?: PxerNavBar.PxerNavBarButtonType,
     errInfo: string,
     showWarn: boolean,
+    showReset: boolean,
     errCount: number,
 } 
 
@@ -46,6 +48,11 @@ class PxerNavBar extends Component<IPxerNavBarProps, any> {
                                 return <button className="btn btn-outline-success" onClick={this.props.onPrint}>Print</button>
                             }
                         })()
+                    }
+                    {
+                        this.props.showReset?
+                        <button className="btn btn-outline-danger" onClick={this.props.onReset}>Reset</button>
+                        :null
                     }
                     {
                         this.props.showWarn?

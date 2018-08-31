@@ -84,7 +84,20 @@ class PxerMainApp extends Component{
                     onStop={this.onStop}
                     onShowErr={this.onShowErr}
                     onPrint={this.onPrint}
+                    onReset={()=>{
+                        this.pxer.pageRequestSet = [];
+                        this.pxer.workRequestSet = [];
+                        this.pxer.workResultSet = [];
+                        this.pxer.taskOption.limit = 0;
+                        this.pxer.taskOption.stopId = "";
+                        this.setState(prev=>{
+                            return {
+                                status: PxerMainApp.PxerStatus.config
+                            }
+                        })
+                    }}
                     showWarn={this.pxer.failList.length!==0 && this.state.status===PxerMainApp.PxerStatus.finish}
+                    showReset={this.state.status===PxerMainApp.PxerStatus.finish}
                     errInfo={""}
                     errCount={this.pxer.failList.length}
                 />

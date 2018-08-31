@@ -71,10 +71,10 @@ function PxerCrawlStatus(props : {
                     <tbody>
                         <tr>
                             <td>停止ID：</td>
-                            <td><input disabled={props.lockConf} size={9} type="number" defaultValue={""} onChange={e=>props.handleMaxID(e.target.value)}/></td>
+                            <td><input disabled={props.lockConf} size={9} min={0} type="number" defaultValue={""} onChange={e=>props.handleMaxID(e.target.value)}/></td>
                         </tr><tr>
                             <td>最大作品数：</td>
-                            <td><input disabled={props.lockConf} size={9} type="number" defaultValue={""} onChange={e=>props.handleMaxWorkCount(e.target.valueAsNumber)}/></td>
+                            <td><input disabled={props.lockConf} size={9} min={0} type="number" defaultValue={""} onChange={e=>props.handleMaxWorkCount(e.target.valueAsNumber)}/></td>
                         </tr>
                     </tbody>
                 </table>
