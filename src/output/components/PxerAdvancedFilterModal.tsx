@@ -2,22 +2,24 @@ import React, { Component } from 'react';
 import AutoSuggestControl from '../AutoSuggestControl.class'
 import { PxerWorks } from '../../pxer/pxerapp/PxerWorksDef.-1';
 import { PxerImageDataLine } from './PxerImageData';
+import { PxerSelectableWorks } from '../lib';
+import { PxerWorkType } from '../../pxer/pxerapp/PxerData.-1';
 interface IPxerAdvancedFilterModalState {
     opened: boolean,
     minLike: number,
     minView: number,
     minRate: number,
-    illust: boolean,
-    manga: boolean,
-    ugoira: boolean,
-    single: boolean,
-    multiple: boolean,
     no_tag_any: string[],
     has_tag_any: string[],
     has_tag_all: string[],
+    single: boolean,
+    multiple: boolean,
+    illust: boolean,
+    manga: boolean,
+    ugoira: boolean,
 }
 interface IPxerAdvancedFilterModalProps {
-    filterReceiver: (filterfn: (work: PxerImageDataLine)=>boolean)=>void,
+    filterReceiver: (filterfn: (work: PxerSelectableWorks)=>boolean)=>void,
     tagList: string[],
 }
 class PxerAdvancedFilterModal extends Component<IPxerAdvancedFilterModalProps, IPxerAdvancedFilterModalState> {
@@ -28,16 +30,17 @@ class PxerAdvancedFilterModal extends Component<IPxerAdvancedFilterModalProps, I
             minLike: 0,
             minView: 0,
             minRate: 0,
+            no_tag_any: [],
+            has_tag_all: [],
+            has_tag_any: [],
+            single: true,
+            multiple: true,
             illust: true,
             manga: true,
             ugoira: true,
-            single: true,
-            multiple: true,
-            no_tag_any: [],
-            has_tag_any: [],
-            has_tag_all: [],
         }
         this.onApply = this.onApply.bind(this);
+        this.onCancel = this.onCancel.bind(this);
     }
     componentDidMount(){
         new AutoSuggestControl("no_tag_any", ()=>this.props.tagList);
@@ -54,30 +57,48 @@ class PxerAdvancedFilterModal extends Component<IPxerAdvancedFilterModalProps, I
                         <form>
                             <div id="filter-params" className="oneline">
                                 点赞数 ≥
-                                <input type="number" defaultValue={"0"} onChange={e=>{
+                                <input 
+                                type="number" 
+                                value={this.state.minLike}
+                                onChange={e=>{
                                     var newValue = e.target.valueAsNumber || 0;
-                                    this.setState(()=>{
-                                            return {minLike: newValue};
-                                        })
-                                    }} />
+                                    this.setState(prev=>{
+                                        return {
+                                            minLike: newValue
+                                        }
+                                    });
+                                }}
+                                />
                             </div>
                             <div id="filter-params" className="oneline">
                                 浏览数 ≥
-                                <input type="number" defaultValue={"0"} onChange={e=>{
+                                <input 
+                                type="number" 
+                                value={this.state.minView}
+                                onChange={e=>{
                                     var newValue = e.target.valueAsNumber || 0;
-                                    this.setState(()=>{
-                                            return {minView: newValue};
-                                        })
-                                    }} />
+                                    this.setState(prev=>{
+                                        return {
+                                            minView: newValue
+                                        }
+                                    });
+                                }}
+                                />
                             </div>
                             <div id="filter-params" className="oneline">
                                 收藏数 ≥
-                                <input type="number" defaultValue={"0"} onChange={e=>{
+                                <input 
+                                type="number" 
+                                value={this.state.minRate}
+                                onChange={e=>{
                                     var newValue = e.target.valueAsNumber || 0;
-                                    this.setState(()=>{
-                                            return {minRate: newValue};
-                                        })
-                                    }} />
+                                    this.setState(prev=>{
+                                        return {
+                                            minRate: newValue
+                                        }
+                                    });
+                                }}
+                                />
                             </div>
                             <div id="filter-params" className="oneline align">
                                 类型：
@@ -149,11 +170,21 @@ class PxerAdvancedFilterModal extends Component<IPxerAdvancedFilterModalProps, I
                             <label htmlFor="modal_filter" className="button" onClick={this.onApply}>
                                 Apply
                             </label>
+                            <label htmlFor="modal_filter" className="button error pull-right" onClick={this.onCancel}>
+                                Cancel
+                            </label>
                         </form>
                     </div>
                 </div>
             </div>
         )
+    }
+    onCancel(){
+        this.setState(prev=>{
+            return {
+                opened: false,
+            }
+        })
     }
     onApply(){
         this.setState(prev=>{
@@ -165,15 +196,15 @@ class PxerAdvancedFilterModal extends Component<IPxerAdvancedFilterModalProps, I
             }
         }, ()=>{
             this.props.filterReceiver((work)=>{
-                if (work.props.likeCount<this.state.minLike) return false;
-                if (work.props.viewCount<this.state.minView) return false;
-                if (work.props.rateCount<this.state.minRate) return false;
-                if (!((this.state as any)[work.props.illustType] as boolean)) return false;
-                if (this.state.no_tag_any.length>0  &&  !this.state.no_tag_any.every(notag=>work.props.tagList.indexOf(notag)===-1)) return false;
-                if (this.state.has_tag_any.length>0 && this.state.has_tag_any.every(hastag=>work.props.tagList.indexOf(hastag)===-1)) return false;
-                if (this.state.has_tag_all.length>0 && !this.state.has_tag_all.every(hastag=>work.props.tagList.indexOf(hastag)!==-1)) return false;
-                if (!this.state.multiple && work.props.pageCount>1) return false;
-                if (!this.state.single && work.props.pageCount==1) return false;
+                if (work.likeCount<this.state.minLike) return false;
+                if (work.viewCount<this.state.minView) return false;
+                if (work.ratedCount<this.state.minRate) return false;
+                if (!((this.state as any)[work.type] as boolean)) return false;
+                if (this.state.no_tag_any.length>0  &&  !this.state.no_tag_any.every(notag=>work.tagList.indexOf(notag)===-1)) return false;
+                if (this.state.has_tag_any.length>0 && this.state.has_tag_any.every(hastag=>work.tagList.indexOf(hastag)===-1)) return false;
+                if (this.state.has_tag_all.length>0 && !this.state.has_tag_all.every(hastag=>work.tagList.indexOf(hastag)!==-1)) return false;
+                if (!this.state.multiple && work.isMultiple) return false;
+                if (!this.state.single && !work.isMultiple) return false;
                 return true;
             })
         })

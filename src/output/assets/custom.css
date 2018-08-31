@@ -44,9 +44,9 @@ th > * {
 div.openup {
     width: 30%;
     height: 60%;
-    padding-top: 10px !important;
-    padding-left: 10px !important;
-    padding-right: 10px !important;
+    padding-top: 2% !important;
+    padding-left: 2% !important;
+    padding-right: 2% !important;
 }
 div.openup ~ * {
     vertical-align: middle;
@@ -57,4 +57,7 @@ div.openup-more {
 }
 textarea {
     height: 70%;
+}
+.pull-right {
+    float: right;
 }

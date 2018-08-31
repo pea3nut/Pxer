@@ -22,7 +22,7 @@ class PxerCopyFallBackModal extends Component<{getText: ()=>string},{
                         Copy Failed. Please copy it yourself:(
                         <i className="shy">{this.state.error}</i>
                         <label className="button" onClick={this.toggle}>Close</label>
-                        <textarea value={this.props.getText()} data-gramm_editor={false}/>
+                        <textarea value={this.props.getText()} data-gramm_editor={false} readOnly={true}/>
                     </div>
                 </div>
             </div>

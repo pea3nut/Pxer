@@ -1,10 +1,10 @@
 import React, { Component, ChangeEvent } from 'react';
 import { PxerWorkType } from '../../pxer/pxerapp/PxerData.-1';
 import { PxerWorkUrl } from '../../pxer/pxerapp/PxerWorksDef.-1';
-import {PxerIndeterminatableBoxState} from './lib'
+import { PxerIndeterminatableBoxState, PxerSelectableWorks } from '../lib';
 interface IPxerSortableTHProps {
-    sortFunc: (key: keyof IPxerImageDataLineState)=>void,
-    sortKey: keyof IPxerImageDataLineState,
+    sortFunc: (key: keyof PxerSelectableWorks)=>void,
+    sortKey: keyof PxerSelectableWorks,
     currentKey: string|null,
     innerContent: string|JSX.Element,
     reverse: boolean,
@@ -35,11 +35,11 @@ class PxerSortableTH extends Component<IPxerSortableTHProps> {
 
 interface IPxerImageDataHeadProps {
     boxState: PxerIndeterminatableBoxState,
-    onSort: (key: keyof IPxerImageDataLineState, reverse: boolean)=>void,
+    onSort: (key: keyof PxerSelectableWorks, reverse: boolean)=>void,
     onSetAllSelectedState: (newstate: boolean)=>void,
 }
 interface IPxerImageDataHeadState {
-    sortKey: string|null,
+    sortKey: keyof PxerSelectableWorks|null,
     sortReverse: boolean,
     selectAll: boolean,
     inDeterminate: boolean,
@@ -89,14 +89,14 @@ class PxerImageDataHead extends Component<IPxerImageDataHeadProps,IPxerImageData
                     innerContent={<input type="checkbox" checked={this.state.selectAll} onChange={this.handleCheckedState} ref="selall"></input>}
                 />
                 <PxerSortableTH
-                    sortKey="illustId"
+                    sortKey="id"
                     sortFunc={this.doSort}
                     currentKey={this.state.sortKey}
                     reverse={this.state.sortReverse}
                     innerContent="illustID"
                 />
                 <PxerSortableTH
-                    sortKey="illustType"
+                    sortKey="type"
                     sortFunc={this.doSort}
                     currentKey={this.state.sortKey}
                     reverse={this.state.sortReverse}
@@ -105,28 +105,28 @@ class PxerImageDataHead extends Component<IPxerImageDataHeadProps,IPxerImageData
                 <th>Thumb</th>
                 <th>Tags</th>
                 <PxerSortableTH
-                    sortKey="PageCount"
+                    sortKey="multiple"
                     sortFunc={this.doSort}
                     currentKey={this.state.sortKey}
                     reverse={this.state.sortReverse}
                     innerContent="PageCount"
                 />
                 <PxerSortableTH
-                    sortKey="LikeCount"
+                    sortKey="likeCount"
                     sortFunc={this.doSort}
                     currentKey={this.state.sortKey}
                     reverse={this.state.sortReverse}
                     innerContent="LikeCount"
                 />
                 <PxerSortableTH
-                    sortKey="ViewCount"
+                    sortKey="viewCount"
                     sortFunc={this.doSort}
                     currentKey={this.state.sortKey}
                     reverse={this.state.sortReverse}
                     innerContent="ViewCount"
                 />
                 <PxerSortableTH
-                    sortKey="RateCount"
+                    sortKey="ratedCount"
                     sortFunc={this.doSort}
                     currentKey={this.state.sortKey}
                     reverse={this.state.sortReverse}
@@ -134,7 +134,7 @@ class PxerImageDataHead extends Component<IPxerImageDataHeadProps,IPxerImageData
                 />
                 <th>WorkTitle</th>
                 <PxerSortableTH
-                    sortKey="Date"
+                    sortKey="date"
                     sortFunc={this.doSort}
                     currentKey={this.state.sortKey}
                     reverse={this.state.sortReverse}
@@ -143,7 +143,7 @@ class PxerImageDataHead extends Component<IPxerImageDataHeadProps,IPxerImageData
             </tr>
         )
     }
-    doSort(key: keyof IPxerImageDataLineState){
+    doSort(key: keyof PxerSelectableWorks){
         var reverse = this.state.sortKey===key?!this.state.sortReverse:true;
         this.props.onSort(key, reverse)
         this.setState(prev=>{
@@ -162,99 +162,56 @@ class PxerImageDataHead extends Component<IPxerImageDataHeadProps,IPxerImageData
 }
 
 interface IPxerImageDataLineProps {
-    illustId: string,
-    illustType: PxerWorkType,
-    urls: PxerWorkUrl,
-    tagList: string[],
-    likeCount: number,
-    viewCount: number,
-    rateCount: number,
-    workTitle: string,
-    pageCount: number,
-    workDate: Date,
+    work: PxerSelectableWorks,
     tagFoldLength: number,
     onChange: ()=>void,
-    onRef: (ref: PxerImageDataLine|null)=>void,
 }
-interface IPxerImageDataLineState {
-    checked: boolean,
-    illustId: string,
-    illustType: PxerWorkType,
-    imgSrc: string,
-    tagList: string[],
-    LikeCount: number,
-    ViewCount: number,
-    RateCount: number,
-    WorkTitle: string,
-    PageCount: number,
-    Date: Date,
-}
+interface IPxerImageDataLineState {}
 class PxerImageDataLine extends Component<IPxerImageDataLineProps,IPxerImageDataLineState> {
     constructor(props: IPxerImageDataLineProps){
         super(props);
-        this.state = {
-            checked: true,
-            illustId: props.illustId,
-            illustType: props.illustType,
-            imgSrc: props.urls.thumb,
-            tagList: props.tagList,
-            LikeCount: props.likeCount,
-            ViewCount: props.viewCount,
-            RateCount: props.rateCount,
-            WorkTitle: props.workTitle,
-            PageCount: props.pageCount,
-            Date: props.workDate,
-        }
+        this.state = {}
         this.handleCheckedState = this.handleCheckedState.bind(this);
         this.toggleCheckedState = this.toggleCheckedState.bind(this);
     }
-    componentDidMount() {
-        this.props.onRef(this)
-    }
-    componentWillUnmount() {
-        this.props.onRef(null)
-    }
-    componentDidUpdate(){
-        this.props.onChange();
-    }
     render(){
         return (
-            <tr className={this.state.checked?"checked":""} onClick={this.toggleCheckedState}>
-                <td><input type="checkbox" checked={this.state.checked} onChange={this.handleCheckedState}></input></td>
-                <td>{this.state.illustId}</td>
-                <td>{this.state.illustType}</td>
+            <tr className={this.props.work.checked?"checked":""} onClick={this.toggleCheckedState}>
+                <td><input type="checkbox" checked={this.props.work.checked} onChange={this.handleCheckedState}></input></td>
+                <td>{this.props.work.id}</td>
+                <td>{this.props.work.type}</td>
                 <td>
-                    <img src={this.state.imgSrc} className="table-img"></img>
+                    <img src={this.props.work.urls.thumb} className="table-img"></img>
                 </td>
                 <td 
-                    data-tooltip={this.state.tagList.join(" ")}
+                    data-tooltip={this.props.work.tagList.join(" ")}
                 >
                     {
-                        this.state.tagList.slice(0, this.props.tagFoldLength).map(tag=><p key={this.state.illustId+"_"+tag}>{tag}</p>)
+                        this.props.work.tagList.slice(0, this.props.tagFoldLength).map(tag=><p key={this.props.work.id+"_"+tag}>{tag}</p>)
                     }
                     {
-                        this.state.tagList.length>this.props.tagFoldLength?<i className="shy">{this.state.tagList.length-this.props.tagFoldLength} not shown. Mouseover for more information.</i>:null
+                        this.props.work.tagList.length>this.props.tagFoldLength?<i className="shy">{this.props.work.tagList.length-this.props.tagFoldLength} not shown. Mouseover for more information.</i>:null
                     }
                 </td>
-                <td>{this.state.PageCount}</td>
-                <td>{this.state.LikeCount}</td>
-                <td>{this.state.ViewCount}</td>
-                <td>{this.state.RateCount}</td>
-                <td>{this.state.WorkTitle}</td>
-                <td className="oneline">{this.state.Date}</td>
+                <td>{this.props.work.multiple}</td>
+                <td>{this.props.work.likeCount}</td>
+                <td>{this.props.work.viewCount}</td>
+                <td>{this.props.work.ratedCount}</td>
+                <td>{this.props.work.title}</td>
+                <td className="oneline">{this.props.work.date}</td>
             </tr>
         )
     }
     handleCheckedState(e: ChangeEvent<HTMLInputElement>){
         var nowstate = (e.target).checked;
-        this.setState(prev=>{
-            return {checked: nowstate}
-        });
+        this.props.work.checked = nowstate;
+        this.props.onChange();
+        this.forceUpdate();
     }
     toggleCheckedState(){
-        this.setState(prev=>{
-            return {checked: !prev.checked}
-        })
+        this.props.work.checked = !this.props.work.checked;
+        this.props.onChange();
+        this.forceUpdate();
     }
 }
 

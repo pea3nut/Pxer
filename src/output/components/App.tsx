@@ -6,27 +6,34 @@ import '../assets/custom.css'
 
 import PxerOutputNavbar from './PxerOutputNavbar'
 import PxerImageDataTable from './PxerImageDataTable'
-import {PxerSideBarConfig, IPxerSideBarConfigProps, IPxerSideBarConfigState} from './PxerSideBarConfig'
+import {PxerSideBarConfig} from './PxerSideBarConfig'
 import PxerAdvancedFilterModal from './PxerAdvancedFilterModal'
 import PxerCopyFallbackModal from './PxerCopyFallbackModal';
-import { PxerWorks } from '../../pxer/pxerapp/PxerWorksDef.-1';
-import {PxerImageDataHead, PxerImageDataLine} from './PxerImageData'
+
+import {PxerSelectableWorks, IPxerOutputConfig} from '../lib'
+import { PxerWorkType } from '../../pxer/pxerapp/PxerData.-1';
 
 interface IPxerOutputAppProps {
-    resultData: PxerWorks[];
+    resultData: PxerSelectableWorks[];
 }
 interface IPxerOutputAppState {
     configsidebarOpen: boolean,
+    outputConfig: IPxerOutputConfig,
 }
 
 class PxerOutputApp extends Component<IPxerOutputAppProps, IPxerOutputAppState> {
-    imageDataTable: PxerImageDataTable|null;
-    sidebarConfig: PxerSideBarConfig|null;
     tags: string[];
     constructor(props: IPxerOutputAppProps){
         super(props);
         this.state = {
             configsidebarOpen: false,
+            outputConfig: {
+                illust_single: "original",
+                illust_multiple: "original",
+                manga_single: "original",
+                manga_multiple: "original",
+                ugoira: "ugoira_master",
+            },
         }
         this.onSetSidebarOpen = this.onSetSidebarOpen.bind(this);
         this.copyLinks = this.copyLinks.bind(this);
@@ -34,8 +41,6 @@ class PxerOutputApp extends Component<IPxerOutputAppProps, IPxerOutputAppState> 
         this.applyWorkFilter = this.applyWorkFilter.bind(this);
         this.getLinks = this.getLinks.bind(this);
         
-        this.imageDataTable = null
-        this.sidebarConfig = null;
         this.tags = [].concat.apply([], this.props.resultData.map((res)=>res.tagList));;
     }
     onSetSidebarOpen() {
@@ -48,7 +53,10 @@ class PxerOutputApp extends Component<IPxerOutputAppProps, IPxerOutputAppState> 
             <div className="Pxer-Output">
                 <Sidebar
                     sidebar={<PxerSideBarConfig 
-                    onRef={(ref: PxerSideBarConfig|null)=>{this.sidebarConfig=ref}}/>}
+                                config={this.state.outputConfig}
+                                applyConfig={(key, value)=>{this.state.outputConfig[key]=value;}}
+                            />
+                    }
                     open={this.state.configsidebarOpen}
                     onSetOpen={this.onSetSidebarOpen}
                     styles={{
@@ -65,7 +73,7 @@ class PxerOutputApp extends Component<IPxerOutputAppProps, IPxerOutputAppState> 
                             onCopy={this.copyLinks} 
                             onOutputConfig={this.onSetSidebarOpen}
                             onAdvancedFilter={this.onAdvancedFilter}
-                            linkCount={this.imageDataTable? this.imageDataTable.gatherSelectedWorksInfo().length:0}
+                            linkCount={this.props.resultData.filter(wk=>wk.checked).length}
                         />
                         <PxerAdvancedFilterModal 
                             ref="filtermodal"
@@ -82,8 +90,7 @@ class PxerOutputApp extends Component<IPxerOutputAppProps, IPxerOutputAppState> 
                             <PxerImageDataTable 
                                 workData={this.props.resultData} 
                                 tagFoldLength={6}
-                                onRef={ref => {this.imageDataTable = ref; this.forceUpdate();}} 
-                                onChange={()=>{this.forceUpdate()}}
+                                onChange={()=>{this.forceUpdate();}}
                             />
                         </div>
                     </main>
@@ -92,25 +99,25 @@ class PxerOutputApp extends Component<IPxerOutputAppProps, IPxerOutputAppState> 
         );
     }
     getLinks(): string[]{
-        if (!this.imageDataTable) return [];
-        var works = this.imageDataTable.gatherSelectedWorksInfo();
+        var works = this.props.resultData.filter(wk=>wk.checked);
         var urls = [];
         for (var work of works) {
             var url: string;
-            if ((work.props as any).illustType==="ugoira") {
-                url = ((work.props as any).urls as any)[
-                    (this.sidebarConfig as PxerSideBarConfig).state.ugoira
+            if (work.type===PxerWorkType.Ugoira) {
+                url = (work.urls as any)[
+                    this.state.outputConfig.ugoira
                 ] as string;
                 if (url) urls.push(url)
             } else {
-                url = ((work.props as any).urls as any)[
-                    ((this.sidebarConfig as PxerSideBarConfig).state as IPxerSideBarConfigState as any)[
-                        (work.props as any).illustType+"_"+
-                        ((work.props as any).pageCount>1?"multiple":"single")
-                    ] as string
+                url = (work.urls as any)[
+                    ((this.state.outputConfig as any)[
+                        work.type+
+                        "_"+
+                        (work.isMultiple?"multiple":"single")
+                    ] as string)
                 ] as string
                 if (!url) continue;
-                for (var i=0;i<(work.props as any).pageCount;i++) {
+                for (var i=0;i<work.multiple;i++) {
                     urls.push(url.replace("_p0","_p"+i))
                 }
             }
@@ -133,15 +140,12 @@ class PxerOutputApp extends Component<IPxerOutputAppProps, IPxerOutputAppState> 
             return {opened: !prev.opened}
         })
     }
-    applyWorkFilter(filterfn: (wk: PxerImageDataLine)=>boolean){
-        for (var work of (this.imageDataTable as PxerImageDataTable).getAllWorksRef()) {
+    applyWorkFilter(filterfn: (wk: PxerSelectableWorks)=>boolean){
+        for (var work of this.props.resultData) {
             let res = filterfn(work)
-            work.setState(prev=>{
-                return {
-                    checked: res,
-                }
-            })
+            work.checked = res
         }
+        this.forceUpdate();
     }
 }
 
