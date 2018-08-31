@@ -6,6 +6,7 @@ input[type="checkbox"] {
     position: relative;
     align-self: baseline;
     vertical-align: middle;
+    width: 1em;
     margin-bottom: 0;
 }
 input[type="number"] {

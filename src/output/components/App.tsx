@@ -155,7 +155,7 @@ class PxerOutputApp extends Component<IPxerOutputAppProps, IPxerOutputAppState> 
                 res(urls.length);
             }).catch(e=>{
                 this.setState({
-                    copyErrMsg: e.toString(),
+                    copyErrMsg: e?e.toString():"无法写入剪贴板",
                     copyFallBackModalOpen: true,
                 })
                 rej(e);

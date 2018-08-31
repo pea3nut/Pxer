@@ -20,7 +20,7 @@ class PxerCopyFallBackModal extends Component<IPxerCopyFallBackModalProps>{
                     onClose={this.props.onClose}
                     headElem={
                         <div>
-                            Copy Failed. Please copy it yourself:(
+                            <p>Copy Failed. Please copy it yourself:(</p>
                             <i className="shy">{this.props.errorDef}</i>
                         </div>
                     }
