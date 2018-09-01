@@ -83,7 +83,7 @@ function PxerUgoiraScriptModal(props: {
             (t)=>(
                 <PxerTextModal
                     headElem={
-                        <p dangerouslySetInnerHTML={{__html: t("ugoira_tip_"+PxerScriptor.isWindows()?"windows":"unix")}}></p>
+                        <p dangerouslySetInnerHTML={{__html: t("ugoira_tip_"+(PxerScriptor.isWindows()?"windows":"unix"))}}></p>
                     }
                     text={
                         Object.keys(ugoiraFrames).length===0?t("ugoira_scripting_no_selected"):
