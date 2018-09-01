@@ -9,6 +9,7 @@ import PxerApp from '../pxerapp/PxerApp.3.class'
 import PxerAnalytics from '../../analytics/PxerAnalytics.class'
 import {PxerMode, PxerWorkType, PxerPageType, PxerRequest, PxerPageRequest, PxerWorksRequest, PxerFailType, PxerFailInfo} from '../pxerapp/PxerData.-1'
 import PxerThreadManager from '../pxerapp/PxerThreadManager.2.class';
+import i18n from '../i18next';
 
 interface IPxerMainAppState {
     status: PxerMainApp.PxerStatus,
@@ -170,6 +171,7 @@ class PxerMainApp extends Component{
         })
         if (this.pxer.canDirectCrawl()){
             this.pxer.getThis().then(()=>{
+                this.onPrint();
                 this.setState((prev: IPxerMainAppState)=>{
                     return {
                         status: PxerMainApp.PxerStatus.standby,
@@ -285,7 +287,9 @@ class PxerMainApp extends Component{
             result_count:this.pxer.workResultSet.length,
         });
         
-        this.pxer.printWorks();
+        if (!this.pxer.printWorks()) {
+            alert(i18n.t("pxerapp:popup_permission_denied"));
+        }
     }
 }
 

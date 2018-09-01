@@ -8,19 +8,9 @@ interface IPxerFailDisplayProps {
 }
 class PxerFailDisplay extends Component<IPxerFailDisplayProps, any> {
     selectedworks: string[];
-    typeadvicemap: {[x in keyof typeof PxerFailType]:string};
     constructor(props: IPxerFailDisplayProps){
         super(props);
         this.selectedworks = [];
-        this.typeadvicemap = {
-            HTTPCode: "稍后再试",
-            mypixiv: "添加画师好友再尝试",
-            parse: '再试一次，若问题依旧，请<a href="https://github.com/pea3nut/Pxer/issues/5" target="_blank">反馈</a>给花生',
-            timeout: "增加最大等待时间再试一次~",
-            urlempty: "点击左侧链接确认内容正确，再试一次~",
-            r18:'开启账号R-18选项',
-            r18g:'开启账号R-18G选项',
-        };
     }
     render(){
         return (

@@ -316,11 +316,10 @@ class PxerApp extends PxerEvent{
     /**
      * 输出抓取到的作品
      * */
-    printWorks() :void{
+    printWorks() :boolean{
         let win =window.open(document.URL ,'_blank');
         if(!win){
-            alert('Pxer:\n浏览器拦截了弹出窗口，请检查浏览器提示，设置允许此站点的弹出式窗口。');
-            return;
+            return false;
         };
         (<any>win).resultData = this.workResultSet;
         let str =[
@@ -331,6 +330,7 @@ class PxerApp extends PxerEvent{
         ];
         win.document.write(str.join('\n'));
         win.document.close();
+        return true;
     };
     /**
      * 获取当前页面的总作品数
@@ -380,7 +380,6 @@ class PxerApp extends PxerEvent{
             // 添加执行
             this.workRequestSet = [pwr];
             this.one('finishParse',()=>{
-                this.printWorks();
                 resolve(true);
             });
             this.executeWroksTask();
