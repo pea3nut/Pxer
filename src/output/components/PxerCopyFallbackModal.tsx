@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PxerTextModal from './PxerTextModal';
+import {I18n} from 'react-i18next'
 
 interface IPxerCopyFallBackModalProps {
     getText: ()=>string,
@@ -13,19 +14,25 @@ class PxerCopyFallBackModal extends Component<IPxerCopyFallBackModalProps>{
     }
     render(){
         return (
-            <div id="copy-fail">
-                <PxerTextModal
-                    text={this.props.getText()}
-                    opened={this.props.opened}
-                    onClose={this.props.onClose}
-                    headElem={
-                        <div>
-                            <p>Copy Failed. Please copy it yourself:(</p>
-                            <i className="shy">{this.props.errorDef}</i>
-                        </div>
-                    }
-                />
-            </div>
+            <I18n ns="pxeroutput">
+                {
+                    (t)=>(
+                        <div id="copy-fail">
+                        <PxerTextModal
+                            text={this.props.getText()}
+                            opened={this.props.opened}
+                            onClose={this.props.onClose}
+                            headElem={
+                                <div>
+                                    <p>{t("copy_fail_notice")}</p>
+                                    <i className="shy">{this.props.errorDef}</i>
+                                </div>
+                            }
+                        />
+                    </div>
+                    )
+                }
+            </I18n>
         )
     }
 }

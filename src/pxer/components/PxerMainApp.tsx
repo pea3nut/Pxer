@@ -292,13 +292,13 @@ class PxerMainApp extends Component{
 namespace PxerMainApp {
     export enum PxerStatus {
         standby,
-        init = "初始化",
-        config = "待命",
-        running_page = "抓取页码中",
-        running_work = "抓取作品中",
-        running_parse = "解析页面中",
-        finish = "完成",
-        stopping = "停止",
+        init,
+        config,
+        running_page,
+        running_work,
+        running_parse,
+        finish,
+        stopping,
     }
 }
 export default PxerMainApp

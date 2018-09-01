@@ -14,6 +14,8 @@ import {PxerSelectableWorks, IPxerOutputConfig} from '../lib'
 import { PxerWorkType } from '../../pxer/pxerapp/PxerData.-1';
 import PxerUgoiraScriptModal from './PxerUgoiraScriptModal';
 
+import {I18n} from 'react-i18next'
+
 interface IPxerOutputAppProps {
     resultData: PxerSelectableWorks[];
 }
@@ -155,7 +157,7 @@ class PxerOutputApp extends Component<IPxerOutputAppProps, IPxerOutputAppState> 
                 res(urls.length);
             }).catch(e=>{
                 this.setState({
-                    copyErrMsg: e?e.toString():"无法写入剪贴板",
+                    copyErrMsg: e?e.toString():"",
                     copyFallBackModalOpen: true,
                 })
                 rej(e);
@@ -163,9 +165,7 @@ class PxerOutputApp extends Component<IPxerOutputAppProps, IPxerOutputAppState> 
         })
     }
     onAdvancedFilter(){
-        (this.refs.filtermodal as PxerAdvancedFilterModal).setState(prev=>{
-            return {opened: !prev.opened}
-        })
+        (this.refs.filtermodal as PxerAdvancedFilterModal).open();
     }
     onUgoiraScript(){
         this.setState({

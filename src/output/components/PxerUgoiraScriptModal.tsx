@@ -3,12 +3,14 @@ import {IPxerUgoiraFrameData, PxerUgoiraWorksUrl, PxerUgoiraWorks} from '../../p
 import PxerTextModal from './PxerTextModal';
 import { PxerSelectableWorks } from '../lib';
 import { PxerWorkType } from '../../pxer/pxerapp/PxerData.-1';
+import {I18n} from 'react-i18next'
+import i18next from 'i18next'
 
 class PxerScriptor {
     static isWindows() {
         return ['Win32', 'Win64', 'Windows', 'WinCE'].indexOf(navigator.platform)!==-1
     }
-    static generateUgoiraScript(frames :{[id :string]:IPxerUgoiraFrameData}, outputType: keyof PxerUgoiraWorksUrl){
+    static generateUgoiraScript(frames :{[id :string]:IPxerUgoiraFrameData}, outputType: keyof PxerUgoiraWorksUrl, t: i18next.TranslationFunction){
         var lines=[];
         var resstring;
         var ffmpeg;
@@ -22,14 +24,14 @@ class PxerScriptor {
             slashstr="^";
             ffmpeg="ffmpeg";
             lines.push("@echo off");
-            lines.push("set /p ext=请输入输出文件扩展名(mp4/gif/...):");
+            lines.push(`set /p ext="${t("scriptor_prompt_ext")}"`);
         } else {
             slashstr="\\";
             ffmpeg="$ffmpeg";
             lines.push("#!/bin/bash");
             lines.push("");
             lines.push("{ hash ffmpeg 2>/dev/null && ffmpeg=ffmpeg;} || { [ -x ./ffmpeg ] && ffmpeg=./ffmpeg;} || { echo >&2 \"Failed to locate ffmpeg executable. Aborting.\"; exit 1;}");
-            lines.push("read -p '请输入输出文件扩展名(mp4/gif/...):' ext");
+            lines.push(`read -p "${t("scriptor_prompt_ext")}" ext`);
         }
         for (let key in frames) {
             var foldername = key + "_ugoira" + resstring;
@@ -55,9 +57,9 @@ class PxerScriptor {
             lines.push(isWindows? ")":"fi");
         }
         if (isWindows) {
-            lines.push("echo 完成 & pause");
+            lines.push(`echo ${t("scriptor_finish")} & pause`);
         } else {
-            lines.push("read  -n 1 -p \"完成，按任意键退出\" m && echo");
+            lines.push(`read  -n 1 -p \"${t("scriptor_finish_anykey")}\" m && echo`);
         }
         return lines;
     };
@@ -76,17 +78,23 @@ function PxerUgoiraScriptModal(props: {
         }
     }
     return (
-        <PxerTextModal
-            headElem={
-                <p>这个页面是自动生成的使用FFmpeg自行合成动图的{PxerScriptor.isWindows()?"批处理":"bash"}脚本，详细使用教程见<a href="http://pxer.pea3nut.org/md/ugoira_concat" target="_blank" >http://pxer.pea3nut.org/md/ugoira_concat</a></p>
-            }
-            text={
-                Object.keys(ugoiraFrames).length===0?"未选择任何动图":
-                PxerScriptor.generateUgoiraScript(ugoiraFrames, props.urlType).join("\n")
-            }
-            opened={props.opened}
-            onClose={props.onClose}
-        />
+        <I18n ns="pxeroutput">
+        {
+            (t)=>(
+                <PxerTextModal
+                    headElem={
+                        <p dangerouslySetInnerHTML={{__html: t("ugoira_tip_"+PxerScriptor.isWindows()?"windows":"unix")}}></p>
+                    }
+                    text={
+                        Object.keys(ugoiraFrames).length===0?t("ugoira_scripting_no_selected"):
+                        PxerScriptor.generateUgoiraScript(ugoiraFrames, props.urlType, t).join("\n")
+                    }
+                    opened={props.opened}
+                    onClose={props.onClose}
+                />
+            )
+        }
+        </I18n>
     )
 }
 

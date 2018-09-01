@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PxerMainApp from './PxerMainApp';
 import { PxerPageType } from '../pxerapp/PxerData.-1';
+import {I18n} from 'react-i18next'
 
 function cap(timesec: number):number|null{
     if (!timesec) return null;
@@ -22,16 +23,6 @@ function fmtTime(sec: number) :string{
         return `${addZero(Math.floor(sec/60)%60)}:${addZero(Math.floor(sec%60))}`
     }
 }
-let pageTypeMap: {[x in keyof typeof PxerPageType]?: string} = {
-    member_works     :'作品列表页',
-    search           :'检索页',
-    bookmark_works   :'收藏列表页',
-    rank             :'排行榜',
-    bookmark_new     :'关注的新作品',
-    discovery        :'探索',
-    unknown          :'未知',
-};
-
 function PxerCrawlStatus(props : {
     version :string,
     status: PxerMainApp.PxerStatus,
@@ -45,89 +36,120 @@ function PxerCrawlStatus(props : {
     handleMaxWorkCount: (count: number)=>void,
 }){
     return (
-        <div className="pxer-info">
-            <div className="pi-item">
-                <div className="pii-title">程序状态</div>
-                <table className="table">
-                    <tbody>
-                        <tr>
-                            <td>主程序版本：</td>
-                            <td>{props.version}</td>
-                        </tr>
-                        <tr>
-                            <td>当前状态：</td>
-                            <td>{props.status}</td>
-                        </tr>
-                        <tr>
-                            <td>已运行时间：</td>
-                            <td>{props.runtime?fmtTime(props.runtime as number):"--:--"}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div className="pi-item">
-                <div className="pii-title">筛选设置</div>
-                <table className="table">
-                    <tbody>
-                        <tr>
-                            <td>停止ID：</td>
-                            <td><input disabled={props.lockConf} size={9} min={0} type="number" defaultValue={""} onChange={e=>props.handleMaxID(e.target.value)}/></td>
-                        </tr><tr>
-                            <td>最大作品数：</td>
-                            <td><input disabled={props.lockConf} size={9} min={0} type="number" defaultValue={""} onChange={e=>props.handleMaxWorkCount(e.target.valueAsNumber)}/></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div className="pi-item">
-                <div className="pii-title">当前页面信息</div>
-                <table className="table">
-                    <tbody>
-                        <tr>
-                            <td>页面类型：</td>
-                            <td>{pageTypeMap[props.pageType]}</td>
-                        </tr>
-                        <tr>
-                            <td>下载数量：</td>
-                            <td>{(props.downCount)||"未知"}</td>
-                        </tr>
-                        <tr>
-                            <td>页面数量：</td>
-                            <td>{(props.pageCount)||"未知"}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div className="pi-item">
-                <div className="pii-title">执行进度</div>
-                <table className="table">
-                    <tbody>
-                        <tr>
-                            <td>总任务数：</td>
-                            <td>{(props.downCount+props.pageCount)||"未知"}</td>
-                        </tr>
-                        <tr>
-                            <td>已完成：</td>
-                            <td>{props.finishCount}</td>
-                        </tr>
-                        <tr>
-                            <td>剩余时间：</td>
-                            <td>
-                            {
-                                (()=>{
-                                    var time = cap((props.downCount+props.pageCount-props.finishCount)
-                                               /
-                                               (props.finishCount/(props.runtime as number)));
-                                    return time?fmtTime(time):"--:--"
-                                    
-                                })()
-                            }
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <I18n ns="pxerapp">
+            {
+                (t) => (
+                    <div className="pxer-info">
+                    <div className="pi-item">
+                        <div className="pii-title">{t("tab_generic")}</div>
+                        <table className="table">
+                            <tbody>
+                                <tr>
+                                    <td>{t("app_version")}</td>
+                                    <td>{props.version}</td>
+                                </tr>
+                                <tr>
+                                    <td>{t("current_status")}</td>
+                                    <td>{
+                                        (()=>{
+                                            switch (props.status){
+                                                case PxerMainApp.PxerStatus.config:
+                                                return t("status_standby")
+                                                case PxerMainApp.PxerStatus.running_page:
+                                                return t("status_running_page")
+                                                case PxerMainApp.PxerStatus.running_work:
+                                                return t("status_running_work")
+                                                case PxerMainApp.PxerStatus.running_parse:
+                                                return t("status_running_parse")
+                                            }
+                                        })()
+                                    }</td>
+                                </tr>
+                                <tr>
+                                    <td>{t("runtime")}</td>
+                                    <td>{props.runtime?fmtTime(props.runtime as number):"--:--"}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="pi-item">
+                        <div className="pii-title">{t("tab_filter")}</div>
+                        <table className="table">
+                            <tbody>
+                                <tr>
+                                    <td>{t("filter_minID")}</td>
+                                    <td><input disabled={props.lockConf} size={9} min={0} style={{width: "8em"}} type="number" defaultValue={""} onChange={e=>props.handleMaxID(e.target.value)}/></td>
+                                </tr><tr>
+                                    <td>{t("filter_maxWorkCount")}</td>
+                                    <td><input disabled={props.lockConf} size={9} min={0} style={{width: "8em"}} type="number" defaultValue={""} onChange={e=>props.handleMaxWorkCount(e.target.valueAsNumber)}/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="pi-item">
+                        <div className="pii-title">{t("tab_pageStatus")}</div>
+                        <table className="table">
+                            <tbody>
+                                <tr>
+                                    <td>{t("PageType")}</td>
+                                    <td>{
+                                        (()=>{
+                                            switch(props.pageType){
+                                            case PxerPageType.member_works     :return t("pagetype_member_works")
+                                            case PxerPageType.search           :return t("pagetype_search")
+                                            case PxerPageType.bookmark_works   :return t("pagetype_bookmark_works")
+                                            case PxerPageType.rank             :return t("pagetype_rank")
+                                            case PxerPageType.bookmark_new     :return t("pagetype_bookmark_new")
+                                            case PxerPageType.discovery        :return t("pagetype_discovery")
+                                            case PxerPageType.unknown          :return t("pagetype_unknown")
+                                            }
+                                        })()
+                                    }</td>
+                                </tr>
+                                <tr>
+                                    <td>{t("downCount")}</td>
+                                    <td>{(props.downCount)||t("Unknown")}</td>
+                                </tr>
+                                <tr>
+                                    <td>{t("pageCount")}</td>
+                                    <td>{(props.pageCount)||t("Unknown")}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="pi-item">
+                        <div className="pii-title">{t("tab_progress")}</div>
+                        <table className="table">
+                            <tbody>
+                                <tr>
+                                    <td>{t("job_total")}</td>
+                                    <td>{(props.downCount+props.pageCount)||t("Unknown")}</td>
+                                </tr>
+                                <tr>
+                                    <td>{t("finish_count")}</td>
+                                    <td>{props.finishCount}</td>
+                                </tr>
+                                <tr>
+                                    <td>{t("ETA")}</td>
+                                    <td>
+                                    {
+                                        (()=>{
+                                            var time = cap((props.downCount+props.pageCount-props.finishCount)
+                                                       /
+                                                       (props.finishCount/(props.runtime as number)));
+                                            return time?fmtTime(time):"--:--"
+                                            
+                                        })()
+                                    }
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                )
+            }
+        </I18n>
     )
 }
 export default PxerCrawlStatus

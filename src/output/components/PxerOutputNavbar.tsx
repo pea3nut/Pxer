@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import {I18n} from 'react-i18next'
+
 
 enum PxerCopyPromistStatus {
     standby,
@@ -30,32 +32,39 @@ class PxerOutputNavbar extends Component<IPxerOutputNavBarProps, IPxerOutputNavB
     }
     render(){
         return (
-            <nav className="" style={{position: "absolute"}}>
-                <a className="brand" href="http://pxer.pea3nut.org" target="_blank">Pxer 7</a>
-                <div className="menu">
-                    <a className="pseudo button" onClick={this.props.onAdvancedFilter}>高级筛选</a>
-                    <a className="pseudo button" onClick={this.props.onOutputConfig}>输出配置</a>
-                    {
-                        this.props.showUgoiraScript?
-                        <a className="pseudo button" onClick={this.props.onUgoiraScript}>动图合成</a>
-                        :null
-                    }
+            <I18n ns="pxeroutput">
+            {
+                (t)=>(
+                    <nav className="" style={{position: "absolute"}}>
+                    <a className="brand" href="http://pxer.pea3nut.org" target="_blank">{t("pxer_brandname")}</a>
+                    <div className="menu">
+                        <a className="pseudo button" onClick={this.props.onAdvancedFilter}>{t("advanced_filter")}</a>
+                        <a className="pseudo button" onClick={this.props.onOutputConfig}>{t("output_config")}</a>
                         {
-                            (()=>{
-                                switch (this.state.copyPromiseStatus) {
-                                    case PxerCopyPromistStatus.ongoing:
-                                        return <a className="button disabled">...</a>
-                                    case PxerCopyPromistStatus.standby:
-                                        return <a className="button" onClick={this.doCopy}>复制{this.props.linkCount}个作品的链接</a>
-                                    case PxerCopyPromistStatus.error:
-                                        return <a className="button warning">错误</a>
-                                    case PxerCopyPromistStatus.success:
-                                        return <a className="button success">成功复制{this.state.lastSuccessCount}个链接</a>
-                                }
-                            })()
+                            this.props.showUgoiraScript?
+                            <a className="pseudo button" onClick={this.props.onUgoiraScript}>{t("ugoira_concat")}</a>
+                            :null
                         }
-                </div>
-            </nav>
+                            {
+                                (()=>{
+                                    switch (this.state.copyPromiseStatus) {
+                                        case PxerCopyPromistStatus.ongoing:
+                                            return <a className="button disabled">...</a>
+                                        case PxerCopyPromistStatus.standby:
+                                            return <a className="button" onClick={this.doCopy}>{t("copy_prompt", {count: this.props.linkCount})}</a>
+                                        case PxerCopyPromistStatus.error:
+                                            return <a className="button warning">{t("copy_fail")}</a>
+                                        case PxerCopyPromistStatus.success:
+                                            return <a className="button success">{t("copy_success", {count:this.state.lastSuccessCount})}</a>
+                                    }
+                                })()
+                            }
+                    </div>
+                </nav>
+                )
+            }
+            </I18n>
+
         )
     }
     doCopy(){

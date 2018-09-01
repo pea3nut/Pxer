@@ -4,6 +4,9 @@ import { PxerWorks } from '../../pxer/pxerapp/PxerWorksDef.-1';
 import { PxerImageDataLine } from './PxerImageData';
 import { PxerSelectableWorks } from '../lib';
 import { PxerWorkType } from '../../pxer/pxerapp/PxerData.-1';
+
+import {I18n} from 'react-i18next'
+
 interface IPxerAdvancedFilterModalState {
     opened: boolean,
     minLike: number,
@@ -41,142 +44,144 @@ class PxerAdvancedFilterModal extends Component<IPxerAdvancedFilterModalProps, I
         }
         this.onApply = this.onApply.bind(this);
         this.onCancel = this.onCancel.bind(this);
-    }
-    componentDidMount(){
-        new AutoSuggestControl("no_tag_any", ()=>this.props.tagList);
-        new AutoSuggestControl("has_tag_all", ()=>this.props.tagList);
-        new AutoSuggestControl("has_tag_any", ()=>this.props.tagList);
+        this.open = this.open.bind(this);
     }
     render(){
         return (
-            <div className="filter">
-                <div className="modal">
-                    <input id="modal_filter" type="checkbox" checked={this.state.opened}/>
-                    <label htmlFor="modal_filter" className="overlay"></label>
-                    <div className="openup">
-                        <form>
-                            <div id="filter-params" className="oneline">
-                                点赞数 ≥
-                                <input 
-                                type="number" 
-                                value={this.state.minLike}
-                                onChange={e=>{
-                                    var newValue = e.target.valueAsNumber || 0;
-                                    this.setState(prev=>{
-                                        return {
-                                            minLike: newValue
-                                        }
-                                    });
-                                }}
-                                />
-                            </div>
-                            <div id="filter-params" className="oneline">
-                                浏览数 ≥
-                                <input 
-                                type="number" 
-                                value={this.state.minView}
-                                onChange={e=>{
-                                    var newValue = e.target.valueAsNumber || 0;
-                                    this.setState(prev=>{
-                                        return {
-                                            minView: newValue
-                                        }
-                                    });
-                                }}
-                                />
-                            </div>
-                            <div id="filter-params" className="oneline">
-                                收藏数 ≥
-                                <input 
-                                type="number" 
-                                value={this.state.minRate}
-                                onChange={e=>{
-                                    var newValue = e.target.valueAsNumber || 0;
-                                    this.setState(prev=>{
-                                        return {
-                                            minRate: newValue
-                                        }
-                                    });
-                                }}
-                                />
-                            </div>
-                            <div id="filter-params" className="oneline align">
-                                类型：
-                                <label>
-                                    <input type="checkbox" checked={this.state.illust} onChange={()=>{
-                                            this.setState(prev=>{
-                                                return {illust: !prev.illust};
-                                            })
-                                        }}
+            <I18n ns="pxeroutput">
+            {
+                (t)=>(
+                    <div className="filter">
+                    <div className="modal">
+                        <input id="modal_filter" type="checkbox" checked={this.state.opened}/>
+                        <label htmlFor="modal_filter" className="overlay"></label>
+                        <div className="openup">
+                            <form>
+                                <div id="filter-params" className="oneline">
+                                    {t("filter_like_ge")}
+                                    <input 
+                                    type="number" 
+                                    value={this.state.minLike}
+                                    onChange={e=>{
+                                        var newValue = e.target.valueAsNumber || 0;
+                                        this.setState(prev=>{
+                                            return {
+                                                minLike: newValue
+                                            }
+                                        });
+                                    }}
                                     />
-                                    Illust
-                                </label>
-                                <label>
-                                    <input type="checkbox" checked={this.state.manga} onChange={()=>{
-                                            this.setState(prev=>{
-                                                return {manga: !prev.manga};
-                                            })
-                                        }}
+                                </div>
+                                <div id="filter-params" className="oneline">
+                                    {t("filter_view_ge")}
+                                    <input 
+                                    type="number" 
+                                    value={this.state.minView}
+                                    onChange={e=>{
+                                        var newValue = e.target.valueAsNumber || 0;
+                                        this.setState(prev=>{
+                                            return {
+                                                minView: newValue
+                                            }
+                                        });
+                                    }}
                                     />
-                                    Manga
-                                </label>
-                                <label>
-                                    <input type="checkbox" checked={this.state.ugoira} onChange={()=>{
-                                            this.setState(prev=>{
-                                                return {ugoira: !prev.ugoira};
-                                            })
-                                        }}
+                                </div>
+                                <div id="filter-params" className="oneline">
+                                    {t("filter_bookmark_ge")}
+                                    <input 
+                                    type="number" 
+                                    value={this.state.minRate}
+                                    onChange={e=>{
+                                        var newValue = e.target.valueAsNumber || 0;
+                                        this.setState(prev=>{
+                                            return {
+                                                minRate: newValue
+                                            }
+                                        });
+                                    }}
                                     />
-                                    Ugoira
+                                </div>
+                                <div id="filter-params" className="oneline align">
+                                    {t("filter_worktype")}
+                                    <label>
+                                        <input type="checkbox" checked={this.state.illust} onChange={()=>{
+                                                this.setState(prev=>{
+                                                    return {illust: !prev.illust};
+                                                })
+                                            }}
+                                        />
+                                        {t("illust")}
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" checked={this.state.manga} onChange={()=>{
+                                                this.setState(prev=>{
+                                                    return {manga: !prev.manga};
+                                                })
+                                            }}
+                                        />
+                                        {t("manga")}
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" checked={this.state.ugoira} onChange={()=>{
+                                                this.setState(prev=>{
+                                                    return {ugoira: !prev.ugoira};
+                                                })
+                                            }}
+                                        />
+                                        {t("ugoira")}
+                                    </label>
+                                
+                                </div>
+    
+                                <div id="filter-params" className="oneline">
+                                    {t("filter_pagecount")}
+                                    <label>
+                                        <input type="checkbox" checked={this.state.single} onChange={()=>{
+                                                this.setState(prev=>{
+                                                    return {single: !prev.single};
+                                                })
+                                            }}
+                                        />
+                                        {t("single_page")}
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" checked={this.state.multiple} onChange={()=>{
+                                                this.setState(prev=>{
+                                                    return {multiple: !prev.multiple};
+                                                })
+                                            }}
+                                        />
+                                        {t("multiple_page")}
+                                    </label>
+                                </div>
+    
+                                <div id="filter-params">
+                                    <label dangerouslySetInnerHTML={{__html: t("filter_no_tag_any")}}></label>
+                                    <input id="no_tag_any" defaultValue={""} ref="no_tag_any" className="tag-suggest"/>
+                                </div>
+                                <div id="filter-params">
+                                    <label dangerouslySetInnerHTML={{__html: t("filter_has_tag_any")}}></label>
+                                    <input id="has_tag_any" defaultValue={""} ref="has_tag_any" className="tag-suggest"/>
+                                </div>
+                                <div id="filter-params">
+                                    <label dangerouslySetInnerHTML={{__html: t("filter_has_tag_all")}}></label>
+                                    <input id="has_tag_all" defaultValue={""} ref="has_tag_all" className="tag-suggest"/>
+                                </div>
+    
+                                <label htmlFor="modal_filter" className="button" onClick={this.onApply}>
+                                    {t("filter_apply")}
                                 </label>
-                            
-                            </div>
-
-                            <div id="filter-params" className="oneline">
-                                张数：
-                                <label>
-                                    <input type="checkbox" checked={this.state.single} onChange={()=>{
-                                            this.setState(prev=>{
-                                                return {single: !prev.single};
-                                            })
-                                        }}
-                                    />
-                                    单张
+                                <label htmlFor="modal_filter" className="button error pull-right" onClick={this.onCancel}>
+                                    {t("filter_cancel")}
                                 </label>
-                                <label>
-                                    <input type="checkbox" checked={this.state.multiple} onChange={()=>{
-                                            this.setState(prev=>{
-                                                return {multiple: !prev.multiple};
-                                            })
-                                        }}
-                                    />
-                                    多张
-                                </label>
-                            </div>
-
-                            <div id="filter-params">
-                                <label>作品中<strong>不能</strong>含有以下<strong>任意一个</strong>标签</label>
-                                <input id="no_tag_any" defaultValue={""} ref="no_tag_any"/>
-                            </div>
-                            <div id="filter-params">
-                                <label>作品中<strong>必须</strong>含有以下<strong>任意一个</strong>标签</label>
-                                <input id="has_tag_any" defaultValue={""} ref="has_tag_any"/>
-                            </div>
-                            <div id="filter-params">
-                                <label>作品中<strong>必须同时</strong>含有以下<strong>所有</strong>标签</label>
-                                <input id="has_tag_all" defaultValue={""} ref="has_tag_all"/>
-                            </div>
-
-                            <label htmlFor="modal_filter" className="button" onClick={this.onApply}>
-                                Apply
-                            </label>
-                            <label htmlFor="modal_filter" className="button error pull-right" onClick={this.onCancel}>
-                                Cancel
-                            </label>
-                        </form>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
+                )
+            }
+            </I18n>
         )
     }
     onCancel(){
@@ -185,6 +190,16 @@ class PxerAdvancedFilterModal extends Component<IPxerAdvancedFilterModalProps, I
                 opened: false,
             }
         })
+    }
+    open(){
+        this.setState(prev=>{
+            return {
+                opened: true,
+            }
+        })
+        new AutoSuggestControl("no_tag_any", ()=>this.props.tagList);
+        new AutoSuggestControl("has_tag_all", ()=>this.props.tagList);
+        new AutoSuggestControl("has_tag_any", ()=>this.props.tagList);
     }
     onApply(){
         this.setState(prev=>{

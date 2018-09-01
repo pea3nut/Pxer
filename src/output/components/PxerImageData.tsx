@@ -2,6 +2,8 @@ import React, { Component, ChangeEvent } from 'react';
 import { PxerWorkType } from '../../pxer/pxerapp/PxerData.-1';
 import { PxerWorkUrl } from '../../pxer/pxerapp/PxerWorksDef.-1';
 import { PxerIndeterminatableBoxState, PxerSelectableWorks } from '../lib';
+import {I18n} from 'react-i18next'
+
 interface IPxerSortableTHProps {
     sortFunc: (key: keyof PxerSelectableWorks)=>void,
     sortKey: keyof PxerSelectableWorks,
@@ -76,71 +78,77 @@ class PxerImageDataHead extends Component<IPxerImageDataHeadProps,IPxerImageData
         }
     }
     componentDidUpdate(){
-        (this.refs.selall as HTMLInputElement).indeterminate = this.state.inDeterminate;
+        if (this.refs.selall) (this.refs.selall as HTMLInputElement).indeterminate = this.state.inDeterminate;
     }
     render(){
         return (
-            <tr>
-                <PxerSortableTH
-                    sortKey="checked"
-                    sortFunc={this.doSort}
-                    currentKey={this.state.sortKey}
-                    reverse={this.state.sortReverse}
-                    innerContent={<input type="checkbox" checked={this.state.selectAll} onChange={this.handleCheckedState} ref="selall"></input>}
-                />
-                <PxerSortableTH
-                    sortKey="id"
-                    sortFunc={this.doSort}
-                    currentKey={this.state.sortKey}
-                    reverse={this.state.sortReverse}
-                    innerContent="illustID"
-                />
-                <PxerSortableTH
-                    sortKey="type"
-                    sortFunc={this.doSort}
-                    currentKey={this.state.sortKey}
-                    reverse={this.state.sortReverse}
-                    innerContent="Type"
-                />
-                <th>Thumb</th>
-                <th>Tags</th>
-                <PxerSortableTH
-                    sortKey="multiple"
-                    sortFunc={this.doSort}
-                    currentKey={this.state.sortKey}
-                    reverse={this.state.sortReverse}
-                    innerContent="PageCount"
-                />
-                <PxerSortableTH
-                    sortKey="likeCount"
-                    sortFunc={this.doSort}
-                    currentKey={this.state.sortKey}
-                    reverse={this.state.sortReverse}
-                    innerContent="LikeCount"
-                />
-                <PxerSortableTH
-                    sortKey="viewCount"
-                    sortFunc={this.doSort}
-                    currentKey={this.state.sortKey}
-                    reverse={this.state.sortReverse}
-                    innerContent="ViewCount"
-                />
-                <PxerSortableTH
-                    sortKey="ratedCount"
-                    sortFunc={this.doSort}
-                    currentKey={this.state.sortKey}
-                    reverse={this.state.sortReverse}
-                    innerContent="RateCount"
-                />
-                <th>WorkTitle</th>
-                <PxerSortableTH
-                    sortKey="date"
-                    sortFunc={this.doSort}
-                    currentKey={this.state.sortKey}
-                    reverse={this.state.sortReverse}
-                    innerContent="Date"
-                />
-            </tr>
+            <I18n ns="pxeroutput">
+            {
+                (t)=>(
+                    <tr>
+                    <PxerSortableTH
+                        sortKey="checked"
+                        sortFunc={this.doSort}
+                        currentKey={this.state.sortKey}
+                        reverse={this.state.sortReverse}
+                        innerContent={<input type="checkbox" checked={this.state.selectAll} onChange={this.handleCheckedState} ref="selall"></input>}
+                    />
+                    <PxerSortableTH
+                        sortKey="id"
+                        sortFunc={this.doSort}
+                        currentKey={this.state.sortKey}
+                        reverse={this.state.sortReverse}
+                        innerContent={t("illustID")}
+                    />
+                    <PxerSortableTH
+                        sortKey="type"
+                        sortFunc={this.doSort}
+                        currentKey={this.state.sortKey}
+                        reverse={this.state.sortReverse}
+                        innerContent={t("illustType")}
+                    />
+                    <th>{t("thumbnail")}</th>
+                    <th>{t("tags")}</th>
+                    <PxerSortableTH
+                        sortKey="multiple"
+                        sortFunc={this.doSort}
+                        currentKey={this.state.sortKey}
+                        reverse={this.state.sortReverse}
+                        innerContent={t("pageCount")}
+                    />
+                    <PxerSortableTH
+                        sortKey="likeCount"
+                        sortFunc={this.doSort}
+                        currentKey={this.state.sortKey}
+                        reverse={this.state.sortReverse}
+                        innerContent={t("likeCount")}
+                    />
+                    <PxerSortableTH
+                        sortKey="viewCount"
+                        sortFunc={this.doSort}
+                        currentKey={this.state.sortKey}
+                        reverse={this.state.sortReverse}
+                        innerContent={t("viewCount")}
+                    />
+                    <PxerSortableTH
+                        sortKey="ratedCount"
+                        sortFunc={this.doSort}
+                        currentKey={this.state.sortKey}
+                        reverse={this.state.sortReverse}
+                        innerContent={t("rateCount")}
+                    />
+                    <th>{t("workTitle")}</th>
+                    <PxerSortableTH
+                        sortKey="date"
+                        sortFunc={this.doSort}
+                        currentKey={this.state.sortKey}
+                        reverse={this.state.sortReverse}
+                        innerContent={t("workDate")}
+                    />
+                </tr>
+                )
+            }
+            </I18n>
         )
     }
     doSort(key: keyof PxerSelectableWorks){
@@ -176,30 +184,36 @@ class PxerImageDataLine extends Component<IPxerImageDataLineProps,IPxerImageData
     }
     render(){
         return (
-            <tr className={this.props.work.checked?"checked":""} onClick={this.toggleCheckedState}>
-                <td><input type="checkbox" checked={this.props.work.checked} onChange={this.handleCheckedState}></input></td>
-                <td>{this.props.work.id}</td>
-                <td>{this.props.work.type}</td>
-                <td>
-                    <img src={this.props.work.urls.thumb} className="table-img"></img>
-                </td>
-                <td 
-                    data-tooltip={this.props.work.tagList.join(" ")}
-                >
-                    {
-                        this.props.work.tagList.slice(0, this.props.tagFoldLength).map(tag=><p key={this.props.work.id+"_"+tag}>{tag}</p>)
-                    }
-                    {
-                        this.props.work.tagList.length>this.props.tagFoldLength?<i className="shy">{this.props.work.tagList.length-this.props.tagFoldLength} not shown. Mouseover for more information.</i>:null
-                    }
-                </td>
-                <td>{this.props.work.multiple}</td>
-                <td>{this.props.work.likeCount}</td>
-                <td>{this.props.work.viewCount}</td>
-                <td>{this.props.work.ratedCount}</td>
-                <td>{this.props.work.title}</td>
-                <td className="oneline">{this.props.work.date}</td>
-            </tr>
+            <I18n ns="pxeroutput">
+            {
+                (t)=>(
+                    <tr className={this.props.work.checked?"checked":""} onClick={this.toggleCheckedState}>
+                    <td><input type="checkbox" checked={this.props.work.checked} onChange={this.handleCheckedState}></input></td>
+                    <td>{this.props.work.id}</td>
+                    <td>{this.props.work.type}</td>
+                    <td>
+                        <img src={this.props.work.urls.thumb} className="table-img"></img>
+                    </td>
+                    <td 
+                        data-tooltip={this.props.work.tagList.join(" ")}
+                    >
+                        {
+                            this.props.work.tagList.slice(0, this.props.tagFoldLength).map(tag=><p key={this.props.work.id+"_"+tag}>{tag}</p>)
+                        }
+                        {
+                            this.props.work.tagList.length>this.props.tagFoldLength?<i className="shy">{t("tag_list_truncated",{count: this.props.work.tagList.length-this.props.tagFoldLength})}</i>:null
+                        }
+                    </td>
+                    <td>{this.props.work.multiple}</td>
+                    <td>{this.props.work.likeCount}</td>
+                    <td>{this.props.work.viewCount}</td>
+                    <td>{this.props.work.ratedCount}</td>
+                    <td>{this.props.work.title}</td>
+                    <td className="oneline">{this.props.work.date.toLocaleString()}</td>
+                </tr>
+                )
+            }
+            </I18n>
         )
     }
     handleCheckedState(e: ChangeEvent<HTMLInputElement>){
