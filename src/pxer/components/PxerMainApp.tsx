@@ -287,7 +287,7 @@ class PxerMainApp extends Component{
             result_count:this.pxer.workResultSet.length,
         });
         
-        if (!this.pxer.printWorks()) {
+        if (!this.pxer.printWorks(i18n.language)) {
             alert(i18n.t("pxerapp:popup_permission_denied"));
         }
     }

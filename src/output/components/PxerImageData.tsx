@@ -186,11 +186,18 @@ class PxerImageDataLine extends Component<IPxerImageDataLineProps,IPxerImageData
         return (
             <I18n ns="pxeroutput">
             {
-                (t)=>(
+                (t, {i18n})=>(
                     <tr className={this.props.work.checked?"checked":""} onClick={this.toggleCheckedState}>
                     <td><input type="checkbox" checked={this.props.work.checked} onChange={this.handleCheckedState}></input></td>
                     <td>{this.props.work.id}</td>
-                    <td>{this.props.work.type}</td>
+                    <td>{(()=>{
+                        switch (this.props.work.type) {
+                            case PxerWorkType.Ugoira: return t("ugoira")
+                            case PxerWorkType.Manga: return t("manga")
+                            case PxerWorkType.Illust: return t("illust")
+                            default: return t("unknown")
+                        }
+                    })()}</td>
                     <td>
                         <img src={this.props.work.urls.thumb} className="table-img"></img>
                     </td>
@@ -209,7 +216,7 @@ class PxerImageDataLine extends Component<IPxerImageDataLineProps,IPxerImageData
                     <td>{this.props.work.viewCount}</td>
                     <td>{this.props.work.ratedCount}</td>
                     <td>{this.props.work.title}</td>
-                    <td className="oneline">{this.props.work.date.toLocaleString()}</td>
+                    <td className="oneline">{this.props.work.date.toLocaleString(i18n.language)}</td>
                 </tr>
                 )
             }

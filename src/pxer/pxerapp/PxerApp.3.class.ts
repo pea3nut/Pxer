@@ -316,12 +316,13 @@ class PxerApp extends PxerEvent{
     /**
      * 输出抓取到的作品
      * */
-    printWorks() :boolean{
+    printWorks(lng: string) :boolean{
         let win =window.open(document.URL ,'_blank');
         if(!win){
             return false;
         };
         (<any>win).resultData = this.workResultSet;
+        (<any>win).defaultLng = lng;
         let str =[
             "<body>",
             "<div id=\"pxer-output\"></div>",
