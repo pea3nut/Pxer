@@ -1,7 +1,8 @@
 .pxer-app{
+    
+    @import "node_modules/bootstrap/scss/functions";
     @import "node_modules/bootstrap/scss/variables";
     @import "node_modules/bootstrap/scss/mixins";
-    @import "node_modules/bootstrap/scss/custom";
     @import "node_modules/bootstrap/scss/reboot";
     @import "node_modules/bootstrap/scss/tables";
     @import "node_modules/bootstrap/scss/forms";
@@ -130,8 +131,8 @@
                 .pppfb-msg{
                     padding:5px;
                     text-align: left;
-                    border:1px solid $gray-lighter;
-                    color:$gray-light;
+                    border:1px solid $gray-200;
+                    color:$gray-600;
                     border-radius:1px;
                 }
             }
@@ -141,7 +142,7 @@
         }
     }
     box-sizing: border-box;
-    color:$gray-dark;
+    color:$gray-900;
     font-size: 14px;
 
     input.form-control,select.form-control{
