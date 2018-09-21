@@ -138,7 +138,7 @@ window.getPageType =function(url=document.URL){
     }else if(URLData.path==='/bookmark_new_illust.php'){
         type ='bookmark_new';
     }else if(URLData.path==='/member.php'){
-        type ='member_info';
+        type ='member_works';
     }else if(URLData.path==='/ranking.php'){
         type ='rank';
     }else if(URLData.path==='/member_illust.php'){
@@ -180,6 +180,7 @@ window.getOnePageWorkCount =function(type) {
         case "search":return 40
         case "rank":return 50
         case "discovery":return 3000
+        case "member_works": return 99999999
         default:return 20
     };
 }

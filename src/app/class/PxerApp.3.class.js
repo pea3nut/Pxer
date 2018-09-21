@@ -128,6 +128,13 @@ class PxerApp extends PxerEvent{
                 url : `https://www.pixiv.net/rpc/recommender.php?type=illust&sample_illusts=auto&num_recommendations=${recomCount}&page=discovery&mode=${mode}&tt=${pixiv.context.token}`,
                 type:this.pageType,
             }));
+        } else if (this.pageType==="member_works"){
+            var uid = document.URL.match(/id=(\d+)/)[1]
+            var type = document.URL.match(/type=(\w+)/)?document.URL.match(/type=(\w+)/)[1]:"all"
+            this.taskList.push(new PxerPageRequest({
+                url: `https://www.pixiv.net/ajax/user/${uid}/profile/all`,
+                type: type?`userprofile_${type}`:"userprofile_all",
+            }))
         } else {
             var separator =document.URL.includes("?")?"&":"?";
             var extraparam = this.pageType==='rank'? "&format=json" : "";
@@ -337,7 +344,7 @@ PxerApp.getWorksNum =function(dom=document){
         } else if (getPageType() === "discovery"){
             resolve(3000);
         } else {
-            var elt = dom.querySelector(".count-badge");
+            var elt = dom.querySelector(".count-badge")||dom.querySelector(".e1vrdfyz0");
             if (!elt) resolve(null);
             resolve(parseInt(elt.innerHTML));
         }
