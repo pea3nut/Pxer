@@ -128,7 +128,7 @@ class PxerApp extends PxerEvent{
                 url : `https://www.pixiv.net/rpc/recommender.php?type=illust&sample_illusts=auto&num_recommendations=${recomCount}&page=discovery&mode=${mode}&tt=${pixiv.context.token}`,
                 type:this.pageType,
             }));
-        } else if (this.pageType==="member_works"){
+        } else if (this.pageType==="member_works_new"){
             var uid = document.URL.match(/id=(\d+)/)[1]
             var type = document.URL.match(/type=(\w+)/)?document.URL.match(/type=(\w+)/)[1]:"all"
             this.taskList.push(new PxerPageRequest({

@@ -28,32 +28,32 @@ PxerHtmlParser.parsePage = function (task) {
         case "userprofile_illust":
         case "userprofile_all":
             var response = JSON.parse(task.html).body
-            
             if (task.type!=="userprofile_illust") {
                 for (let elt in response.manga) {
-                    var task = new PxerWorksRequest({
+                    var tsk = new PxerWorksRequest({
                         html: {},
                         type: null,
                         isMultiple: null,
                         id: elt,
                     })
-                    task.url = PxerHtmlParser.getUrlList(task)
-                    taskList.push(task)
+                    tsk.url = PxerHtmlParser.getUrlList(tsk)
+                    taskList.push(tsk)
                 }
             }
 
             if (task.type!=="userprofile_manga") {
                 for (let elt in response.illusts) {
-                    var task = new PxerWorksRequest({
+                    var tsk = new PxerWorksRequest({
                         html: {},
                         type: null,
                         isMultiple: null,
                         id: elt,
                     })
-                    task.url = PxerHtmlParser.getUrlList(task)
-                    taskList.push(task)
+                    tsk.url = PxerHtmlParser.getUrlList(tsk)
+                    taskList.push(tsk)
                 }
             }
+            break;
 
         case "bookmark_works":
         case "member_works":
