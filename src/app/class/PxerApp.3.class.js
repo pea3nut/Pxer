@@ -330,8 +330,8 @@ PxerApp.prototype['getThis'] =async function(){
 PxerApp.getWorksNum =function(dom=document){
     return new Promise((resolve, reject)=>{
         if (getPageType() === "rank") {
-            var queryurl = dom.URL + "&format=json";
-            var xhr = new XMLHttpRequest();
+            let queryurl = dom.URL + "&format=json";
+            let xhr = new XMLHttpRequest();
             xhr.open("GET", queryurl);
             xhr.onload = (e) => resolve(JSON.parse(xhr.responseText)['rank_total']);
             xhr.send();
@@ -339,13 +339,13 @@ PxerApp.getWorksNum =function(dom=document){
             // 关注的新作品页数最多100页
             // 因为一般用户关注的用户数作品都足够填满100页，所以从100开始尝试页数
             // 如果没有100页进行一次二分查找
-            var currpage = parseInt(dom.querySelector("ul.page-list>li.current").innerHTML);
+            let currpage = parseInt(dom.querySelector("ul.page-list>li.current").innerHTML);
             this.getFollowingBookmarkWorksNum(currpage, 100, 100).then((res) => resolve(res));
         } else if (getPageType() === "discovery"){
             resolve(3000);
         } else if (getPageType() === "member_works_new") {
-            var queryurl = `https://www.pixiv.net/ajax/user/${dom.URL.match(/id=(\d+)/)[1]}/profile/all`;
-            var xhr = new XMLHttpRequest();
+            let queryurl = `https://www.pixiv.net/ajax/user/${dom.URL.match(/id=(\d+)/)[1]}/profile/all`;
+            let xhr = new XMLHttpRequest();
             xhr.open("GET", queryurl);
             xhr.onload = (e) => {
                 var resp = JSON.parse(xhr.responseText).body;
