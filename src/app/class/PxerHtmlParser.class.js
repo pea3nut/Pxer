@@ -56,6 +56,19 @@ PxerHtmlParser.parsePage = function (task) {
             break;
 
         case "bookmark_works":
+            var response = JSON.parse(task.html).body
+            for (let worki in response.works) {
+                let work = response.works[worki];
+                let tsk = new PxerWorksRequest({
+                    html: {},
+                    type: this.parseIllustType(work.illustType),
+                    isMultiple: work.pageCount>1,
+                    id: work.id,
+                })
+                tsk.url = PxerHtmlParser.getUrlList(tsk)
+                taskList.push(tsk)
+            }
+            break;
         case "member_works":
             var dom = PxerHtmlParser.HTMLParser(task.html);
             var elts = dom.body.querySelectorAll('a.work._work');

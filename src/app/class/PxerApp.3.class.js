@@ -135,6 +135,13 @@ class PxerApp extends PxerEvent{
                 url: `https://www.pixiv.net/ajax/user/${uid}/profile/all`,
                 type: type?`userprofile_${type}`:"userprofile_all",
             }))
+        } else if (this.pageType==="bookmark_works"){
+            for (let offset =0;offset<pageNum;offset+=48) {
+                this.taskList.push(new PxerPageRequest({
+                    type:this.pageType,
+                    url: `https://www.pixiv.net/ajax/user/${document.URL.match(/id=(\d+)/)[1]}/illusts/bookmarks?tag=&offset=${offset}&limit=48&rest=show`
+                }))
+            }
         } else {
             var separator =document.URL.includes("?")?"&":"?";
             var extraparam = this.pageType==='rank'? "&format=json" : "";
@@ -343,6 +350,14 @@ PxerApp.getWorksNum =function(dom=document){
             this.getFollowingBookmarkWorksNum(currpage, 100, 100).then((res) => resolve(res));
         } else if (getPageType() === "discovery"){
             resolve(3000);
+        } else if (getPageType() === "bookmark_works"){
+            let queryurl = `https://www.pixiv.net/ajax/user/${dom.URL.match(/id=(\d+)/)[1]}/illusts/bookmarks?tag=&offset=0&limit=48&rest=show`;
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", queryurl);
+            xhr.onload = (e) => {
+                resolve(JSON.parse(xhr.responseText).body.total)
+            };
+            xhr.send();
         } else if (getPageType() === "member_works_new") {
             let queryurl = `https://www.pixiv.net/ajax/user/${dom.URL.match(/id=(\d+)/)[1]}/profile/all`;
             let xhr = new XMLHttpRequest();

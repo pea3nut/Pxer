@@ -181,6 +181,7 @@ window.getOnePageWorkCount =function(type) {
         case "search":return 40
         case "rank":return 50
         case "discovery":return 3000
+        case "bookmark_works":return 48
         case "member_works_new": return Number.MAX_SAFE_INTEGER
         default:return 20
     };
