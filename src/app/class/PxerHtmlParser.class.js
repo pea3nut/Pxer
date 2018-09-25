@@ -24,6 +24,37 @@ PxerHtmlParser.parsePage = function (task) {
 
     var taskList = [];
     switch (task.type) {
+        case "userprofile_manga":
+        case "userprofile_illust":
+        case "userprofile_all":
+            var response = JSON.parse(task.html).body
+            if (task.type!=="userprofile_illust") {
+                for (let elt in response.manga) {
+                    let tsk = new PxerWorksRequest({
+                        html: {},
+                        type: null,
+                        isMultiple: null,
+                        id: elt,
+                    })
+                    tsk.url = PxerHtmlParser.getUrlList(tsk)
+                    taskList.push(tsk)
+                }
+            }
+
+            if (task.type!=="userprofile_manga") {
+                for (let elt in response.illusts) {
+                    var tsk = new PxerWorksRequest({
+                        html: {},
+                        type: null,
+                        isMultiple: null,
+                        id: elt,
+                    })
+                    tsk.url = PxerHtmlParser.getUrlList(tsk)
+                    taskList.push(tsk)
+                }
+            }
+            break;
+
         case "bookmark_works":
         case "member_works":
             var dom = PxerHtmlParser.HTMLParser(task.html);

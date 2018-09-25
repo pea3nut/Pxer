@@ -69,6 +69,7 @@ afterLoad(function(){
             pageType(){
                 var map ={
                     'member_works'     :'作品列表页',
+                    'member_works_new' :'作品列表页_',
                     'search'           :'检索页',
                     'bookmark_works'   :'收藏列表页',
                     'rank'             :'排行榜',

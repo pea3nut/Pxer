@@ -122,6 +122,7 @@ window.execPromise =function(taskList,call){
 window.getPageType =function(url=document.URL){
     var URLData =parseURL(url);
     var type =null;
+    var isnew =!(Boolean(document.querySelector(".count-badge"))||Boolean(document.querySelector(".profile")));
     if(URLData.domain !=='www.pixiv.net')return 'unknown';
     if(URLData.path==='/bookmark.php'){
         if(URLData.query &&URLData.query.type){
@@ -138,7 +139,7 @@ window.getPageType =function(url=document.URL){
     }else if(URLData.path==='/bookmark_new_illust.php'){
         type ='bookmark_new';
     }else if(URLData.path==='/member.php'){
-        type ='member_info';
+        type =isnew?'member_works_new':"member_info";
     }else if(URLData.path==='/ranking.php'){
         type ='rank';
     }else if(URLData.path==='/member_illust.php'){
@@ -157,7 +158,7 @@ window.getPageType =function(url=document.URL){
                     type ='unknown';
             };
         }else{
-            type ='member_works';
+            type =isnew?'member_works_new':"member_works";
         }
     }else if(URLData.path==='/search.php'){
         type ='search';
@@ -180,6 +181,7 @@ window.getOnePageWorkCount =function(type) {
         case "search":return 40
         case "rank":return 50
         case "discovery":return 3000
+        case "member_works_new": return Number.MAX_SAFE_INTEGER
         default:return 20
     };
 }

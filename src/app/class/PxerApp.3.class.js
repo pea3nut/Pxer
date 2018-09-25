@@ -128,6 +128,13 @@ class PxerApp extends PxerEvent{
                 url : `https://www.pixiv.net/rpc/recommender.php?type=illust&sample_illusts=auto&num_recommendations=${recomCount}&page=discovery&mode=${mode}&tt=${pixiv.context.token}`,
                 type:this.pageType,
             }));
+        } else if (this.pageType==="member_works_new"){
+            var uid = document.URL.match(/id=(\d+)/)[1]
+            var type = document.URL.match(/type=(\w+)/)?document.URL.match(/type=(\w+)/)[1]:"all"
+            this.taskList.push(new PxerPageRequest({
+                url: `https://www.pixiv.net/ajax/user/${uid}/profile/all`,
+                type: type?`userprofile_${type}`:"userprofile_all",
+            }))
         } else {
             var separator =document.URL.includes("?")?"&":"?";
             var extraparam = this.pageType==='rank'? "&format=json" : "";
@@ -323,8 +330,8 @@ PxerApp.prototype['getThis'] =async function(){
 PxerApp.getWorksNum =function(dom=document){
     return new Promise((resolve, reject)=>{
         if (getPageType() === "rank") {
-            var queryurl = dom.URL + "&format=json";
-            var xhr = new XMLHttpRequest();
+            let queryurl = dom.URL + "&format=json";
+            let xhr = new XMLHttpRequest();
             xhr.open("GET", queryurl);
             xhr.onload = (e) => resolve(JSON.parse(xhr.responseText)['rank_total']);
             xhr.send();
@@ -332,12 +339,31 @@ PxerApp.getWorksNum =function(dom=document){
             // 关注的新作品页数最多100页
             // 因为一般用户关注的用户数作品都足够填满100页，所以从100开始尝试页数
             // 如果没有100页进行一次二分查找
-            var currpage = parseInt(dom.querySelector("ul.page-list>li.current").innerHTML);
+            let currpage = parseInt(dom.querySelector("ul.page-list>li.current").innerHTML);
             this.getFollowingBookmarkWorksNum(currpage, 100, 100).then((res) => resolve(res));
         } else if (getPageType() === "discovery"){
             resolve(3000);
+        } else if (getPageType() === "member_works_new") {
+            let queryurl = `https://www.pixiv.net/ajax/user/${dom.URL.match(/id=(\d+)/)[1]}/profile/all`;
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", queryurl);
+            xhr.onload = (e) => {
+                var resp = JSON.parse(xhr.responseText).body;
+                var type = dom.URL.match(/type=(manga|illust)/);
+                var getKeyCount = function(obj) {
+                    return Object.keys(obj).length
+                }
+                if (!type) {
+                    resolve(getKeyCount(resp.illusts)+getKeyCount(resp.manga))
+                } else if (type[1]==="illust") {
+                    resolve(getKeyCount(resp.illusts))
+                } else {
+                    resolve(getKeyCount(resp.manga))
+                }
+            };
+            xhr.send();
         } else {
-            var elt = dom.querySelector(".count-badge");
+            let elt = dom.querySelector(".count-badge");
             if (!elt) resolve(null);
             resolve(parseInt(elt.innerHTML));
         }
