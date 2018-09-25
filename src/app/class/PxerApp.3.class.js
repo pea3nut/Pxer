@@ -343,8 +343,27 @@ PxerApp.getWorksNum =function(dom=document){
             this.getFollowingBookmarkWorksNum(currpage, 100, 100).then((res) => resolve(res));
         } else if (getPageType() === "discovery"){
             resolve(3000);
+        } else if (getPageType() === "member_works_new") {
+            var queryurl = `https://www.pixiv.net/ajax/user/${dom.URL.match(/id=(\d+)/)[1]}/profile/all`;
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", queryurl);
+            xhr.onload = (e) => {
+                var resp = JSON.parse(xhr.responseText).body;
+                var type = dom.URL.match(/type=(manga|illust)/);
+                var getKeyCount = function(obj) {
+                    return Object.keys(obj).length
+                }
+                if (!type) {
+                    resolve(getKeyCount(resp.illusts)+getKeyCount(resp.manga))
+                } else if (type[1]==="illust") {
+                    resolve(getKeyCount(resp.illusts))
+                } else {
+                    resolve(getKeyCount(resp.manga))
+                }
+            };
+            xhr.send();
         } else {
-            var elt = dom.querySelector(".count-badge")||dom.querySelector(".e1vrdfyz0");
+            let elt = dom.querySelector(".count-badge");
             if (!elt) resolve(null);
             resolve(parseInt(elt.innerHTML));
         }

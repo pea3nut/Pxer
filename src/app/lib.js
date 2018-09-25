@@ -122,7 +122,7 @@ window.execPromise =function(taskList,call){
 window.getPageType =function(url=document.URL){
     var URLData =parseURL(url);
     var type =null;
-    var isnew =!!document.querySelector(".e1vrdfyz0") || !!document.querySelector("._3NOStiW")
+    var isnew =!(Boolean(document.querySelector(".count-badge"))||Boolean(document.querySelector(".profile")));
     if(URLData.domain !=='www.pixiv.net')return 'unknown';
     if(URLData.path==='/bookmark.php'){
         if(URLData.query &&URLData.query.type){
@@ -181,7 +181,7 @@ window.getOnePageWorkCount =function(type) {
         case "search":return 40
         case "rank":return 50
         case "discovery":return 3000
-        case "member_works_new": return 99999999
+        case "member_works_new": return Number.MAX_SAFE_INTEGER
         default:return 20
     };
 }

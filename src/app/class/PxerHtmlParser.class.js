@@ -30,7 +30,7 @@ PxerHtmlParser.parsePage = function (task) {
             var response = JSON.parse(task.html).body
             if (task.type!=="userprofile_illust") {
                 for (let elt in response.manga) {
-                    var tsk = new PxerWorksRequest({
+                    let tsk = new PxerWorksRequest({
                         html: {},
                         type: null,
                         isMultiple: null,
