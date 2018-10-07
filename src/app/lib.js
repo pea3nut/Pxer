@@ -187,11 +187,12 @@ window.getOnePageWorkCount =function(type) {
     };
 }
 window.getIDfromURL =function(key='id', url=document.URL) {
-    var regex = new RegExp(`${key}=(\\d+)`);
-    if (url.match(regex)) {
-        return url.match(regex)[1]
+    if (!(url instanceof URL)) {
+        url = new URL(url)
     }
-    return null
+    var query = url.search.substr(1);
+    var params = new URLSearchParams(query);
+    return params.get(key)
 }
 /*EventTarget扩展
 EventTarget.prototype['addOneEventListener'] =function(type,listener,useCapture){
