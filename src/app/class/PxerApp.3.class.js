@@ -137,9 +137,10 @@ class PxerApp extends PxerEvent{
             }))
         } else if (this.pageType==="bookmark_works"){
             for (let offset =0;offset<pageNum;offset+=48) {
+                let id = document.URL.match(/id=(\d+)/)?document.URL.match(/id=(\d+)/)[1]:document.querySelector("a.user-name").getAttribute("href").match(/id=(\d+)/)[1] // old bookmark page
                 this.taskList.push(new PxerPageRequest({
                     type:this.pageType,
-                    url: `https://www.pixiv.net/ajax/user/${document.URL.match(/id=(\d+)/)[1]}/illusts/bookmarks?tag=&offset=${offset}&limit=48&rest=show`
+                    url: `https://www.pixiv.net/ajax/user/${id}/illusts/bookmarks?tag=&offset=${offset}&limit=48&rest=show`
                 }))
             }
         } else {
@@ -351,7 +352,8 @@ PxerApp.getWorksNum =function(dom=document){
         } else if (getPageType() === "discovery"){
             resolve(3000);
         } else if (getPageType() === "bookmark_works"){
-            let queryurl = `https://www.pixiv.net/ajax/user/${dom.URL.match(/id=(\d+)/)[1]}/illusts/bookmarks?tag=&offset=0&limit=48&rest=show`;
+            let id = dom.URL.match(/id=(\d+)/)?dom.URL.match(/id=(\d+)/)[1]:dom.querySelector("a.user-name").getAttribute("href").match(/id=(\d+)/)[1] // old bookmark page
+            let queryurl = `https://www.pixiv.net/ajax/user/${id}/illusts/bookmarks?tag=&offset=0&limit=48&rest=show`;
             let xhr = new XMLHttpRequest();
             xhr.open("GET", queryurl);
             xhr.onload = (e) => {
