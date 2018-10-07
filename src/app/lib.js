@@ -186,6 +186,13 @@ window.getOnePageWorkCount =function(type) {
         default:return 20
     };
 }
+window.getIDfromURL =function(key='id', url=document.URL) {
+    var regex = new RegExp(`${key}=(\\d+)`);
+    if (url.match(regex)) {
+        return url.match(regex)[1]
+    }
+    return null
+}
 /*EventTarget扩展
 EventTarget.prototype['addOneEventListener'] =function(type,listener,useCapture){
     var fn;
