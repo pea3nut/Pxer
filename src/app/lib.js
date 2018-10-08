@@ -190,7 +190,7 @@ window.getIDfromURL =function(key='id', url=document.URL) {
     if (!(url instanceof URL)) {
         url = new URL(url)
     }
-    var query = url.search.substr(1);
+    var query = url.search;
     var params = new URLSearchParams(query);
     return params.get(key)
 }
