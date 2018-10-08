@@ -129,12 +129,20 @@ class PxerApp extends PxerEvent{
                 type:this.pageType,
             }));
         } else if (this.pageType==="member_works_new"){
-            var uid = document.URL.match(/id=(\d+)/)[1]
+            var uid = getIDfromURL()
             var type = document.URL.match(/type=(\w+)/)?document.URL.match(/type=(\w+)/)[1]:"all"
             this.taskList.push(new PxerPageRequest({
                 url: `https://www.pixiv.net/ajax/user/${uid}/profile/all`,
                 type: type?`userprofile_${type}`:"userprofile_all",
             }))
+        } else if (this.pageType==="bookmark_works"){
+            for (let offset =0;offset<pageNum;offset+=48) {
+                let id = getIDfromURL() || getIDfromURL("id", document.querySelector("a.user-name").getAttribute("href")) // old bookmark page
+                this.taskList.push(new PxerPageRequest({
+                    type:this.pageType,
+                    url: `https://www.pixiv.net/ajax/user/${id}/illusts/bookmarks?tag=&offset=${offset}&limit=48&rest=show`
+                }))
+            }
         } else {
             var separator =document.URL.includes("?")?"&":"?";
             var extraparam = this.pageType==='rank'? "&format=json" : "";
@@ -290,7 +298,7 @@ class PxerApp extends PxerEvent{
 PxerApp.prototype['getThis'] =async function(){
     // 生成任务对象
     var initdata = document.head.innerHTML.match(PxerHtmlParser.REGEXP['getInitData'])[0];
-    var id = document.URL.match(/illust_id=(\d+)/)[1];
+    var id = getIDfromURL("illust_id");
 
     initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, "preload");
     initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, 'illust');
@@ -343,8 +351,17 @@ PxerApp.getWorksNum =function(dom=document){
             this.getFollowingBookmarkWorksNum(currpage, 100, 100).then((res) => resolve(res));
         } else if (getPageType() === "discovery"){
             resolve(3000);
+        } else if (getPageType() === "bookmark_works"){
+            let id =  getIDfromURL("id", dom.URL)  || getIDfromURL("id", dom.querySelector("a.user-name").getAttribute("href")) // old bookmark page
+            let queryurl = `https://www.pixiv.net/ajax/user/${id}/illusts/bookmarks?tag=&offset=0&limit=48&rest=show`;
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", queryurl);
+            xhr.onload = (e) => {
+                resolve(JSON.parse(xhr.responseText).body.total)
+            };
+            xhr.send();
         } else if (getPageType() === "member_works_new") {
-            let queryurl = `https://www.pixiv.net/ajax/user/${dom.URL.match(/id=(\d+)/)[1]}/profile/all`;
+            let queryurl = `https://www.pixiv.net/ajax/user/${getIDfromURL()}/profile/all`;
             let xhr = new XMLHttpRequest();
             xhr.open("GET", queryurl);
             xhr.onload = (e) => {
