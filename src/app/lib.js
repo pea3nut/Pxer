@@ -187,7 +187,7 @@ window.getOnePageWorkCount =function(type) {
     };
 }
 window.getIDfromURL =function(key='id', url=document.URL) {
-    url = new URL(url);
+    url = new URL(url, document.URL);
     var query = url.search;
     var params = new URLSearchParams(query);
     return params.get(key);
