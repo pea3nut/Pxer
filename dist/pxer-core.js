@@ -2676,7 +2676,7 @@ var PxerApp = function (_PxerEvent3) {
                     type: type ? "userprofile_" + type : "userprofile_all"
                 }));
             } else if (this.pageType === "bookmark_works") {
-                for (var offset = 0; offset < pageNum; offset += 48) {
+                for (var offset = 0; offset < 48 * pageNum; offset += 48) {
                     var id = getIDfromURL() || getIDfromURL("id", document.querySelector("a.user-name").getAttribute("href")); // old bookmark page
                     this.taskList.push(new PxerPageRequest({
                         type: this.pageType,
