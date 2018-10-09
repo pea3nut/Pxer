@@ -38,6 +38,10 @@ const buildOnce =()=>{
     Fse.copySync(Join(__dirname,'../src/view/template.html') ,Join(__dirname,'../dist/view/template.html'));
     Fse.copySync(Join(__dirname,'../src/view/style.css')     ,Join(__dirname,'../dist/view/style.css'));
     PxerUtility.babelCopy(
+        Join(__dirname,'../src/view/AutoSuggestControl.class.js'),
+        Join(__dirname,'../dist/view/AutoSuggestControl.class.js')
+    );
+    PxerUtility.babelCopy(
         Join(__dirname,'../src/view/vm.js'),
         Join(__dirname,'../dist/view/vm.js')
     );
@@ -57,7 +61,7 @@ const buildOnce =()=>{
     );
 
     // 合并app/class为pxer-core
-    var fileList =[];
+    var fileList =[Join(__dirname, "generator-runtime.js")];
     for(let array of PxerUtility.groupFile(
             PxerUtility
                 .getAllFile(Join(__dirname,'../src/app/class/'))
