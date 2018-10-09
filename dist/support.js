@@ -7,7 +7,7 @@
     // 环境检测
     window['PXER_SUPPORT'] = true;
     window['PXER_LOAD_APP'] = false;
-    var supportType = ['bookmark_works', 'member_works', 'search', 'works_medium', 'bookmark_new', 'rank', 'discovery'];
+    var supportType = ['bookmark_works', 'member_works', 'search', 'works_medium', 'bookmark_new', 'rank', 'discovery', 'member_works_new'];
     var URLData = parseURL(document.URL);
     if (URLData.domain === 'www.pixiv.net') {
         if (supportType.indexOf(getPageType()) !== -1) {
@@ -34,7 +34,7 @@
     var appClass = /**/"dist/pxer-core.js"; //*/[];
     var viewTpl = /**/"dist/view/template.html"; //*/'';
     var viewStyles = /**/"dist/view/style.css"; //*/[];
-    var viewScripts = /**/["dist/view/PxerAnalytics.class.js", "dist/view/vue.min.js", "dist/view/vm.js"]; //*/[];
+    var viewScripts = /**/["dist/view/PxerAnalytics.class.js", "dist/view/AutoSuggestControl.class.js", "dist/view/vue.min.js", "dist/view/vm.js"]; //*/[];
     var afterRun = /**/"dist/run.js"; //*/[];
     var linkResource = /**/["dist/public/favicon.ico"]; //*/[];
 

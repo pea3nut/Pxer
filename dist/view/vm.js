@@ -64,11 +64,25 @@ afterLoad(function () {
                         });
                     });
                 },
+                mounted: function mounted() {
+                    var _this2 = this;
+
+                    var getResultList = function getResultList() {
+                        return [].concat.apply([], _this2.pxer.resultSet.map(function (res) {
+                            return res.tagList;
+                        }));
+                    };
+                    new AutoSuggestControl("no_tag_any", getResultList);
+                    new AutoSuggestControl("no_tag_every", getResultList);
+                    new AutoSuggestControl("has_tag_some", getResultList);
+                    new AutoSuggestControl("has_tag_every", getResultList);
+                },
 
                 computed: {
                     pageType: function pageType() {
                         var map = {
                             'member_works': '作品列表页',
+                            'member_works_new': '作品列表页_',
                             'search': '检索页',
                             'bookmark_works': '收藏列表页',
                             'rank': '排行榜',
@@ -153,21 +167,21 @@ afterLoad(function () {
                         }
                     },
                     showFailTaskList: function showFailTaskList() {
-                        var _this2 = this;
+                        var _this3 = this;
 
                         return this.pxer.failList.filter(function (pfi) {
-                            return _this2.tryFailWroksList.indexOf(pfi) === -1;
+                            return _this3.tryFailWroksList.indexOf(pfi) === -1;
                         });
                     }
                 },
                 watch: {
                     state: function state(newValue, oldValue) {},
                     isRunning: function isRunning(value) {
-                        var _this3 = this;
+                        var _this4 = this;
 
                         if (value && this.runTimeTimer === null) {
                             this.runTimeTimer = setInterval(function () {
-                                return _this3.runTimeTimestamp++;
+                                return _this4.runTimeTimestamp++;
                             }, 1000);
                         } else {
                             clearInterval(this.runTimeTimer);
@@ -177,19 +191,19 @@ afterLoad(function () {
                 },
                 methods: {
                     load: function load() {
-                        var _this4 = this;
+                        var _this5 = this;
 
                         this.state = 'init';
                         if (this.pxer.pageType === 'works_medium') {
                             this.showLoadBtn = false;
                             this.pxer.one('finishWorksTask', function () {
-                                _this4.showLoadBtn = true;
-                                _this4.state = 'standby';
+                                _this5.showLoadBtn = true;
+                                _this5.state = 'standby';
                             });
                             this.pxer.getThis();
                         } else {
                             this.pxer.init().then(function () {
-                                return _this4.state = 'ready';
+                                return _this5.state = 'ready';
                             });
                             this.pxer.on('finishWorksTask', function () {
                                 window.blinkTitle();
@@ -200,7 +214,7 @@ afterLoad(function () {
                         });
                     },
                     run: function run() {
-                        var _this5 = this;
+                        var _this6 = this;
 
                         this.analytics.postData("pxer.app.start", {
                             ptm_config: this.pxer.ptmConfig,
@@ -211,18 +225,18 @@ afterLoad(function () {
                             this.state = 'page';
                             this.pxer.initPageTask();
                             this.pxer.one('finishPageTask', function () {
-                                _this5.state = 'works';
-                                _this5.pxer.switchPage2Works();
-                                _this5.pxer.executeWroksTask();
+                                _this6.state = 'works';
+                                _this6.pxer.switchPage2Works();
+                                _this6.pxer.executeWroksTask();
                             });
                             this.pxer.one('finishWorksTask', function () {
-                                _this5.state = 'finish';
+                                _this6.state = 'finish';
                             });
                             this.pxer.executePageTask();
                         } else if (this.state === 're-ready') {
                             this.state = 'works';
                             this.pxer.one('finishWorksTask', function () {
-                                _this5.state = 'finish';
+                                _this6.state = 'finish';
                             });
                             this.pxer.executeFailWroks(this.tryFailWroksList);
                             this.tryFailWroksList = [];

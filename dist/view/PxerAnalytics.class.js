@@ -33,6 +33,7 @@ var PxerAnalytics = function () {
             if (!this.enabled) return;
             data.uid = this.uid;
             data.pxer_mode = window['PXER_MODE'];
+            data.pxer_version = window['PXER_VERSION'];
 
             var xhr = new XMLHttpRequest();
             xhr.open("POST", window['PXER_URL'] + "stats/" + event.replace(/\./g, "/"), true);
