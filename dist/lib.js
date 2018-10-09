@@ -282,7 +282,7 @@ window.getIDfromURL = function () {
     var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'id';
     var url = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document.URL;
 
-    url = new URL(url);
+    url = new URL(url, document.URL);
     var query = url.search;
     var params = new URLSearchParams(query);
     return params.get(key);
