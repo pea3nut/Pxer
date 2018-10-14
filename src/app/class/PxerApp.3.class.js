@@ -203,6 +203,9 @@ class PxerApp extends PxerEvent{
             this.dispatch('error' ,'PxerApp.executeWroksTask: taskList is illegal');
             return false;
         };
+        
+        // 任务按ID降序排列
+        tasks.sort((a,b)=>parseInt(b.id)-parseInt(a.id));
 
         this.dispatch('executeWroksTask');
 
