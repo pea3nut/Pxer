@@ -1,6 +1,6 @@
 import { expect } from "chai"
 import { describe } from "mocha"
-import PxerEngine from "../../src";
+import PxerEngine from "../../src/index";
 import { Task } from "../../src/types"
 
 describe("Engine", ()=>{
