@@ -3,11 +3,13 @@
       "strict": true,
       "lib": ["esnext"],
       "types": ["node","request"],
-      "module": "commonjs",
+      "module": "umd",
       "target": "es6",
-      "sourceMap": true
+      "sourceMap": true,
+      "declaration": true
     },
     "exclude": [
-      "node_modules"
+      "node_modules",
+      "tests",
     ]
 }
