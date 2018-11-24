@@ -5,7 +5,7 @@ import NetworkAgent from "../common/network";
 /*
  * Sugar resolvers
  * Sugar resolvers are desinged for multi-step task resolving and are mainly composed of a switch..case statement.
- * A standard workflow of sugar resolvers (example: mock_sugar):
+ * A standard workflow of sugar resolvers:
  *   0: get the method name by splitting the task directive by a double colon
  *   1: switch (method)
  *   2: default: {Perform step one of the task. Call reportErr if errors occured, call addTask to add tasks for future steps with step 1 results written in the Payload.}
@@ -26,39 +26,6 @@ function getTaskMethod(task: Task) :string{
 }
 
 export default {
-    "mock_sugar": async (task, gotWork, addTask, reportErr) => {
-        interface ResultPayload extends TaskPayloadBase {
-            mock_payload: string,
-        }
-        
-        let method = getTaskMethod(task);
-        switch(method){
-            default:
-                addTask({
-                    Directive: "mock_sugar::results",
-                    Payload: {mock_payload: "pea3nut~~"},
-                })
-                break
-            case "results":
-                if (!(<ResultPayload>task.Payload).mock_payload) {
-                    reportErr({
-                        fatal: true,
-                        type: ErrType.Unknown,
-                        extraMsg: "Payload not transfered",
-                        rawErr: null,
-                    })
-                } else {
-                    addTask({
-                        Directive: "mock_work",
-                        Payload: {},
-                    })
-                    addTask({
-                        Directive: "mock_work",
-                        Payload: {},
-                    })
-                }
-        }
-    },
     "get_user_works": async (task, gotWork, addTask, reportErr) => {
 
         let method = getTaskMethod(task);

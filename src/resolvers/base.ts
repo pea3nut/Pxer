@@ -6,25 +6,12 @@ import { formatIllustType } from "../common/illusttype";
 /**
  * Base resolvers
  * Base resolvers are designed to perform tasks that could be completed in only one step.
- * A standard workflow of sugar resolvers (example: mock_work):
+ * A standard workflow of sugar resolvers:
  *   0: Unpack request payload
  *   1: Perform network request(s) to acquire all data needed
  *   2: Call gotWork with the work data you acquired or reportErr to report errors
  */
 export default {
-    "mock_work": async (task, gotWork, addTask, reportErr) => {
-        gotWork({
-            illustID: "12345678",
-            illustType: "illust",
-            URLs: {
-                mini: "",
-                thumb: "",
-                small: "",
-                regular: "",
-                original: "",
-            }
-        })
-    },
     "get_illust_data": async (task, gotWork, addTask, reportErr) => {
         interface RequestPayload extends TaskPayloadBase {
             illust_id: string,
