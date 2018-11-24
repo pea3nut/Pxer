@@ -3,6 +3,10 @@ import { URL } from "url";
 // @ts-ignore
 const inBrowser: boolean =  typeof window !== "undefined"
 
+/**
+ * Networking encapsulation layer
+ * @class
+ */
 export default class NetworkAgent {
     static get(url: string|URL) :Promise<string> {
         return new Promise<string>((resolve, reject)=>{

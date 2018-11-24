@@ -1,5 +1,9 @@
 import { illustType } from "../types";
 
+/**
+ * @param n Number|string representation of illustType
+ * @returns illustType
+ */
 export function formatIllustType(n :any): illustType {
     switch(n) {
         case 0:

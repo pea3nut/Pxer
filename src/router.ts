@@ -4,7 +4,18 @@ import BaseResolver from "./resolvers/base"
 import SugarResolver from "./resolvers/sugar"
 import { ErrType } from "./common/error";
 
+/**
+ * Task router
+ * @class
+ */
 export class Router {
+    /**
+     * Route task to resolvers and execute it
+     * @param task the task to complete
+     * @param gotWork @see ResolverFunction
+     * @param addTask @see ResolverFunction
+     * @param reportErr @see ResolverFunction
+     */
     static route(
         task: Task,
         gotWork: (work: WorkResult)=>void,

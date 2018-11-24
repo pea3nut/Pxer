@@ -1,11 +1,14 @@
 import ThreadManager from "./common/threadmanager";
 import { Task, WorkResult, ErrInfo } from "./types"
 import { Router } from "./router";
-
+/**
+ * Pxer Engine
+ */
 export default class PxerEngine {
     private threadCount: number = 5
     private tm: ThreadManager = new ThreadManager(this.threadCount)
     
+    // Start the execution flow with an initial task
     public run(task: Task) {
         this.tm.notify(()=>{
             this._emit("end")
@@ -32,8 +35,20 @@ export default class PxerEngine {
     private workListeners: ((work: WorkResult)=>any)[] = [];
     private errListeners: ((err: ErrInfo)=>any)[] = [];
     private endListeners: Function[] = [];
+    /**
+     * Register a listener for work data
+     * @param listener Listener function, called every time a piece of work data is ready 
+     */
     public on(event: "work", listener: (work: WorkResult)=>any) :this;
+    /**
+     * Register a listen for errors
+     * @param listener Listener function, called every time an error occured
+     */
     public on(event: "error", listener: (work: ErrInfo)=>any) :this;
+    /**
+     * Register a listener for end of process
+     * @param listener Listener function, called when all tasks are resolved
+     */
     public on(event: "end", listener: ()=>any) :this;
     public on(event: string, listener: Function) :this{
         function addListener(list: Function[], member: Function) {

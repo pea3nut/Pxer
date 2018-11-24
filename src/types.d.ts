@@ -7,8 +7,10 @@ export type Task = {
     Payload: TaskPayloadBase,
 }
 
+// TaskPayloadBase contains nothing. Resolvers can extend this interface to define their own payload type.
 export interface TaskPayloadBase {}
 
+// Result data
 export type WorkResult = {
     illustID: string,
     illustType: illustType,
@@ -33,17 +35,20 @@ export type UgoiraMeta = {
 }
 
 export type ErrInfo = {
+    // Whether is error is fatal to the whole task flow
     fatal: boolean,
+    // Type of error
     type: ErrType,
+    // Extra message to be delivered to the front end
     extraMsg: string,
+    // Raw error info
     rawErr: Error|null,
 }
 
-export type testFunc = (n: number)=>Promise<void>
-
+// ResolverFunction definition of a resolver function
 export type ResolverFunction = (
-    task: Task,
-    gotWork: (work: WorkResult)=>void,
-    addTask: (task: Task)=>void,
-    reportErr: (err: ErrInfo)=>void,
+    task: Task, // The task to resolve
+    gotWork: (work: WorkResult)=>void, // called after a piece of work data is ready
+    addTask: (task: Task)=>void, // schedule a new task which will be executed in the future
+    reportErr: (err: ErrInfo)=>void, // report any errors occured during the procedd
 ) => Promise<void>

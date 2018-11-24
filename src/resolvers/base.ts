@@ -3,6 +3,14 @@ import NetworkAgent from "../common/network";
 import { ErrType } from "../common/error";
 import { formatIllustType } from "../common/illusttype";
 
+/**
+ * Base resolvers
+ * Base resolvers are designed to perform tasks that could be completed in only one step.
+ * A standard workflow of sugar resolvers (example: mock_work):
+ *   0: Unpack request payload
+ *   1: Perform network request(s) to acquire all data needed
+ *   2: Call gotWork with the work data you acquired or reportErr to report errors
+ */
 export default {
     "mock_work": async (task, gotWork, addTask, reportErr) => {
         gotWork({
