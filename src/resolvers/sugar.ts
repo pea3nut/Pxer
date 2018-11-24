@@ -95,7 +95,7 @@ export default {
                             for (let id in data.illusts) {
                                 addTask({
                                     Directive: "get_illust_data",
-                                    Payload: {illust_id: id, accept_types: payload.types},
+                                    Payload: {illust_id: id, accept_type: payload.types},
                                 })
                             }
                         }
@@ -103,7 +103,7 @@ export default {
                             for (let id in data.manga) {
                                 addTask({
                                     Directive: "get_illust_data",
-                                    Payload: {illust_id: id, accept_types: payload.types},
+                                    Payload: {illust_id: id, accept_type: payload.types},
                                 })
                             }
                         }
