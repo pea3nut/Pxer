@@ -9,14 +9,14 @@ const inBrowser: boolean =  typeof window !== "undefined"
  */
 export default class NetworkAgent {
     static get(url: string|URL) :Promise<string> {
-        return new Promise<string>((resolve, reject)=>{
-            if (inBrowser) {
-                return async function(url: string|URL) :Promise<string>{
-                    // @ts-ignore
-                    let req = await fetch(url, {credentials: "include"})
-                    return await req.text()
-                }(url)
-            } else {
+        if (inBrowser) {
+            return async function(url: string|URL) :Promise<string>{
+                // @ts-ignore
+                let req = await fetch(url, {credentials: "include"})
+                return await req.text()
+            }(url)
+        } else {
+            return new Promise<string>((resolve, reject)=>{
                 const request = require("request");
                 request({
                     method: "GET",
@@ -41,7 +41,7 @@ export default class NetworkAgent {
                     }
                     resolve(body.toString())
                 })
-            }
-        })
+            })
+        }
     }
 }
