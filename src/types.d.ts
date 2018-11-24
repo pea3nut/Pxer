@@ -7,10 +7,15 @@ export type Task = {
     Payload: TaskPayloadBase,
 }
 
-// TaskPayloadBase contains nothing. Resolvers can extend this interface to define their own payload type.
+/**
+ * TaskPayloadBase contains nothing. Resolvers can extend this interface to define their own payload type.
+ * @interface
+ */
 export interface TaskPayloadBase {}
 
-// Result data
+/**
+ * Result data
+ */
 export type WorkResult = {
     illustID: string,
     illustType: illustType,
