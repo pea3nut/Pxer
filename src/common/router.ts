@@ -1,8 +1,8 @@
-import { ResolverFunction } from "./types";
-import { Task, WorkResult, ErrInfo } from "./types"
-import BaseResolver from "./resolvers/base"
-import SugarResolver from "./resolvers/sugar"
-import { ErrType } from "./common/error";
+import { ResolverFunction } from "../types";
+import { Task, WorkResult, ErrInfo } from "../types"
+import BaseResolver from "../resolvers/base"
+import SugarResolver from "../resolvers/sugar"
+import { ErrType } from "./error";
 
 /**
  * Task router

@@ -1,6 +1,6 @@
 import ThreadManager from "./common/threadmanager";
 import { Task, WorkResult, ErrInfo } from "./types"
-import { Router } from "./router";
+import { Router } from "./common/router";
 /**
  * Pxer Engine
  */
