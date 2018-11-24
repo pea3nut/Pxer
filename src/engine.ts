@@ -19,12 +19,16 @@ export default class PxerEngine {
     
     private _push(task: Task) {
         this.tm.register((done: ()=>void) => {
-            Router.route(task, (work)=>{
-                this._emit("work", work)
-            }, (task)=>{
-                this._push(task)
-            }, (err)=>{
-                this._emit("error", err)
+            Router.route(task, {
+                gotWork: (work)=>{
+                    this._emit("work", work)
+                },
+                addTask: (task)=>{
+                    this._push(task)
+                },
+                reportErr: (err)=>{
+                    this._emit("error", err)
+                }
             }).finally(()=>{
                 done()
             })

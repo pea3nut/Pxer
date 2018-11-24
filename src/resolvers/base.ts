@@ -12,7 +12,7 @@ import { formatIllustType } from "../common/illusttype";
  *   2: Call gotWork with the work data you acquired or reportErr to report errors
  */
 export default {
-    "get_illust_data": async (task, gotWork, addTask, reportErr) => {
+    "get_illust_data": async (task, {gotWork, reportErr}) => {
         interface RequestPayload extends TaskPayloadBase {
             illust_id: string,
             accept_type?: ("illust"|"manga"|"ugoira")[],

@@ -26,7 +26,7 @@ function getTaskMethod(task: Task) :string{
 }
 
 export default {
-    "get_user_works": async (task, gotWork, addTask, reportErr) => {
+    "get_user_works": async (task, {addTask, reportErr}) => {
 
         let method = getTaskMethod(task);
         switch (method) {

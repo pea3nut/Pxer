@@ -53,7 +53,9 @@ export type ErrInfo = {
 // ResolverFunction definition of a resolver function
 export type ResolverFunction = (
     task: Task, // The task to resolve
-    gotWork: (work: WorkResult)=>void, // called after a piece of work data is ready
-    addTask: (task: Task)=>void, // schedule a new task which will be executed in the future
-    reportErr: (err: ErrInfo)=>void, // report any errors occured during the procedd
+    cbs: {
+        gotWork: (work: WorkResult)=>void, // called after a piece of work data is ready
+        addTask: (task: Task)=>void, // schedule a new task which will be executed in the future
+        reportErr: (err: ErrInfo)=>void, // report any errors occured during the procedd
+    },
 ) => Promise<void>

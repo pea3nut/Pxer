@@ -18,17 +18,19 @@ export class Router {
      */
     static route(
         task: Task,
-        gotWork: (work: WorkResult)=>void,
-        addTask: (task: Task)=>void,
-        reportErr: (err: ErrInfo)=>void,
+        cbs: {
+            gotWork: (work: WorkResult)=>void,
+            addTask: (task: Task)=>void,
+            reportErr: (err: ErrInfo)=>void,
+        }
     ):Promise<void> {
         let func = task.Directive.split("::")[0]
         if (func in BaseResolver) {
-            return BaseResolver[func](task, gotWork, addTask, reportErr)
+            return BaseResolver[func](task, cbs)
         } else if (func in SugarResolver) {
-            return SugarResolver[func](task, gotWork, addTask, reportErr)
+            return SugarResolver[func](task, cbs)
         }
-        reportErr({
+        cbs.reportErr({
             fatal: true,
             type: ErrType.ResolverNotFound,
             extraMsg: `Unknown task directive ${task.Directive} with resolved func name ${func}`,
