@@ -8,15 +8,15 @@ const inBrowser: boolean =  typeof window !== "undefined"
  * @class
  */
 export default class NetworkAgent {
-    static get(url: string|URL) :Promise<string> {
+    static get(url: string|URL) :Promise<[number, string]> {
         if (inBrowser) {
-            return async function(url: string|URL) :Promise<string>{
+            return async function(url: string|URL) :Promise<[number, string]>{
                 // @ts-ignore
                 let req = await fetch(url, {credentials: "include"})
-                return await req.text()
+                return [req.status, await req.text()]
             }(url)
         } else {
-            return new Promise<string>((resolve, reject)=>{
+            return new Promise<[number, string]>((resolve, reject)=>{
                 const request = require("request");
                 request({
                     method: "GET",
@@ -35,11 +35,9 @@ export default class NetworkAgent {
                 }, function(error: Error|null, response: any, body: any){
                     if (error) {
                         reject(error)
+                    } else {
+                        resolve([response.statusCode, body.toString()])
                     }
-                    if (![200, 304].includes(response.statusCode)) {
-                        reject(new Error(`Network: remote returned ${response.statusCode}.`))
-                    }
-                    resolve(body.toString())
                 })
             })
         }

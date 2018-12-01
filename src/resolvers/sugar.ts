@@ -39,7 +39,17 @@ export default {
                 let url = `https://www.pixiv.net/ajax/user/${payload.user_id}/profile/all`
                 let res
                 try {
-                    res = JSON.parse(await NetworkAgent.get(url))
+                    let [code, data] = await NetworkAgent.get(url)
+                    if (code!==200) {
+                        reportErr({
+                            fatal: true,
+                            type: ErrType.HTTPCode,
+                            extraMsg: `Remote returned ${code}`,
+                            rawErr: null,
+                        })
+                    } else {
+                        res = JSON.parse(data)
+                    }
                 } catch (e) {
                     reportErr({
                         fatal: true,

@@ -23,7 +23,17 @@ export default {
         let url = "https://www.pixiv.net/ajax/illust/" + id
         let res
         try {
-            res = JSON.parse(await NetworkAgent.get(url))
+            let [code, data] = await NetworkAgent.get(url)
+            if (code!==200) {
+                reportErr({
+                    fatal: true,
+                    type: ErrType.HTTPCode,
+                    extraMsg: `Remote returned ${code}`,
+                    rawErr: null,
+                })
+            } else {
+                res = JSON.parse(data)
+            }
         } catch (e) {
             reportErr({
                 fatal: true,
@@ -47,7 +57,17 @@ export default {
                 if (type=="ugoira") {
                     let ret
                     try {
-                        ret = JSON.parse(await NetworkAgent.get(url+"/ugoira_meta"))
+                        let [code, data] = await NetworkAgent.get(url+"/ugoira_meta")
+                        if (code!==200) {
+                            reportErr({
+                                fatal: false,
+                                type: ErrType.HTTPCode,
+                                extraMsg: `Remote returned ${code} during ugoira meta`,
+                                rawErr: null,
+                            })
+                        } else {
+                            ret = JSON.parse(data)
+                        }
                     } catch (e) {
                         reportErr({
                             fatal: false,
