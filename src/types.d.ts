@@ -1,4 +1,4 @@
-import { ErrType } from "./common/error"
+import { ErrType } from "./common/common"
 
 export type illustType = "illust" | "manga" | "ugoira"
 

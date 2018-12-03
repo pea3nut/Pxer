@@ -1,4 +1,6 @@
 import { URL } from "url";
+import { ErrInfo } from "../types";
+import { ErrType } from "./common";
 
 // @ts-ignore
 const inBrowser: boolean =  typeof window !== "undefined"
@@ -8,15 +10,36 @@ const inBrowser: boolean =  typeof window !== "undefined"
  * @class
  */
 export default class NetworkAgent {
-    static get(url: string|URL) :Promise<[number, string]> {
+    static get(url: string|URL, onError: (e: ErrInfo)=>void) :Promise<string|null> {
         if (inBrowser) {
-            return async function(url: string|URL) :Promise<[number, string]>{
-                // @ts-ignore
-                let req = await fetch(url, {credentials: "include"})
-                return [req.status, await req.text()]
+            return async function(url: string|URL) :Promise<string|null>{
+                let req = null
+                try {
+                    // @ts-ignore
+                    req = await fetch(url, {credentials: "include"})
+                } catch {
+                    onError({
+                        fatal: true,
+                        type: ErrType.NetworkTimeout,
+                        extraMsg: `Network error for URL ${url.toString()}`,
+                        rawErr: null,
+                    })
+                    return null
+                }
+                if (req.status===200) {
+                    return await req.text()
+                } else {
+                    onError({
+                        fatal: true,
+                        type: ErrType.HTTPCode,
+                        extraMsg: `Remote returned ${req.status} for URL ${url.toString()}`,
+                        rawErr: null,
+                    })
+                    return null
+                }
             }(url)
         } else {
-            return new Promise<[number, string]>((resolve, reject)=>{
+            return new Promise<string|null>((resolve, reject)=>{
                 const request = require("request");
                 request({
                     method: "GET",
@@ -34,9 +57,25 @@ export default class NetworkAgent {
                     gzip: true,
                 }, function(error: Error|null, response: any, body: any){
                     if (error) {
-                        reject(error)
+                        onError({
+                            fatal: true,
+                            type: ErrType.NetworkTimeout,
+                            extraMsg: `Network error for URL ${url.toString()}`,
+                            rawErr: error,
+                        })
+                        resolve(null)
                     } else {
-                        resolve([response.statusCode, body.toString()])
+                        if (response.statusCode===200) {
+                            resolve(body.toString())
+                        } else {
+                            onError({
+                                fatal: true,
+                                type: ErrType.HTTPCode,
+                                extraMsg: `Remote returned ${response.statusCode} for URL ${url.toString()}`,
+                                rawErr: null,
+                            })
+                            resolve(null)
+                        }
                     }
                 })
             })

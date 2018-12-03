@@ -2,7 +2,7 @@ import { ResolverFunction } from "../types";
 import { Task, WorkResult, ErrInfo } from "../types"
 import BaseResolver from "../resolvers/base"
 import SugarResolver from "../resolvers/sugar"
-import { ErrType } from "./error";
+import { ErrType } from "./common";
 
 /**
  * Task router
@@ -16,7 +16,7 @@ export class Router {
      * @param addTask @see ResolverFunction
      * @param reportErr @see ResolverFunction
      */
-    static route(
+    static async executeTask(
         task: Task,
         cbs: {
             gotWork: (work: WorkResult)=>void,
@@ -26,9 +26,9 @@ export class Router {
     ):Promise<void> {
         let func = task.Directive.split("::")[0]
         if (func in BaseResolver) {
-            return BaseResolver[func](task, cbs)
+            return await BaseResolver[func](task, cbs)
         } else if (func in SugarResolver) {
-            return SugarResolver[func](task, cbs)
+            return await SugarResolver[func](task, cbs)
         }
         cbs.reportErr({
             fatal: true,
@@ -36,6 +36,5 @@ export class Router {
             extraMsg: `Unknown task directive ${task.Directive} with resolved func name ${func}`,
             rawErr: null,
         })
-        return async function(){}()
     }
 }

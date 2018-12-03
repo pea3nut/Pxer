@@ -1,5 +1,5 @@
 import { ResolverFunction, Task, TaskPayloadBase} from "../types";
-import { ErrType } from "../common/error"
+import { ErrType, parseJSONAPIBody } from "../common/common"
 import NetworkAgent from "../common/network";
 
 /*
@@ -25,7 +25,7 @@ function getTaskMethod(task: Task) :string{
     }
 }
 
-export default {
+const sugarResolvers:{[name: string]: ResolverFunction} = {
     "get_user_works": async (task, {addTask, reportErr}) => {
 
         let method = getTaskMethod(task);
@@ -36,56 +36,33 @@ export default {
                     types?: ("illust"|"manga"|"ugoira")[],
                 }
                 let payload = <RequestPayload>task.Payload
-                let url = `https://www.pixiv.net/ajax/user/${payload.user_id}/profile/all`
-                let res
-                try {
-                    let [code, data] = await NetworkAgent.get(url)
-                    if (code!==200) {
-                        reportErr({
-                            fatal: true,
-                            type: ErrType.HTTPCode,
-                            extraMsg: `Remote returned ${code}`,
-                            rawErr: null,
-                        })
-                    } else {
-                        res = JSON.parse(data)
-                    }
-                } catch (e) {
-                    reportErr({
-                        fatal: true,
-                        type: ErrType.NetworkTimeout,
-                        extraMsg: "network error",
-                        rawErr: e,
+                const requestWorkData = function(id: string) {
+                    addTask({
+                        Directive: "get_illust_data",
+                        Payload: {illust_id: id, accept_type: payload.types},
                     })
                 }
+                
+                let url = `https://www.pixiv.net/ajax/user/${payload.user_id}/profile/all`
+                let res = await NetworkAgent.get(url, reportErr)
                 if (res) {
-                    if (res.error) {
-                        reportErr({
-                            fatal: true,
-                            type: ErrType.Unknown,
-                            extraMsg: "ajax api error: "+res.message,
-                            rawErr: null,
-                        })
-                    } else {
-                        let data = res.body
+                    let workList = parseJSONAPIBody(res, reportErr)
+                    if (workList) {
                         if (payload.types===undefined||payload.types.includes("illust")||payload.types.includes("ugoira")) {
-                            for (let id in data.illusts) {
-                                addTask({
-                                    Directive: "get_illust_data",
-                                    Payload: {illust_id: id, accept_type: payload.types},
-                                })
+                            for (let id in workList.illusts) {
+                                requestWorkData(id)
                             }
                         }
                         if (payload.types===undefined||payload.types.includes("manga")) {
-                            for (let id in data.manga) {
-                                addTask({
-                                    Directive: "get_illust_data",
-                                    Payload: {illust_id: id, accept_type: payload.types},
-                                })
+                            for (let id in workList.manga) {
+                                requestWorkData(id)
                             }
                         }
                     }
                 }
         }
     }
-} as {[name: string]: ResolverFunction}
+}
+
+
+export default sugarResolvers
