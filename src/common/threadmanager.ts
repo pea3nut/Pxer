@@ -14,6 +14,7 @@ export default class ThreadManager{
     // sync mutex for _check
     private checking: boolean = false;
     private started: boolean = false;
+    private stopping: boolean = false;
     
     constructor(count: number) {
         this.limit = count
@@ -65,19 +66,27 @@ export default class ThreadManager{
         }
     }
 
+    public stop() :Promise<void>{
+        return new Promise<void>((resolve, reject)=>{
+            this.listeners = [resolve] // clear up listeners
+            this.stopping = true
+        })
+    }
+
     private _check() :void {
         if (this.checking) {
             return
         }
 
-        if (this.counter==0 && this.pointer == this.tasks.length - 1) {
+        if (this.counter==0 && (this.stopping || this.pointer == this.tasks.length - 1)) {
             // All tasks completed
             this._do_notify()
+            return
         }
         
         this.checking = true
         
-        while (this.counter<this.limit && this.pointer < this.tasks.length-1) {
+        while (!this.stopping && this.counter<this.limit && this.pointer < this.tasks.length-1) {
             let task = this.tasks[++this.pointer];
             
             this.counter++

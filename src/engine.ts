@@ -1,23 +1,56 @@
 import ThreadManager from "./common/threadmanager";
 import { Task, WorkResult, ErrInfo } from "./types"
 import { Router } from "./common/router";
+
+interface PxerEngineState {
+    tasks: Task[],
+    failures: {
+        task: Task,
+        err: ErrInfo,
+    }[],
+} 
+
 /**
  * Pxer Engine
  */
 export default class PxerEngine {
     private threadCount: number = 5
     private tm: ThreadManager = new ThreadManager(this.threadCount)
+    private state: PxerEngineState = {tasks: [], failures: []}
     
     // Start the execution flow with an initial task
-    public run(task: Task) {
+    public start(task: Task) {
+        this._push(task)
+        this._run()
+    }
+
+    public load(states: string, retry?:boolean) {
+        let state: PxerEngineState = JSON.parse(states)
+        for (let task of state.tasks) {
+            this._push(task)
+        }
+        if (retry) {
+            for (let fail of state.failures) {
+                this._push(fail.task)
+            }
+        }
+        this._run()
+    }
+
+    public async save() :Promise<string> {
+        await this.tm.stop()
+        return JSON.stringify(this.state)
+    }
+
+    private _run() {
         this.tm.notify(()=>{
             this._emit("end")
         })
-        this._push(task)
         this.tm.run()
     }
     
     private _push(task: Task) {
+        this.state.tasks.push(task)
         this.tm.register((done: ()=>void) => {
             Router.executeTask(task, {
                 gotWork: (work)=>{
@@ -27,9 +60,14 @@ export default class PxerEngine {
                     this._push(task)
                 },
                 reportErr: (err)=>{
+                    this.state.failures.push({
+                        task,
+                        err,
+                    })
                     this._emit("error", err)
                 }
             }).finally(()=>{
+                this.state.tasks = this.state.tasks.filter((t: Task)=>t!==task)
                 done()
             })
         })
