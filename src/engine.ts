@@ -1,5 +1,5 @@
 import ThreadManager from "./common/threadmanager";
-import { Task, WorkResult, ErrInfo } from "./types"
+import { Task, Result, ErrInfo, CountResult, WorkResult } from "./types"
 import { Router } from "./common/router";
 
 interface PxerEngineState {
@@ -53,8 +53,11 @@ export default class PxerEngine {
         this.state.tasks.push(task)
         this.tm.register((done: ()=>void) => {
             Router.executeTask(task, {
-                gotWork: (work)=>{
-                    this._emit("work", work)
+                gotCount: (count)=>{
+                    this._emit("count", count)
+                },
+                gotWork: (res)=>{
+                    this._emit("work", res)
                 },
                 addTask: (task)=>{
                     this._push(task)
@@ -74,14 +77,18 @@ export default class PxerEngine {
     }
     
     
+    private resultListeners: ((res: Result)=>any)[] = [];
+    private countListeners: ((count: CountResult)=>any)[] = [];
     private workListeners: ((work: WorkResult)=>any)[] = [];
     private errListeners: ((err: ErrInfo)=>any)[] = [];
     private endListeners: Function[] = [];
     /**
-     * Register a listener for work data
-     * @param listener Listener function, called every time a piece of work data is ready 
+     * Register a listener for result data, emitted together with count and work
+     * @param listener Listener function, called every time a piece of result data is ready
      */
-    public on(event: "work", listener: (work: WorkResult)=>any) :this;
+    public on(event: "result", listener: (res: Result)=>any) :this;
+    public on(event: "count", listener: (count: CountResult)=>any) :this;
+    public on(event: "work", listener: (count: WorkResult)=>any) :this;
     /**
      * Register a listen for errors
      * @param listener Listener function, called every time an error occured
@@ -97,6 +104,12 @@ export default class PxerEngine {
             list.push(member)
         }
         switch (event) {
+            case "result":
+                addListener(this.resultListeners, listener)
+                break
+            case "count":
+                addListener(this.countListeners, listener)
+                break
             case "work":
                 addListener(this.workListeners, listener)
                 break
@@ -111,6 +124,7 @@ export default class PxerEngine {
         }
         return this
     }
+    private _emit(event: "count", count: CountResult) :void;
     private _emit(event: "work", work: WorkResult) :void;
     private _emit(event: "error", err: ErrInfo) :void;
     private _emit(event: "end") :void;
@@ -119,8 +133,11 @@ export default class PxerEngine {
             return listeners.forEach((fn)=>{fn(data)})
         }
         switch (event) {
+            case "count":
+                callListeners([...this.resultListeners, ...this.countListeners], data)
+                break
             case "work":
-                callListeners(this.workListeners, data)
+                callListeners([...this.resultListeners, ...this.workListeners], data)
                 break
             case "error":
                 callListeners(this.errListeners, data)

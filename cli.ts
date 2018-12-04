@@ -16,8 +16,8 @@ function onSIGINT(f: ()=>void) {
 }
 
 let eng = new PxerEngine
-eng.on("work", (work)=>{
-    console.log(work)
+eng.on("result", (res)=>{
+    console.log(res)
 })
 eng.on("error", (err)=>{
     console.error(err)

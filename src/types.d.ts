@@ -13,10 +13,17 @@ export type Task = {
  */
 export interface TaskPayloadBase {}
 
+export interface Result {}
+
+export interface CountResult extends Result {
+    count: number,
+    precise: boolean,
+}
+
 /**
  * Result data
  */
-export type WorkResult = {
+export interface WorkResult extends Result {
     illustID: string,
     illustType: illustType,
     URLs: {
@@ -54,7 +61,8 @@ export type ErrInfo = {
 export type ResolverFunction = (
     task: Task, // The task to resolve
     cbs: {
-        gotWork: (work: WorkResult)=>void, // called after a piece of work data is ready
+        gotCount: (res: CountResult)=>void, // report a count
+        gotWork: (res: WorkResult)=>void, // report a result
         addTask: (task: Task)=>void, // schedule a new task which will be executed in the future
         reportErr: (err: ErrInfo)=>void, // report any errors occured during the procedd
     },

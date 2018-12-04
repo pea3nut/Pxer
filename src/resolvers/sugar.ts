@@ -26,7 +26,7 @@ function getTaskMethod(task: Task) :string{
 }
 
 const sugarResolvers:{[name: string]: ResolverFunction} = {
-    "get_user_works": async (task, {addTask, reportErr}) => {
+    "get_user_works": async (task, {gotCount, addTask, reportErr}) => {
 
         let method = getTaskMethod(task);
         switch (method) {
@@ -34,8 +34,10 @@ const sugarResolvers:{[name: string]: ResolverFunction} = {
                 interface RequestPayload extends TaskPayloadBase {
                     user_id: string,
                     types?: ("illust"|"manga"|"ugoira")[],
+                    count_only?: boolean,
                 }
                 let payload = <RequestPayload>task.Payload
+                
                 const requestWorkData = function(id: string) {
                     addTask({
                         Directive: "get_illust_data",
@@ -45,20 +47,33 @@ const sugarResolvers:{[name: string]: ResolverFunction} = {
                 
                 let url = `https://www.pixiv.net/ajax/user/${payload.user_id}/profile/all`
                 let res = await NetworkAgent.get(url, reportErr)
+                let illustIDs: string[] = []
+                let countIsPrecise = true
                 if (res) {
                     let workList = parseJSONAPIBody(res, reportErr)
                     if (workList) {
                         if (payload.types===undefined||payload.types.includes("illust")||payload.types.includes("ugoira")) {
+                            if (Object.keys(workList.illusts).length>0) {
+                                countIsPrecise = false
+                            }
                             for (let id in workList.illusts) {
-                                requestWorkData(id)
+                                illustIDs.push(id)
                             }
                         }
                         if (payload.types===undefined||payload.types.includes("manga")) {
                             for (let id in workList.manga) {
-                                requestWorkData(id)
+                                illustIDs.push(id)
                             }
                         }
                     }
+                }
+                gotCount({
+                    count: illustIDs.length,
+                    precise: countIsPrecise,
+                })
+
+                if (!payload.count_only) {
+                    illustIDs.forEach(requestWorkData)
                 }
         }
     }

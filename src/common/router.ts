@@ -1,5 +1,4 @@
-import { ResolverFunction } from "../types";
-import { Task, WorkResult, ErrInfo } from "../types"
+import { Task, WorkResult, CountResult, ErrInfo } from "../types"
 import BaseResolver from "../resolvers/base"
 import SugarResolver from "../resolvers/sugar"
 import { ErrType } from "./common";
@@ -19,7 +18,8 @@ export class Router {
     static async executeTask(
         task: Task,
         cbs: {
-            gotWork: (work: WorkResult)=>void,
+            gotWork: (res: WorkResult)=>void,
+            gotCount: (count: CountResult)=>void,
             addTask: (task: Task)=>void,
             reportErr: (err: ErrInfo)=>void,
         }
