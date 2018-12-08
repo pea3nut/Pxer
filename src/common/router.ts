@@ -1,4 +1,4 @@
-import { Task, WorkResult, CountResult, ErrInfo } from "../types"
+import { Task, WorkResult, CountResult, ErrInfo, ResolverFunctionCallback } from "../types"
 import BaseResolver from "../resolvers/base"
 import SugarResolver from "../resolvers/sugar"
 import { ErrType } from "./common";
@@ -11,18 +11,11 @@ export class Router {
     /**
      * Route task to resolvers and execute it
      * @param task the task to complete
-     * @param gotWork @see ResolverFunction
-     * @param addTask @see ResolverFunction
-     * @param reportErr @see ResolverFunction
+     * @param cbs @see ResolverFunctionCallback
      */
     static async executeTask(
         task: Task,
-        cbs: {
-            gotWork: (res: WorkResult)=>void,
-            gotCount: (count: CountResult)=>void,
-            addTask: (task: Task)=>void,
-            reportErr: (err: ErrInfo)=>void,
-        }
+        cbs: ResolverFunctionCallback
     ):Promise<void> {
         let func = task.Directive.split("::")[0]
         if (func in BaseResolver) {

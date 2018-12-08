@@ -11,7 +11,7 @@ import { ErrType, parseJSONAPIBody, formatIllustType } from "../common/common";
  *   2: Call gotWork with the work data you acquired or reportErr to report errors
  */
 const baseResolvers: {[name: string]: ResolverFunction} = {
-    "get_illust_data": async (task, {gotWork, reportErr}) => {
+    "get_illust_data": async (task, {reportResult, reportErr}) => {
         interface RequestPayload extends TaskPayloadBase {
             illust_id: string,
             accept_type?: ("illust"|"manga"|"ugoira")[],
@@ -42,7 +42,7 @@ const baseResolvers: {[name: string]: ResolverFunction} = {
                         }
                     }
                 }
-                gotWork(work)
+                reportResult(work)
             }
         }
 

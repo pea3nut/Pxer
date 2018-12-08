@@ -1,5 +1,5 @@
 import ThreadManager from "./common/threadmanager";
-import { Task, Result, ErrInfo, CountResult, WorkResult } from "./types"
+import { Task, Result, ErrInfo } from "./types"
 import { Router } from "./common/router";
 
 interface PxerEngineState {
@@ -43,8 +43,16 @@ export default class PxerEngine {
     }
 
     private _run() {
-        this.tm.notify(()=>{
-            this._emit("end")
+        this.tm.notify("progress", (cur, total)=>{
+            this._emit("progress", cur, total)
+        })
+        this.tm.notify("end", (reason)=>{
+            switch (reason) {
+            case "complete":
+                this._emit("end", "complete")
+            case "halt":
+                this._emit("end", "halt")
+            }
         })
         this.tm.run()
     }
@@ -53,13 +61,10 @@ export default class PxerEngine {
         this.state.tasks.push(task)
         this.tm.register((done: ()=>void) => {
             Router.executeTask(task, {
-                gotCount: (count)=>{
-                    this._emit("count", count)
+                reportResult: (res) => {
+                    this._emit("result", res)
                 },
-                gotWork: (res)=>{
-                    this._emit("work", res)
-                },
-                addTask: (task)=>{
+                addTask: (task) => {
                     this._push(task)
                 },
                 reportErr: (err)=>{
@@ -76,19 +81,19 @@ export default class PxerEngine {
         })
     }
     
-    
+    private progressListeners: ((cur: number, total: number)=>any)[] = [];
     private resultListeners: ((res: Result)=>any)[] = [];
-    private countListeners: ((count: CountResult)=>any)[] = [];
-    private workListeners: ((work: WorkResult)=>any)[] = [];
     private errListeners: ((err: ErrInfo)=>any)[] = [];
     private endListeners: Function[] = [];
+    /**
+     * Register a listener for progress
+     */
+    public on(event: "progress", listener: (cur: number, total: number)=>any) :this;
     /**
      * Register a listener for result data, emitted together with count and work
      * @param listener Listener function, called every time a piece of result data is ready
      */
     public on(event: "result", listener: (res: Result)=>any) :this;
-    public on(event: "count", listener: (count: CountResult)=>any) :this;
-    public on(event: "work", listener: (count: WorkResult)=>any) :this;
     /**
      * Register a listen for errors
      * @param listener Listener function, called every time an error occured
@@ -98,20 +103,17 @@ export default class PxerEngine {
      * Register a listener for end of process
      * @param listener Listener function, called when all tasks are resolved
      */
-    public on(event: "end", listener: ()=>any) :this;
+    public on(event: "end", listener: (reason: "complete"|"halt")=>any) :this;
     public on(event: string, listener: Function) :this{
         function addListener(list: Function[], member: Function) {
             list.push(member)
         }
         switch (event) {
+            case "progress":
+                addListener(this.progressListeners, listener)
+                break
             case "result":
                 addListener(this.resultListeners, listener)
-                break
-            case "count":
-                addListener(this.countListeners, listener)
-                break
-            case "work":
-                addListener(this.workListeners, listener)
                 break
             case "error":
                 addListener(this.errListeners, listener)
@@ -124,26 +126,26 @@ export default class PxerEngine {
         }
         return this
     }
-    private _emit(event: "count", count: CountResult) :void;
-    private _emit(event: "work", work: WorkResult) :void;
+    private _emit(event: "progress", cur: number, total: number):void;
+    private _emit(event: "result", res: Result) :void;
     private _emit(event: "error", err: ErrInfo) :void;
-    private _emit(event: "end") :void;
-    private _emit(event: string, data?: any) :void{
-        function callListeners(listeners: Function[], data: any) {
-            return listeners.forEach((fn)=>{fn(data)})
+    private _emit(event: "end", reason: "complete"|"halt") :void;
+    private _emit(event: string, ...data: any[]) :void{
+        function callListeners(listeners: Function[], ...data: any[]) {
+            return listeners.forEach((fn)=>setTimeout(()=>fn(...data), 0))
         }
         switch (event) {
-            case "count":
-                callListeners([...this.resultListeners, ...this.countListeners], data)
+            case "progress":
+                callListeners(this.progressListeners, ...data)
                 break
-            case "work":
-                callListeners([...this.resultListeners, ...this.workListeners], data)
+            case "result":
+                callListeners(this.resultListeners, ...data)
                 break
             case "error":
-                callListeners(this.errListeners, data)
+                callListeners(this.errListeners, ...data)
                 break
             case "end":
-                callListeners(this.endListeners, data)
+                callListeners(this.endListeners, ...data)
                 break
             default:
                 throw new Error("Unknown event type")

@@ -57,13 +57,14 @@ export type ErrInfo = {
     rawErr: Error|null,
 }
 
+export type ResolverFunctionCallback = {
+    reportResult: (res: Result) => void,
+    addTask: (task: Task) => void, // schedule a new task which will be executed in the future
+    reportErr: (err: ErrInfo) => void, // report any errors occurred during the process
+}
+
 // ResolverFunction definition of a resolver function
 export type ResolverFunction = (
     task: Task, // The task to resolve
-    cbs: {
-        gotCount: (res: CountResult)=>void, // report a count
-        gotWork: (res: WorkResult)=>void, // report a result
-        addTask: (task: Task)=>void, // schedule a new task which will be executed in the future
-        reportErr: (err: ErrInfo)=>void, // report any errors occured during the procedd
-    },
+    cbs: ResolverFunctionCallback,
 ) => Promise<void>

@@ -16,24 +16,35 @@ function onSIGINT(f: ()=>void) {
 }
 
 let eng = new PxerEngine
+eng.on("progress", (cur, total)=>{
+    console.log(`${cur}/${total} (${(cur/total).toFixed(2)}%)`)
+})
 eng.on("result", (res)=>{
     console.log(res)
 })
 eng.on("error", (err)=>{
     console.error(err)
 })
-eng.on("end", ()=>{
-    console.log("Exiting...")
-    process.exit(0)
+eng.on("end", (reason)=>{
+    console.log("Exiting... Reason: "+reason)
+    if (reason=="complete")
+        process.exit(0)
 })
+
+let exiting = false
 onSIGINT(()=>{
-    console.log("Received SIGINT, stopping...")
-    eng.save().then((state)=>{
-        console.log("Saving progress to progress.json")
-        writeFileSync("./progress.json", state)
-        console.log("Exiting...")
-        process.exit(1)
-    })
+    if (exiting) {
+        process.exit(127)
+    } else {
+        console.log("Received SIGINT, stopping gracefully...")
+        exiting = true
+        eng.save().then((state)=>{
+            console.log("Saving progress to progress.json")
+            writeFileSync("./progress.json", JSON.stringify(JSON.parse(state), null, 4))
+            console.log("Exiting...")
+            process.exit(1)
+        })
+    }
 })
 
 let directive = process.argv[2]

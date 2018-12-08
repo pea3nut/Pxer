@@ -51,24 +51,36 @@ export default class ThreadManager{
         this._check()
     }
 
-    private listeners: (()=>any)[] = [];
-    /**
-     * Register a callback when all tasks are done
-     * @param cb Callback function
-     */
-    public notify(cb: ()=>any) :void {
-        this.listeners.push(cb)
+    private endListeners: ((reason: "complete"|"halt")=>any)[] = [];
+    private progressListeners: ((current: number, total: number)=>any)[] = [];
+    public notify(evt: "end", cb: (reason: "complete"|"halt")=>any) :void;
+    public notify(evt: "progress", cb:(current: number, total: number)=>any) :void;
+    public notify(evt: string, cb: (...data: any[])=>any) :void {
+        switch (evt) {
+        case "end":
+            this.endListeners.push(cb)
+        case "progress":
+            this.progressListeners.push(cb)
+        }
     }
 
-    private _do_notify() :void{
-        for (let listener of this.listeners) {
-            setTimeout(listener, 0)
+    private emit(evt: "end", reason: "complete"|"halt" ) :void;
+    private emit(evt: "progress", current: number, total: number) :void;
+    private emit(evt: string, ...data: any[]) :void{
+        const notifyListeners = function(cbs: ((...data: any[])=>any)[], ...data: any[]) {
+            cbs.forEach(cb=>setTimeout(()=>cb(...data), 0))
+        }
+        switch (evt) {
+        case "end":
+            notifyListeners(this.endListeners, ...data)
+        case "progress":
+            notifyListeners(this.progressListeners, ...data)
         }
     }
 
     public stop() :Promise<void>{
         return new Promise<void>((resolve, reject)=>{
-            this.listeners = [resolve] // clear up listeners
+            this.notify("end", (reason)=>{resolve()})
             this.stopping = true
         })
     }
@@ -80,7 +92,7 @@ export default class ThreadManager{
 
         if (this.counter==0 && (this.stopping || this.pointer == this.tasks.length - 1)) {
             // All tasks completed
-            this._do_notify()
+            this.emit("end", this.stopping?"halt":"complete")
             return
         }
         
@@ -94,6 +106,7 @@ export default class ThreadManager{
                 task(()=>{
                     this.counter--
                     this._check()
+                    this.emit("progress", this.pointer, this.tasks.length)
                 })
             })()
         
