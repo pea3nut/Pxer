@@ -3,7 +3,7 @@ const Fs =require('fs');
 
 module.exports.pxerURL ='https://pxer-app.pea3nut.org/';
 module.exports.rootPath ='../';
-module.exports.pxerVersion ='7.1.1';
+module.exports.pxerVersion ='7.1.2';
 
 module.exports.path2URL =function(path){
     var url =module.exports.pxerURL;

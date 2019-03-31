@@ -1190,6 +1190,13 @@ PxerHtmlParser.parsePage = function (task) {
         return false;
     }
 
+    var parseList = function parseList(elt) {
+        return JSON.parse(elt.getAttribute('data-items')).filter(function (i) {
+            return !i.isAdContainer;
+        }) // skip AD
+        ;
+    };
+
     var taskList = [];
     switch (task.type) {
         case "userprofile_manga":
@@ -1362,8 +1369,7 @@ PxerHtmlParser.parsePage = function (task) {
             break;
         case "search":
             var dom = PxerHtmlParser.HTMLParser(task.html);
-            var searchResult = dom.body.querySelector("input#js-mount-point-search-result-list");
-            var searchData = JSON.parse(searchResult.getAttribute('data-items'));
+            var searchData = parseList(dom.body.querySelector("input#js-mount-point-search-result-list"));
             var _iteratorNormalCompletion4 = true;
             var _didIteratorError4 = false;
             var _iteratorError4 = undefined;
@@ -1400,7 +1406,7 @@ PxerHtmlParser.parsePage = function (task) {
             break;
         case "bookmark_new":
             var dom = PxerHtmlParser.HTMLParser(task.html);
-            var data = JSON.parse(dom.body.querySelector("div#js-mount-point-latest-following").getAttribute("data-items"));
+            var data = parseList(dom.body.querySelector("div#js-mount-point-latest-following"));
             var _iteratorNormalCompletion5 = true;
             var _didIteratorError5 = false;
             var _iteratorError5 = undefined;
@@ -2793,6 +2799,11 @@ var PxerApp = function (_PxerEvent3) {
                 this.dispatch('error', 'PxerApp.executeWroksTask: taskList is illegal');
                 return false;
             };
+
+            // 任务按ID降序排列(#133)
+            tasks.sort(function (a, b) {
+                return Number(b.id) - Number(a.id);
+            });
 
             this.dispatch('executeWroksTask');
 
