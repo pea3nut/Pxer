@@ -22,6 +22,12 @@ PxerHtmlParser.parsePage = function (task) {
         return false;
     }
 
+    const parseList = function (elt) {
+        return JSON.parse(elt.getAttribute('data-items'))
+            .filter(i => !i.isAdContainer) // skip AD
+        ;
+    };
+
     var taskList = [];
     switch (task.type) {
         case "userprofile_manga":
@@ -122,8 +128,7 @@ PxerHtmlParser.parsePage = function (task) {
             break;
         case "search":
             var dom = PxerHtmlParser.HTMLParser(task.html);
-            var searchResult = dom.body.querySelector("input#js-mount-point-search-result-list");
-            var searchData = JSON.parse(searchResult.getAttribute('data-items'));
+            var searchData = parseList(dom.body.querySelector("input#js-mount-point-search-result-list"));
             for (var searchItem of searchData) {
                 var task = new PxerWorksRequest({
                     html: {},
@@ -137,7 +142,7 @@ PxerHtmlParser.parsePage = function (task) {
             break;
         case "bookmark_new":
             var dom = PxerHtmlParser.HTMLParser(task.html);
-            var data = JSON.parse(dom.body.querySelector("div#js-mount-point-latest-following").getAttribute("data-items"));
+            var data = parseList(dom.body.querySelector("div#js-mount-point-latest-following"));
             for (var task of data) {
                 
                 var task = new PxerWorksRequest({
