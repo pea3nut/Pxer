@@ -7,8 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "concurrently --kill-others \"node ./build/build-dist.js --watch\" \"npm run server\"",
     "build": "node ./build/build-dist.js",
-    "server": "node ./build/server.js",
-    "prod": "pm2 start ./prod-server.yml"
+    "server": "node server/index.js",
+    "prod": "pm2-docker start ./prod-server.yml"
   },
   "repository": {
     "type": "git",
@@ -31,12 +31,12 @@
     "bootstrap": "^4.3.1",
     "chokidar": "^2.1.5",
     "concurrently": "^3.6.1",
-    "ejs": "^2.5.6",
-    "fs-extra": "^2.1.2",
-    "node-sass": "^4.11.0",
+    "node-sass": "^4.12.0",
     "typescript": "^2.7.2"
   },
   "dependencies": {
+    "ejs": "^2.5.6",
+    "fs-extra": "^2.1.2",
     "commander": "^2.16.0",
     "express": "^4.16.3",
     "pm2": "^3.4.1"

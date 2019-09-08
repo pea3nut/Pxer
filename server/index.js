@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const program = require('commander');
 const bodyParser = require('body-parser');
-const PxerUtility =require('./pxer-utility.js');
+const PxerUtility =require('../build/pxer-utility.js');
 
 const PROJECT_PATH = path.resolve(__dirname, "../");
 
@@ -36,7 +36,7 @@ switch (true) {
 const CACHE_TIME = program.cache;
 
 /**
- * 
+ *
  * @param {String} section - [client|server]
  * @param {String} severity - [info|notice|warning|severe]
  * @param {String} event - 事件名称
