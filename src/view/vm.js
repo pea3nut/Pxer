@@ -2,7 +2,8 @@ afterLoad(function(){
     // 寻找插入点
     var elt =document.createElement('div');
     var insetElt=(
-        document.getElementById('wrapper')
+        document.getElementById('pxer-app')
+        || document.getElementById('wrapper')
         || document.getElementById('root').childNodes[1] //skip <header>
         || document.body
     );
