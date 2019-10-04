@@ -1,7 +1,7 @@
 ---
-name: Bug report | Bug 反馈
-about: Report a bug using pxer | 反馈一个你使用 Pxer 中遇到的问题
-title: BUG: 
+name: 'Bug report | Bug 反馈'
+about: 'Report a bug using pxer | 反馈一个你使用 Pxer 中遇到的问题'
+title: 'BUG:'
 ---
 
 <!-- The text will hidden when it is wrapped like this -->

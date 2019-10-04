@@ -1,7 +1,7 @@
 ---
-name: Feature request | 功能建议
-about: Suggest a new featrue for Pxer | 为Pxer提出功能建议
-title: FEAT: 
+name: 'Feature request | 功能建议'
+about: 'Suggest a new featrue for Pxer | 为Pxer提出功能建议'
+title: 'FEAT: '
 ---
 
 <!-- The text will hidden when it is wrapped like this -->
