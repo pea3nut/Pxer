@@ -1,0 +1,73 @@
+[
+    [
+        {
+            "src": "src/view/template.html",
+            "saveAs": "uiTemplate"
+        },
+        {
+            "src": "src/view/style.css"
+        },
+        {
+            "src": "./public/favicon.ico"
+        },
+        {
+            "src": "node_modules/vue/dist/vue.min.js",
+            "requirePath": "https://cdn.jsdelivr.net/npm/vue@2.6/dist/vue.min.js"
+        },
+        {
+            "src": "http://point.pea3nut.org/sdk/1.0/browser.js"
+        },
+        {
+            "src": "src/app/util.js"
+        }
+    ],
+    [
+        {
+            "src": "src/app/PxerData.js"
+        },
+        {
+            "src": "src/app/PxerEvent.js"
+        }
+    ],
+    [
+        {
+            "src": "src/app/PxerFilter.js"
+        },
+        {
+            "src": "src/app/PxerHtmlParser.js"
+        },
+        {
+            "src": "src/app/PxerPrinter.js"
+        }
+    ],
+    [
+        {
+            "src": "src/app/PxerThread.js"
+        }
+    ],
+    [
+        {
+            "src": "src/app/PxerThreadManager.js"
+        }
+    ],
+    [
+        {
+            "src": "src/app/PxerApp.js"
+        }
+    ],
+    [
+        {
+            "src": "src/view/analytics.js"
+        }
+    ],
+    [
+        {
+            "src": "src/view/AutoSuggestControl.js"
+        }
+    ],
+    [
+        {
+            "src": "src/view/vm.js"
+        }
+    ]
+]

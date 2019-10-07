@@ -10,7 +10,7 @@
         <div class="pn-buttons">
             <button class="btn btn-outline-success"
                     @click="load"
-                    v-show="state==='loaded'&&showLoadBtn"
+                    v-show="state==='standby'&&showLoadBtn"
             >Load</button>
             <button class="btn btn-outline-primary"
                     @click="run"
@@ -20,6 +20,13 @@
                     @click="stop"
                     v-show="isRunning"
             >Stop</button>
+            <div id="wave"	
+                 v-show="state==='init'"	
+            >
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
             <template v-if="showFailTaskList.length">
                 <button class="btn btn-outline-warning"
                         @click="showPxerFailWindow=!showPxerFailWindow"
@@ -158,19 +165,19 @@
                 </div>
                 <div class="form-group">
                     <label>作品中<strong>不能</strong>含有以下<strong>任意一个</strong>标签</label>
-                    <input v-model="no_tag_any" type="text" class="form-control" placeholder="可以有多个，空格分割" />
+                    <input v-model="no_tag_any" id="no_tag_any" type="text" class="form-control" placeholder="可以有多个，空格分割" />
                 </div>
                 <div class="form-group">
                     <label>作品中<strong>不能同时</strong>含有以下<strong>所有</strong>标签</label>
-                    <input v-model="no_tag_every" type="text" class="form-control" placeholder="可以有多个，空格分割" />
+                    <input v-model="no_tag_every" id="no_tag_every" type="text" class="form-control" placeholder="可以有多个，空格分割" />
                 </div>
                 <div class="form-group">
                     <label>作品中<strong>必须</strong>含有以下<strong>任意一个</strong>标签</label>
-                    <input v-model="has_tag_some" type="text" class="form-control" placeholder="可以有多个，空格分割" />
+                    <input v-model="has_tag_some" id="has_tag_some" type="text" class="form-control" placeholder="可以有多个，空格分割" />
                 </div>
                 <div class="form-group">
                     <label>作品中<strong>必须同时</strong>含有以下<strong>所有</strong>标签</label>
-                    <input v-model="has_tag_every" type="text" class="form-control" placeholder="可以有多个，空格分割" />
+                    <input v-model="has_tag_every" id="has_tag_every" type="text" class="form-control" placeholder="可以有多个，空格分割" />
                 </div>
             </div>
         </div>
@@ -224,7 +231,7 @@
                 <div class="pppf-buttons">
                     <p class="pppfb-msg" v-html="taskInfo" v-show="taskInfo"></p>
                     <button class="btn btn-outline-info" @click="count">Count</button>
-                    <button class="btn btn-outline-success" @click="pxer.printWorks()">Print</button>
+                    <button class="btn btn-outline-success" @click="printWorks">Print</button>
                 </div>
             </div>
         </div>

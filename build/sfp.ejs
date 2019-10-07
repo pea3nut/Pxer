@@ -1,0 +1,28 @@
+// ==UserScript==
+// @name           Pxer
+// @name:zh        Pxer
+// @name:en        Pxer
+// @description    Maybe the best tool for pixiv.net for capture pictures
+// @description:zh 可能是目前最好用的P站批量抓图工具
+// @description:en Maybe the best tool for pixiv.net for capture pictures
+// @version        7
+// @namespace      http://pxer.pea3nut.org/sfp
+// @supportURL     http://pxer.pea3nut.org
+// @author         pea3nut / eternal-flame-AD
+// @grant          none
+// @noframes
+// @updateURL      https://pxer-app.pea3nut.org/pxer-sfp.user.js
+<%- requireHeaders %>
+// @include        https://www.pixiv.net*
+// @include        http://www.pixiv.net**
+// @include        http://pxer.pea3nut.org*
+// @include        https://pxer.pea3nut.org*
+// ==/UserScript==
+javascript: void(function() {
+
+window['PXER_URL'] = 'https://pxer-app.pea3nut.org/';
+window['PXER_MODE'] = 'sfp';
+
+<%- sourceCode %>
+
+}());

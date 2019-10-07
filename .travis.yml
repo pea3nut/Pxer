@@ -1,0 +1,15 @@
+language: node_js
+node_js:
+  - "10"
+services:
+  - docker
+
+branches:
+  only:
+    - master
+
+script:
+  - npm run build
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker build -t "pea3nut/pxer:${TRAVIS_BRANCH}" .
+  - docker push "pea3nut/pxer:${TRAVIS_BRANCH}"
