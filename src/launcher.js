@@ -53,6 +53,8 @@
     switch (PXER_MODE) {
         case 'dev':
         case 'master':
+            // old version doesn't declare "@require vuejs"
+            await pxer.addFile('https://cdn.jsdelivr.net/npm/vue@2.6/dist/vue.min.js');
         case 'native':
             await pxer.addFile('native.js');
             break;
