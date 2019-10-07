@@ -7,6 +7,8 @@
     });
     eventSender.setContent({
         dataLayer,
+        mode: PXER_MODE,
+        url: PXER_URL,
     });
     pxer.sendEvent = eventSender.send.bind(eventSender);
 })();
