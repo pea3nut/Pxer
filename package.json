@@ -1,6 +1,6 @@
 {
   "name": "pxer",
-  "version": "0.0.0",
+  "version": "7.0.0",
   "private": true,
   "scripts": {
     "dev": "ws --https --port 8125 --cors.origin *",
@@ -8,7 +8,6 @@
     "test-build": "ws --directory dist/ --https --port 8125 --cors.origin *"
   },
   "dependencies": {
-    "mysql": "^2.17.1",
     "request": "^2.88.0",
     "vue": "^2.6.10"
   },
