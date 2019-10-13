@@ -17,7 +17,7 @@ Open source, free and easy to use even you are not a development. Please go [ins
 
 开源免费，易于使用，非开发者也可简单安装使用。请前往[安装页面](http://pxer.pea3nut.org/install)进行安装使用！
 
-<img src="/src/public/pxer-ui-gif.gif?raw=true" />
+<img src="/public/pxer-ui.gif?raw=true" />
 
 ## Development 开发
 
