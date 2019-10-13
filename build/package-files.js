@@ -30,9 +30,10 @@ module.exports = async function () {
                 sourceCode += `\n\n// ${info.src}\n`;
 
                 if (info.saveAs) {
-                    sourceCode += `pxer['${info.saveAs}'] = \`${fileContent}\``
+                    let count = info.src.endsWith('.json') ? fileContent : '`' + fileContent + '`';
+                    sourceCode += `pxer.util.set(pxer, '${info.saveAs}', ${count})`;
                 } else if (info.src.endsWith('.ico')) {
-                    sourceCode += `pxer.addFile('${info.src}')`;
+                    sourceCode += `pxer.util.addFile('${info.src}')`;
                 } else if (info.src.endsWith('.css')) {
                     sourceCode += 'document.documentElement.appendChild(\n';
                     sourceCode += '    document.createElement(\'style\')\n';

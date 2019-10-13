@@ -27,9 +27,20 @@
         },
         {
             "src": "src/app/PxerEvent.js"
+        },
+        {
+            "src": "src/view/i18n.js"
         }
     ],
     [
+        {
+            "src": "public/i18n/en.json",
+            "saveAs": "i18nMap.en"
+        },
+        {
+            "src": "public/i18n/zh.json",
+            "saveAs": "i18nMap.zh"
+        },
         {
             "src": "src/app/PxerFilter.js"
         },

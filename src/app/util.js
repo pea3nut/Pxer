@@ -1,6 +1,6 @@
 'use strict';
 
-pxer.util = {};
+pxer.util = pxer.util || {};
 
 // 全局函数
 pxer.util.afterLoad =function(fn){

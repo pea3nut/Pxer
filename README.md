@@ -1,7 +1,7 @@
 # Pxer 
 
 <p align="left">
-	<img src="https://travis-ci.org/pea3nut/Pxer.svg?branch=master" />
+	<img src="https://api.travis-ci.org/FoXZilla/Pxer.svg?branch=dev" />
 	<img src="https://img.shields.io/badge/PV-10k/day-blue.svg" />
 	<img src="https://img.shields.io/badge/JavaScript-Pure-green.svg" />
 	<img src="https://img.shields.io/badge/InstallBy-Tampermonkey-green.svg" />

@@ -137,10 +137,8 @@ PxerPrinter.prototype['print'] =function(){
             return;
         };
         let str = [
-            '<p>' ,
-            '/** 这个页面是抓取到的下载地址，你可以将它们复制到第三方下载工具如QQ旋风中下载 */<br />' ,
-            this.taskInfo,
-            '</p>',
+            `<p>${pxer.t('phrase.pointPage')}</p>`,
+            `<p>${this.taskInfo}</p>`,
             '<textarea style="height:100%; width:100%" readonly>' ,
             this.address.join('\n') ,
             '</textarea>' ,

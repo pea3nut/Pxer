@@ -1,65 +1,98 @@
+window['pxer'] = window['pxer'] || {};
+pxer.util = pxer.util || {};
+pxer.util.compile = function (str, scope = window) {
+    let matchResult = null;
+    while (matchResult = str.match(/{{\s*([\w_]+)\s*}}/)) {
+        str = str.replace(matchResult[0], scope[matchResult[1]]);
+    }
+    return str;
+};
+pxer.util.set = function (obj, key, val) {
+    const keys = key.split('.');
+    let pointer = obj;
+    for (let i = 0; i < keys.length; i++) {
+        if (i === keys.length - 1) {
+            pointer[keys[i]] = val;
+        } else {
+            pointer[keys[i]] = pointer[keys[i]] || {};
+            pointer = pointer[keys[i]];
+        }
+    }
+};
+// @ref https://www.jianshu.com/p/162dad820f48
+pxer.util.get = function self(data,f){
+    if(f.substr) f = f.split(/\.|\\|\//);
+
+    if(f.length && data){
+        return self(data[f.shift()],f)
+    }else if(!f.length && data){
+        return data
+    }else {
+        return "";
+    }
+};
+pxer.util.addFile = async function (url) {
+    if (!/^(https?:)?\/\//.test(url)) url = pxer.url + url;
+
+    const createScript = () => new Promise(function (resolve, reject) {
+        const elt = document.createElement('script');
+        elt.addEventListener('error', reject);
+        elt.addEventListener('load', resolve);
+        elt.addEventListener('load', () => pxer.log('Loaded ' + url));
+        elt.src = url;
+        document.documentElement.appendChild(elt);
+        return elt;
+    });
+    const createCss = () => new Promise(function (resolve) {
+        const elt = document.createElement('link');
+        elt.rel = 'stylesheet';
+        elt.href = url;
+        document.documentElement.appendChild(elt);
+        resolve();
+    });
+    const createIcon = () => new Promise(function (resolve) {
+        const elt = document.createElement('link');
+        elt.rel = 'shortcut icon';
+        elt.type = 'image/x-icon';
+        elt.href = url;
+        document.documentElement.appendChild(elt);
+        resolve();
+    });
+
+    switch (true) {
+        case url.endsWith('.js'):
+            return createScript();
+        case url.endsWith('.css'):
+            return createCss();
+        case url.endsWith('.ico'):
+            return createIcon();
+        case url.endsWith('.json'):
+            return fetch(url).then(res => res.json());
+        default:
+            return fetch(url).then(res => res.text());
+    }
+};
+
 (async function(){
     window['PXER_URL'] = window['PXER_URL'] || 'https://pxer-app.pea3nut.org/';
     window['PXER_MODE'] = window['PXER_MODE'] || 'native';
-    window['pxer'] = window['pxer'] || {};
+    window['PXER_LANG'] = window['PXER_LANG'] || (document.documentElement.lang || window.navigator.language).split('-')[0];
 
     pxer.url = PXER_URL;
     pxer.mode = PXER_MODE;
+    pxer.lang = PXER_LANG;
     pxer.log = (...msg) => console.log('[Pxer]', ...msg);
-    pxer.addFile = async function (url) {
-        if (!/^(https?:)?\/\//.test(url)) url = pxer.url + url;
-
-        const createScript = () => new Promise(function (resolve, reject) {
-            const elt = document.createElement('script');
-            elt.addEventListener('error', reject);
-            elt.addEventListener('load', resolve);
-            elt.addEventListener('load', () => pxer.log('Loaded ' + url));
-            elt.src = url;
-            document.documentElement.appendChild(elt);
-            return elt;
-        });
-        const createCss = () => new Promise(function (resolve) {
-            const elt = document.createElement('link');
-            elt.rel = 'stylesheet';
-            elt.href = url;
-            document.documentElement.appendChild(elt);
-            pxer.log('Link ' + url);
-            resolve();
-        });
-        const createIcon = () => new Promise(function (resolve) {
-            const elt = document.createElement('link');
-            elt.rel = 'shortcut icon';
-            elt.type = 'image/x-icon';
-            elt.href = url;
-            document.documentElement.appendChild(elt);
-            pxer.log('Link ' + url);
-            resolve();
-        });
-
-        switch (true) {
-            case url.endsWith('.js'):
-                return createScript();
-            case url.endsWith('.css'):
-                return createCss();
-            case url.endsWith('.ico'):
-                return createIcon();
-            case url.endsWith('.json'):
-                return fetch(url).then(res => res.json());
-            default:
-                return fetch(url).then(res => res.text());
-        }
-    };
 
     switch (PXER_MODE) {
         case 'dev':
         case 'master':
             // old version doesn't declare "@require vuejs"
-            await pxer.addFile('https://cdn.jsdelivr.net/npm/vue@2.6/dist/vue.min.js');
+            await pxer.util.addFile('https://cdn.jsdelivr.net/npm/vue@2.6/dist/vue.min.js');
         case 'native':
-            await pxer.addFile('native.js');
+            await pxer.util.addFile('native.js');
             break;
         case 'local':
-            await pxer.addFile('src/local.js');
+            await pxer.util.addFile('src/local.js');
             break;
         case 'sfp':
             break;
