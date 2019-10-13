@@ -22,9 +22,10 @@
 
 1. 修改你的Chrome运行本地混流
    打开 `chrome://flags/#allow-insecure-localhost` 并设置为 enabled
-2. 命令行进入项目目录，运行 `npm install` 安装依赖
-3. 运行 `npm run dev` 后打开 `127.0.0.1:8125/src/local.user.js` 将脚本安装进 TamperMonkey 里
-4. 打开某些页面（如Pixiv）你将会看到本地的 Pxer 的运行结果
+1 命令行进入项目目录，运行 `npm install` 安装依赖
+1. 运行 `npm run dev` 
+1. 在 TamperMonkey 中添加 `src/local.user.js`
+1. 打开某些页面（如Pixiv）你将会看到本地的 Pxer 的运行结果
 
 
 ## 开源许可证

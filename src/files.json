@@ -15,7 +15,7 @@
             "requirePath": "https://cdn.jsdelivr.net/npm/vue@2.6/dist/vue.min.js"
         },
         {
-            "src": "http://point.pea3nut.org/sdk/1.0/browser.js"
+            "src": "https://point.pea3nut.org/sdk/1.0/browser.js"
         },
         {
             "src": "src/app/util.js"

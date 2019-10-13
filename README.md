@@ -22,9 +22,10 @@ Open source, free and easy to use even you are not a development. Please go [ins
 
 1. Change your Chrome config for allow insecure in localhost
    Navigate to `chrome://flags/#allow-insecure-localhost` and set this to enabled
-2. Go project directory and run `npm install` for install dependence
-3. Run `npm run dev` and install `127.0.0.1:8125/src/local.user.js` in TamperMonkey
-4. Open some web page and you will see the run result
+1. Go project directory and run `npm install` for install dependence
+1. Run `npm run dev`  
+1. Add 'src/local.user.js' in TamperMonkey
+1. Open some web page and you will see the run result
 
 
 ## License
