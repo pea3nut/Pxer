@@ -1,6 +1,8 @@
+---
 name: 'Bug report | Bug 反馈'
 about: 'Report a bug using pxer | 反馈一个你使用 Pxer 中遇到的问题'
 title: 'BUG:'
+---
 
 <!-- The text will hidden when it is wrapped like this -->
 <!-- 被这种标记包裹的文本最终不会被显示出来 -->
