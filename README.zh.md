@@ -18,7 +18,7 @@
 <img src="/public/pxer-ui.gif?raw=true" />
 
 
-## Development 开发
+## 开发
 
 1. 修改你的Chrome运行本地混流
    打开 `chrome://flags/#allow-insecure-localhost` 并设置为 enabled

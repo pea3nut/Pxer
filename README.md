@@ -18,7 +18,7 @@ Open source, free and easy to use even you are not a development. Please go [ins
 <img src="/public/pxer-ui.gif?raw=true" />
 
 
-## Development 开发
+## Development
 
 1. Change your Chrome config for allow insecure in localhost
    Navigate to `chrome://flags/#allow-insecure-localhost` and set this to enabled
