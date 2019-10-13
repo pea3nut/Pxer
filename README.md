@@ -1,13 +1,15 @@
-# Pxer [中文文档](/README.zh.md)
+# Pxer 
 
 <p align="left">
 	<img src="https://travis-ci.org/pea3nut/Pxer.svg?branch=master" />
 	<img src="https://img.shields.io/badge/PV-10k/day-blue.svg" />
 	<img src="https://img.shields.io/badge/JavaScript-Pure-green.svg" />
-	[<img src="https://img.shields.io/badge/InstallBy-Tampermonkey-green.svg" />](https://pxer-app.pea3nut.org/pxer.user.js)
+	<img src="https://img.shields.io/badge/InstallBy-Tampermonkey-green.svg" />
 	<img src="https://img.shields.io/badge/jQuery-No-red.svg" />
 	<img src="https://img.shields.io/github/license/pea3nut/Pxer" />
 </p>
+
+> [中文文档](/README.zh.md) | [English](/README.md)
 
 A tool which for [pixiv.net](https://www.pixiv.net), which written by pure clint javascript and which PV attained 10k+.
 

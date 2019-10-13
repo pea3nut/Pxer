@@ -1,4 +1,4 @@
-# Pxer [英文文档](/README.md)
+# Pxer 
 
 <p align="left">
 	<img src="https://travis-ci.org/pea3nut/Pxer.svg?branch=master" />
@@ -8,6 +8,8 @@
 	<img src="https://img.shields.io/badge/jQuery-No-red.svg" />
 	<img src="https://img.shields.io/github/license/pea3nut/Pxer" />
 </p>
+
+> [中文文档](/README.zh.md) | [English](/README.md)
 
 纯客户端 JavaScript 编写的 [pixiv.net](https://www.pixiv.net) 爬虫工具，日均万级PV！
 
