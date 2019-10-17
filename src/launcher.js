@@ -51,11 +51,14 @@ pxer.util.addFile = async function (url) {
         resolve();
     });
     const createIcon = () => new Promise(function (resolve) {
-        const elt = document.createElement('link');
-        elt.rel = 'shortcut icon';
-        elt.type = 'image/x-icon';
-        elt.href = url;
-        document.documentElement.appendChild(elt);
+        Array.from(document.querySelector("link[rel*='icon']")).forEach(elt => elt.href = url);
+        (document.head || document.documentElement).appendChild(function(){
+            const elt = document.createElement('link');
+            elt.rel = 'shortcut icon';
+            elt.type = 'image/x-icon';
+            elt.href = url;
+            return elt;
+        }());
         resolve();
     });
 

@@ -8,7 +8,7 @@
             "src": "src/view/style.css"
         },
         {
-            "src": "./public/favicon.ico"
+            "src": "public/favicon.ico"
         },
         {
             "src": "node_modules/vue/dist/vue.min.js",
