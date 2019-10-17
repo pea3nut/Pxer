@@ -1,5 +1,12 @@
 window['pxer'] = window['pxer'] || {};
 pxer.util = pxer.util || {};
+pxer.util.afterLoad =function(fn){
+    if(document.readyState !== 'loading'){
+        setTimeout(fn);
+    }else{
+        document.addEventListener('DOMContentLoaded', fn);
+    }
+};
 pxer.util.compile = function (str, scope = window) {
     let matchResult = null;
     while (matchResult = str.match(/{{\s*([\w_]+)\s*}}/)) {
@@ -51,7 +58,9 @@ pxer.util.addFile = async function (url) {
         resolve();
     });
     const createIcon = () => new Promise(function (resolve) {
-        Array.from(document.querySelector("link[rel*='icon']")).forEach(elt => elt.href = url);
+        pxer.util.afterLoad(() => {
+            Array.from(document.querySelectorAll("link[rel*='icon']")).forEach(elt => elt.href = url);
+        });
         (document.head || document.documentElement).appendChild(function(){
             const elt = document.createElement('link');
             elt.rel = 'shortcut icon';

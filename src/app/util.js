@@ -3,13 +3,6 @@
 pxer.util = pxer.util || {};
 
 // 全局函数
-pxer.util.afterLoad =function(fn){
-    if(document.readyState !=='loading'){
-        setTimeout(fn);
-    }else{
-        document.addEventListener('DOMContentLoaded' ,fn);
-    };
-};
 pxer.util.blinkTitle =function(addMsg ,spaceMsg){
     var addMsg =addMsg ||'[完成] ';
     var spaceMsg =spaceMsg ||'[　　] ';
