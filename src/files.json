@@ -23,6 +23,9 @@
     ],
     [
         {
+            "src": "src/app/regexp.js"
+        },
+        {
             "src": "src/app/PxerData.js"
         },
         {

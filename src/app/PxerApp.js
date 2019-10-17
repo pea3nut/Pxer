@@ -306,7 +306,7 @@ class PxerApp extends PxerEvent{
 PxerApp.prototype['getThis'] =async function(){
     // 生成任务对象
     var initdata = document.head.innerHTML.match(PxerHtmlParser.REGEXP['getInitData'])[0];
-    var id = getIDfromURL("illust_id");
+    var id = pxer.util.getIDfromURL("illust_id") || document.URL.match(pxer.regexp.urlWorkDetail)[1];
 
     initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, "preload");
     initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, 'illust');

@@ -117,7 +117,13 @@ pxer.util.execPromise =function(taskList,call){
  * @return {string} - 页面类型
  * */
 pxer.util.getPageType =function(url=document.URL){
-    var URLData =parseURL(url);
+    var URLData = pxer.util.parseURL(url);
+
+    switch (true) {
+        case pxer.regexp.urlWorkDetail.test(URLData.path): return 'works_medium';
+    }
+
+
     var type =null;
     var isnew =!(Boolean(document.querySelector(".count-badge"))||Boolean(document.querySelector(".profile")));
     if(URLData.domain !=='www.pixiv.net')return 'unknown';
