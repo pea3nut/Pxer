@@ -4,10 +4,6 @@ node_js:
 services:
   - docker
 
-branches:
-  only:
-    - master
-
 script:
   - npm run build
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
