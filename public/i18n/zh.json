@@ -2,5 +2,21 @@
     "phrase": {
         "pointPage": "这个页面是抓取到的下载地址，你可以将它们复制到第三方下载工具中下载<br />不知道用什么工具？<a href=\"https://github.com/FoXZilla/Pxer/issues/8\" target=\"_blank\">访问这里</a>来看看大家都在用什么工具下载<br />"
     },
+    "button": {
+        "crawl": "抓取",
+        "load": "载入",
+        "stop": "停止",
+        "successBut": "部分成功"
+    },
+    "pageType": {
+        "member_works": "作品列表页",
+        "member_works_new": "作品列表页_",
+        "search": "检索页",
+        "bookmark_works": "收藏列表页",
+        "rank": "排行榜",
+        "bookmark_new": "关注的新作品",
+        "discovery": "探索",
+        "unknown": "未知"
+    },
     "hello": "你好"
 }

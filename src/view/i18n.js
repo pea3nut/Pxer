@@ -1,5 +1,5 @@
 pxer.t = function (key) {
-    const defaultLang = 'en';
+    const defaultLang = 'zh'; // FIXME: change to en when i18n got ready
 
     return (
         pxer.util.get(pxer.i18nMap[pxer.lang], key)

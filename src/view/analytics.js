@@ -12,7 +12,6 @@
         get referer() { return location.href; },
     });
     eventSender.setContent({
-        dataLayer,
         mode: PXER_MODE,
         url: PXER_URL,
     });

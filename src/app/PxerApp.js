@@ -80,16 +80,10 @@ class PxerApp extends PxerEvent{
         // 使用的PxerThreadManager实例
         this.ptm =null;
 
-        if(window['PXER_MODE']==='dev') window['PXER_APP']=this;
-
-        this.on('error', function (error) {
-            pxer.sendEvent('error', {
-                error,
-                PXER_ERROR,
-            })
-        });
+        pxer.app = this;
     };
 
+    static canCrawl(url = document.URL) { return ['works_medium', 'rank', 'bookmark_new', 'discovery', 'bookmark_works', 'member_works_new'].includes(pxer.util.getPageType(url)); }
 
     /**
      * 初始化时的耗时任务

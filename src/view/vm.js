@@ -1,19 +1,24 @@
 pxer.util.afterLoad(function(){
-    // 寻找插入点
-    var elt =document.createElement('div');
-    var insetElt=(
-        document.getElementById('pxer-app')
-        || document.getElementById('wrapper')
-        || document.querySelector('#root > *:nth-child(2)') // skip <header>
-        || document.body
-    );
-    insetElt.insertBefore(elt,insetElt.firstChild);
-
-    // 运行Vue实例
-    new Vue({render:ce=>ce({
+    const el = document.createElement('div');
+    const component = {
         template: pxer.uiTemplate,
+        watch:{
+            currentUrl(){
+                this.state = 'standby';
+                this.taskInfo = '';
+                this.errmsg = '';
+            },
+            isRunning(value){
+                if(value&&this.runTimeTimer===null){
+                    this.runTimeTimer = setInterval(()=>this.runTimeTimestamp++ ,1000);
+                }else{
+                    clearInterval(this.runTimeTimer);
+                    this.runTimeTimer =null;
+                }
+            },
+        },
         data(){return {
-            pxer:new PxerApp(),
+            pxer: null,
             showAll:false,
             state:'standby',//[standby|init|ready|page|works|finish|re-ready|stop|error]
             stateMap:{
@@ -41,43 +46,11 @@ pxer.util.afterLoad(function(){
             },
             showLoadBtn:true,
             errmsg:'',
+
+            currentUrl: document.URL,
+            showLoadingButton: false,
         }},
-        created(){
-            window['PXER_VM'] =this;
-            pxer.sendEvent('created');
-            this.pxer.on('error',(err)=>{
-                this.errmsg =err;
-            });
-            this.pxer.on('finishWorksTask',(result) =>{
-                pxer.sendEvent('finish', {
-                    result_count: result.length,
-                    ptm_config: this.pxer.ptmConfig,
-                    task_option: this.pxer.taskOption,
-                    error_count: this.pxer.failList.length,
-                });
-            })
-        },
-        mounted(){
-            var getResultList=()=>[].concat.apply([], this.pxer.resultSet.map((res)=>res.tagList));
-            new AutoSuggestControl("no_tag_any", getResultList);
-            new AutoSuggestControl("no_tag_every", getResultList);
-            new AutoSuggestControl("has_tag_some", getResultList);
-            new AutoSuggestControl("has_tag_every", getResultList);
-        },
         computed:{
-            pageType(){
-                var map ={
-                    'member_works'     :'作品列表页',
-                    'member_works_new' :'作品列表页_',
-                    'search'           :'检索页',
-                    'bookmark_works'   :'收藏列表页',
-                    'rank'             :'排行榜',
-                    'bookmark_new'     :'关注的新作品',
-                    'discovery'        :'探索',
-                    'unknown'          :'未知',
-                };
-                return map[this.pxer.pageType];
-            },
             isRunning(){
                 var runState =['page','works'];
                 return runState.indexOf(this.state)!==-1;
@@ -155,41 +128,54 @@ pxer.util.afterLoad(function(){
                 },
             },
             showFailTaskList(){
+                if (!this.pxer) return [];
                 return this.pxer.failList
                     .filter((pfi)=>{
                         return this.tryFailWroksList.indexOf(pfi)===-1;
                     })
                 ;
             },
-        },
-        watch:{
-            state(newValue,oldValue){
-            },
-            isRunning(value){
-                if(value&&this.runTimeTimer===null){
-                    this.runTimeTimer = setInterval(()=>this.runTimeTimestamp++ ,1000);
-                }else{
-                    clearInterval(this.runTimeTimer);
-                    this.runTimeTimer =null;
-                }
-            },
+
+            pageType() { return pxer.util.getPageType(this.currentUrl); },
+            canCrawlDirectly() { return this.pageType === 'works_medium'; },
+            canCrawl() { return PxerApp.canCrawl(this.currentUrl); },
         },
         methods:{
+            createPxerApp() {
+                this.pxer = new PxerApp();
+                this.pxer.on('error',(error)=>{
+                    this.errmsg = error;
+                    pxer.sendEvent('error', {
+                        error,
+                        PXER_ERROR: typeof PXER_ERROR !== 'undefined' ? PXER_ERROR : null,
+                    });
+                });
+                this.pxer.on('finishWorksTask',(result) =>{
+                    pxer.sendEvent('finish', {
+                        result_count: result.length,
+                        ptm_config: this.pxer.ptmConfig,
+                        task_option: this.pxer.taskOption,
+                        error_count: this.pxer.failList.length,
+                    });
+                });
+            },
+            crawlDirectly() {
+                this.createPxerApp();
+                this.showLoadingButton = true;
+                this.pxer.one('finishWorksTask',()=>{
+                    this.showLoadingButton = false;
+                    this.state='standby';
+                });
+                this.pxer.getThis();
+            },
+
             load(){
+                this.createPxerApp();
                 this.state='init';
-                if(this.pxer.pageType==='works_medium'){
-                    this.showLoadBtn=false;
-                    this.pxer.one('finishWorksTask',()=>{
-                        this.showLoadBtn=true;
-                        this.state='standby';
-                    });
-                    this.pxer.getThis();
-                }else{
-                    this.pxer.init().then(()=>this.state='ready');
-                    this.pxer.on('finishWorksTask',()=>{
-                        window.blinkTitle();
-                    });
-                }
+                this.pxer.init().then(()=>this.state='ready');
+                this.pxer.on('finishWorksTask',()=>{
+                    window.blinkTitle();
+                });
                 pxer.sendEvent('load', {
                     page_type:this.pxer.pageType,
                 });
@@ -282,7 +268,58 @@ pxer.util.afterLoad(function(){
             formatTime(s){
                 return `${~~(s/60)}:${(s%60>=10)?s%60:'0'+s%60}`
             },
-        },
-    })}).$mount(elt);
 
+            t: pxer.t,
+            listenUrlChange(){
+                const vm = this;
+                const historyPushState = history.pushState;
+                const historyReplaceState = history.replaceState;
+
+                history.pushState = function (...args) {
+                    historyPushState.apply(history, args);
+                    setTimeout(() => vm.currentUrl = document.URL, 0);
+                };
+                history.replaceState = function (...args) {
+                    historyReplaceState.apply(history, args);
+                    setTimeout(() => vm.currentUrl = document.URL, 0);
+                };
+            },
+        },
+        mounted(){
+            this.listenUrlChange();
+        },
+    };
+
+    // find a element as anchor
+    [
+        elt => {
+            const target = document.querySelector('#root > header');
+            if (!target) return false;
+
+            target.appendChild(elt);
+            return true;
+        },
+        elt => {
+            const target = document.querySelector('._global-header');
+            if (!target) return false;
+
+            target.appendChild(elt);
+            return true;
+        },
+        elt => {
+            const target = document.getElementById('wrapper');
+            if (!target) return false;
+
+            target.insertBefore(elt, target.firstChild);
+
+            return true;
+        },
+        elt => {
+            document.body.insertBefore(elt, document.body.firstChild);
+            return true;
+        },
+    ].some(fn => fn(el));
+
+    // mount UI
+    pxer.vm = new Vue(component).$mount(el);
 });
