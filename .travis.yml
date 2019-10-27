@@ -7,7 +7,10 @@ services:
 script:
   - npm run build
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  - echo "push a image for tag $TRAVIS_COMMIT"
+  - echo "push a image for pea3nut/pxer:$TRAVIS_COMMIT"
   - docker build -t "pea3nut/pxer:${TRAVIS_COMMIT}" .
   - docker push "pea3nut/pxer:${TRAVIS_COMMIT}"
+  - echo "push a image for pea3nut/pxer:$TRAVIS_BRANCH"
+  - docker tag "pea3nut/pxer:${TRAVIS_COMMIT}" "pea3nut/pxer:${TRAVIS_BRANCH}"
+  - docker push "pea3nut/pxer:${TRAVIS_BRANCH}"
   - sh push-tag-image.sh
