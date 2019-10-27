@@ -7,6 +7,7 @@ pxer.util.afterLoad(function(){
                 this.state = 'standby';
                 this.taskInfo = '';
                 this.errmsg = '';
+                pxer.sendEvent('pv');
             },
             isRunning(value){
                 if(value&&this.runTimeTimer===null){
@@ -167,6 +168,9 @@ pxer.util.afterLoad(function(){
                     this.state='standby';
                 });
                 this.pxer.getThis();
+                pxer.sendEvent('get-this', {
+                    page_type:this.pxer.pageType,
+                });
             },
 
             load(){
@@ -287,6 +291,7 @@ pxer.util.afterLoad(function(){
         },
         mounted(){
             this.listenUrlChange();
+            pxer.sendEvent('pv');
         },
     };
 
