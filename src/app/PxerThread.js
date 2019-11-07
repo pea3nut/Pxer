@@ -77,6 +77,7 @@ PxerThread.prototype['init'] =function(task){
     //判断行为，读取要请求的URL
     if(this.task instanceof PxerWorksRequest){
         this.runtime.urlList =this.task.url.slice();
+        this.runtime.urlList.push(pxer.URLGetter.illustInfoById(this.task.id));
     }else if(this.task instanceof PxerPageRequest){
         this.runtime.urlList =[this.task.url];
     }else{

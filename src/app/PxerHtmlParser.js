@@ -122,7 +122,7 @@ PxerHtmlParser.parsePage = function (task) {
                     id  : id.toString(),
                 });
                 task.url = PxerHtmlParser.getUrlList(task);
-                
+
                 taskList.push(task);
             };
             break;
@@ -144,7 +144,7 @@ PxerHtmlParser.parsePage = function (task) {
             var dom = PxerHtmlParser.HTMLParser(task.html);
             var data = parseList(dom.body.querySelector("div#js-mount-point-latest-following"));
             for (var task of data) {
-                
+
                 var task = new PxerWorksRequest({
                     html      : {},
                     type      : this.parseIllustType(task.illustType),
@@ -159,7 +159,7 @@ PxerHtmlParser.parsePage = function (task) {
         default:
             throw new Error(`Unknown PageWorks type ${task.type}`);
     };
-    
+
     if (taskList.length<1) {
         window['PXER_ERROR'] = 'PxerHtmlParser.parsePage: result empty';
         return false;
@@ -190,14 +190,10 @@ PxerHtmlParser.parseWorks =function(task){
             task: task,
         };
         try{
-            switch (true){
-                case url.indexOf('mode=medium')!==-1:
-                    var pw=PxerHtmlParser.parseMediumHtml(data);
-                    break;
-                default:
-                    throw new Error(`PxerHtmlParser.parsePage: count not parse task url "${url}"`);
-            };
+            var pw= PxerHtmlParser.parseMediumHtml(data);
         }catch(e){
+            pxer.log(`Error in parsing task of`, task);
+            pxer.log(e);
             window['PXER_ERROR'] =`${task.id}:${e.message}`;
             if(window['PXER_MODE']==='dev')console.error(task ,e);
             return false;
@@ -221,11 +217,7 @@ PxerHtmlParser.getUrlList =function(task){
 
 
 PxerHtmlParser.parseMediumHtml =function({task,dom}){
-    var illustData = dom.head.innerHTML.match(this.REGEXP['getInitData'])[0];
-    illustData = this.getKeyFromStringObjectLiteral(illustData, "preload");
-    illustData = this.getKeyFromStringObjectLiteral(illustData, 'illust');
-    illustData = this.getKeyFromStringObjectLiteral(illustData, task.id);
-    illustData = JSON.parse(illustData);
+    var illustData = JSON.parse(task.html[pxer.URLGetter.illustInfoById(task.id)]).body;
 
     var pw;
     switch (true) {
@@ -242,8 +234,8 @@ PxerHtmlParser.parseMediumHtml =function({task,dom}){
     if (pw instanceof PxerMultipleWorks) {
         pw.multiple = illustData.pageCount;
     }
-    
-    
+
+
     if (pw.type ==="ugoira"){
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "https://www.pixiv.net/ajax/illust/"+ task.id + "/ugoira_meta", false);
@@ -265,7 +257,7 @@ PxerHtmlParser.parseMediumHtml =function({task,dom}){
 
             pw.domain = URLObj.domain;
             pw.date = src.match(PxerHtmlParser.REGEXP['getDate'])[1];
-            pw.fileFormat =src.match(/\.(jpg|gif|png)$/)[1];    
+            pw.fileFormat =src.match(/\.(jpg|gif|png)$/)[1];
     };
     return pw;
 };
@@ -414,4 +406,22 @@ PxerHtmlParser.getKeyFromStringObjectLiteral =function(s, key) {
         if (pair[0] ===key) return pair[1];
     }
     return false;
-}
+};
+
+pxer.URLGetter = {
+    illustInfoById(id) {
+        return 'https://www.pixiv.net/ajax/illust/' + id;
+    }
+};
+pxer.Requester = {
+    async illustInfoById(id) {
+        return (
+            await (
+                await fetch(
+                    pxer.URLGetter.illustInfoById(id),
+                    { credentials: 'include' },
+                )
+            ).json()
+        ).body;
+    }
+};

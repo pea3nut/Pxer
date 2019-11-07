@@ -299,18 +299,9 @@ class PxerApp extends PxerEvent{
 /**直接抓取本页面的作品*/
 PxerApp.prototype['getThis'] =async function(){
     // 生成任务对象
-    var initdata = document.head.innerHTML.match(PxerHtmlParser.REGEXP['getInitData'])[0];
     var id = pxer.util.getIDfromURL("illust_id") || document.URL.match(pxer.regexp.urlWorkDetail)[1];
+    var initdata = await pxer.Requester.illustInfoById(id);
 
-    initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, "preload");
-    initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, 'illust');
-    initdata = PxerHtmlParser.getKeyFromStringObjectLiteral(initdata, id);
-
-    if (initdata) {
-        initdata = JSON.parse(initdata);
-    } else {
-        initdata = (await (await fetch("https://www.pixiv.net/ajax/illust/"+ id, {credentials:'include'})).json())['body'];
-    };
 
     var type = initdata.illustType;
     var pageCount = initdata.pageCount;
