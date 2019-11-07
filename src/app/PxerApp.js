@@ -83,7 +83,7 @@ class PxerApp extends PxerEvent{
         pxer.app = this;
     };
 
-    static canCrawl(url = document.URL) { return ['works_medium', 'rank', 'bookmark_new', 'discovery', 'bookmark_works', 'member_works_new'].includes(pxer.util.getPageType(url)); }
+    static canCrawl(url = document.URL) { return ['search', 'works_medium', 'rank', 'bookmark_new', 'discovery', 'bookmark_works', 'member_works_new'].includes(pxer.util.getPageType(url)); }
 
     /**
      * 初始化时的耗时任务
