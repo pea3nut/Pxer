@@ -33,7 +33,7 @@ pxer.util.afterLoad(function(){
                 stop  :'用户手动停止',
                 error :'出错',
             },
-            pxerVersion:window['PXER_VERSION'],
+            pxerVersion: pxer.package.version,
             showPxerFailWindow:false,
             runTimeTimestamp:0,
             runTimeTimer:null,

@@ -1,6 +1,10 @@
 [
     [
         {
+            "src": "package.json",
+            "saveAs": "package"
+        },
+        {
             "src": "src/view/template.html",
             "saveAs": "uiTemplate"
         },
