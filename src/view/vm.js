@@ -291,6 +291,7 @@ pxer.util.afterLoad(function(){
         },
         mounted(){
             this.listenUrlChange();
+            pxer.loaded = true;
             pxer.sendEvent('pv');
         },
     };

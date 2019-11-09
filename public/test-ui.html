@@ -6,5 +6,14 @@
 </head>
 <body>
     <div id="pxer-app"></div>
+    <script>
+        const timer = setInterval(() => {
+            if (window.pxer && pxer.loaded) {
+                clearInterval(timer);
+                pxer.vm.createPxerApp();
+                pxer.vm.showAll = true;
+            }
+        });
+    </script>
 </body>
 </html>
