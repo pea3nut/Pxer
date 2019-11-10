@@ -1,10 +1,10 @@
 {
   "name": "pxer",
-  "version": "7.3.0",
+  "version": "7.3.1",
   "private": true,
   "scripts": {
     "dev": "ws --https --port 8125 --cors.origin *",
-    "build": "node build/build-native && node build/build-sfp",
+    "build": "node-sass src/ --output src/ && node build/build-native && node build/build-sfp",
     "test-build": "ws --directory dist/ --https --port 8125 --cors.origin *"
   },
   "dependencies": {
