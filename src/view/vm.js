@@ -7,6 +7,7 @@ pxer.util.afterLoad(function(){
                 this.state = 'standby';
                 this.taskInfo = '';
                 this.errmsg = '';
+                this.pageType = pxer.util.getPageType();
                 pxer.sendEvent('pv');
             },
             isRunning(value){
@@ -52,6 +53,7 @@ pxer.util.afterLoad(function(){
             showLoadBtn:true,
             errmsg:'',
 
+            pageType: pxer.util.getPageType(),
             currentUrl: document.URL,
             showAllTagFilter: false,
             showLoadingButton: false,
@@ -146,9 +148,8 @@ pxer.util.afterLoad(function(){
                 ;
             },
 
-            pageType() { return pxer.util.getPageType(this.currentUrl); },
             canCrawlDirectly() { return this.pageType === 'works_medium'; },
-            canCrawl() { return PxerApp.canCrawl(this.currentUrl); },
+            canCrawl() { return PxerApp.canCrawl(); },
 
             /**
              * @return {TagInfo}

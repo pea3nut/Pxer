@@ -156,6 +156,19 @@ PxerHtmlParser.parsePage = function (task) {
                 taskList.push(task);
             };
             break;
+        case "search_spa":
+            var response = JSON.parse(task.html).body;
+            for (let illust of response.illustManga.data) {
+                var tsk = new PxerWorksRequest({
+                    html: {},
+                    type: null,
+                    isMultiple: null,
+                    id: illust.id,
+                });
+                tsk.url = PxerHtmlParser.getUrlList(tsk)
+                taskList.push(tsk)
+            }
+            break;
         default:
             throw new Error(`Unknown PageWorks type ${task.type}`);
     };
@@ -411,17 +424,10 @@ PxerHtmlParser.getKeyFromStringObjectLiteral =function(s, key) {
 pxer.URLGetter = {
     illustInfoById(id) {
         return 'https://www.pixiv.net/ajax/illust/' + id;
-    }
-};
-pxer.Requester = {
-    async illustInfoById(id) {
-        return (
-            await (
-                await fetch(
-                    pxer.URLGetter.illustInfoById(id),
-                    { credentials: 'include' },
-                )
-            ).json()
-        ).body;
-    }
+    },
+    search({ url = document.URL, page = 0 } = {}){
+        const queryString = url.split('?')[1];
+        const query = new URLSearchParams(queryString);
+        return `https://www.pixiv.net/ajax/search/artworks/${query.get('word')}?${queryString}&p=${page + 1}`;
+    },
 };

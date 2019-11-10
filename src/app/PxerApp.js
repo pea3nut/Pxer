@@ -27,7 +27,7 @@ class PxerApp extends PxerEvent{
          * 当前页面类型。可能的值
          * @type {string}
          * */
-        this.pageType =getPageType();
+        this.pageType = getPageType(document);
         /**
          * 页面的作品数量
          * @type {number|null}
@@ -83,7 +83,7 @@ class PxerApp extends PxerEvent{
         pxer.app = this;
     };
 
-    static canCrawl(url = document.URL) { return ['search', 'works_medium', 'rank', 'bookmark_new', 'discovery', 'bookmark_works', 'member_works_new'].includes(pxer.util.getPageType(url)); }
+    static canCrawl(doc = document) { return ['search', 'search_spa', 'works_medium', 'rank', 'bookmark_new', 'discovery', 'bookmark_works', 'member_works_new'].includes(pxer.util.getPageType(doc)); }
 
     /**
      * 初始化时的耗时任务
@@ -141,6 +141,13 @@ class PxerApp extends PxerEvent{
                     type:this.pageType,
                     url: `https://www.pixiv.net/ajax/user/${id}/illusts/bookmarks?tag=&offset=${offset}&limit=48&rest=show`
                 }))
+            }
+        } else if (this.pageType === "search_spa"){
+            for (let page = 0; page < pageNum; page++) {
+                this.taskList.push(new PxerPageRequest({
+                    url: pxer.URLGetter.search({ page }),
+                    type: this.pageType,
+                }));
             }
         } else {
             var separator =document.URL.includes("?")?"&":"?";
@@ -300,7 +307,7 @@ class PxerApp extends PxerEvent{
 PxerApp.prototype['getThis'] =async function(){
     // 生成任务对象
     var id = pxer.util.getIDfromURL("illust_id") || document.URL.match(pxer.regexp.urlWorkDetail)[1];
-    var initdata = await pxer.Requester.illustInfoById(id);
+    var initdata = await pxer.util.fetchPixivApi(pxer.URLGetter.illustInfoById(id));
 
 
     var type = initdata.illustType;
@@ -330,21 +337,23 @@ PxerApp.prototype['getThis'] =async function(){
  * */
 PxerApp.getWorksNum =function(dom=document){
     return new Promise((resolve, reject)=>{
-        if (getPageType() === "rank") {
+        const pageType = pxer.util.getPageType(dom);
+
+        if (pageType === "rank") {
             let queryurl = dom.URL + "&format=json";
             let xhr = new XMLHttpRequest();
             xhr.open("GET", queryurl);
             xhr.onload = (e) => resolve(JSON.parse(xhr.responseText)['rank_total']);
             xhr.send();
-        } else if (getPageType() === "bookmark_new") {
+        } else if (pageType === "bookmark_new") {
             // 关注的新作品页数最多100页
             // 因为一般用户关注的用户数作品都足够填满100页，所以从100开始尝试页数
             // 如果没有100页进行一次二分查找
             let currpage = parseInt(dom.querySelector("ul.page-list>li.current").innerHTML);
             this.getFollowingBookmarkWorksNum(currpage, 100, 100).then((res) => resolve(res));
-        } else if (getPageType() === "discovery"){
+        } else if (pageType === "discovery"){
             resolve(3000);
-        } else if (getPageType() === "bookmark_works"){
+        } else if (pageType === "bookmark_works"){
             let id =  getIDfromURL("id", dom.URL)  || getIDfromURL("id", dom.querySelector("a.user-name").getAttribute("href")) // old bookmark page
             let queryurl = `https://www.pixiv.net/ajax/user/${id}/illusts/bookmarks?tag=&offset=0&limit=48&rest=show`;
             let xhr = new XMLHttpRequest();
@@ -353,7 +362,7 @@ PxerApp.getWorksNum =function(dom=document){
                 resolve(JSON.parse(xhr.responseText).body.total)
             };
             xhr.send();
-        } else if (getPageType() === "member_works_new") {
+        } else if (pageType === "member_works_new") {
             let queryurl = `https://www.pixiv.net/ajax/user/${getIDfromURL()}/profile/all`;
             let xhr = new XMLHttpRequest();
             xhr.open("GET", queryurl);
@@ -372,6 +381,10 @@ PxerApp.getWorksNum =function(dom=document){
                 }
             };
             xhr.send();
+        } else if (pageType === 'search_spa') {
+            pxer.util.fetchPixivApi(pxer.URLGetter.search()).then(data => {
+                resolve(data.illustManga.total);
+            });
         } else {
             let elt = dom.querySelector(".count-badge");
             if (!elt) resolve(null);

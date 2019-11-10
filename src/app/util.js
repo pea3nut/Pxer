@@ -106,10 +106,11 @@ pxer.util.execPromise =function(taskList,call){
  * - rank           排行榜
  * - bookmark_new   关注的新作品
  * - unknown        未知
- * @param {string} url
+ * @param {Document} doc
  * @return {string} - 页面类型
  * */
-pxer.util.getPageType =function(url=document.URL){
+pxer.util.getPageType =function(doc = document){
+    const url = doc.URL;
     var URLData = pxer.util.parseURL(url);
 
     switch (true) {
@@ -157,7 +158,9 @@ pxer.util.getPageType =function(url=document.URL){
             type =isnew?'member_works_new':"member_works";
         }
     }else if(URLData.path==='/search.php'){
-        type ='search';
+        // TODO: Not all of search is carried in SPA
+        //       But new version seems batter?
+        type ='search_spa';
     }else if(URLData.path==='/discovery'){
         type ='discovery';
     }else if(URLData.path==='/'){
@@ -174,6 +177,7 @@ pxer.util.getPageType =function(url=document.URL){
  */
 pxer.util.getOnePageWorkCount =function(type) {
     switch (type) {
+        case "search_spa":return 48
         case "search":return 40
         case "rank":return 50
         case "discovery":return 3000
@@ -187,6 +191,16 @@ pxer.util.getIDfromURL =function(key='id', url=document.URL) {
     var query = url.search;
     var params = new URLSearchParams(query);
     return params.get(key);
+};
+pxer.util.fetchPixivApi = async function(url) {
+    return (
+        await (
+            await fetch(
+                url,
+                { credentials: 'include' },
+            )
+        ).json()
+    ).body;
 };
 
 Object.assign(window, pxer.util);
