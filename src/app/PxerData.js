@@ -91,6 +91,7 @@ class PxerMultipleWorks extends PxerWorks{
     constructor(data={}){
         super(data,false);
         /**作品的图片张数*/
+        this.isMultiple =true;
         this.multiple =data.multiple;
     }
 };
@@ -102,6 +103,7 @@ class PxerMultipleWorks extends PxerWorks{
 class PxerUgoiraWorks extends PxerWorks{
     constructor(data={}){
         super(data,false);
+        this.type ='ugoira';
         this.fileFormat='zip';
         /**动图动画参数*/
         this.frames =data.frames;

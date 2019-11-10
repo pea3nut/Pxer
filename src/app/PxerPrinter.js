@@ -1,9 +1,9 @@
 ﻿class PxerPrinter{
     constructor(config){
-        
+
         /**
          * 计算得到的下载地址
-         * @type {string[]} 
+         * @type {string[]}
          * */
         this.address =[];
         /**计算得到的任务信息*/
@@ -83,16 +83,13 @@ PxerPrinter.prototype['fillTaskInfo'] =function(worksList){
                 break;
         };
 
-        if(works instanceof PxerMultipleWorks){
+        if(works.isMultiple){
             multiple++;
             address +=works.multiple;
-        }else if(works instanceof PxerWorks){//动图
+        }else{
             address++;
             single++;
-        }else{
-            console.error(works);
-            throw new Error(`PxerPrinter.fillTaskInfo: works instanceof illegal`);
-        };
+        }
     }
 
 
@@ -115,7 +112,7 @@ PxerPrinter.prototype['print'] =function(){
             alert('Pxer:\n浏览器拦截了弹出窗口，请检查浏览器提示，设置允许此站点的弹出式窗口。');
             return;
         };
-        
+
         var scriptname="";
         switch (navigator.platform) {
             case "Win32":scriptname="bat批处理"; break;
@@ -157,11 +154,11 @@ PxerPrinter.prototype['print'] =function(){
  * */
 PxerPrinter.getWorksKey =function(works){
     var configKey =null;
-    if(works instanceof PxerUgoiraWorks){
+    if(works.type === 'ugoira'){
         configKey ='ugoira_zip';
     }else{
         configKey =works.type+(
-                works instanceof PxerMultipleWorks
+                works.isMultiple
                     ?'_multiple'
                     :'_single'
             );
@@ -338,13 +335,11 @@ PxerPrinter.getWorks =function (works ,type='max'){
  * */
 PxerPrinter.countAddress =function(works,argn){
     switch(true){
-        case works instanceof PxerUgoiraWorks:
+        case works.type === 'ugoira':
             return PxerPrinter.getUgoira(...arguments);
-        case works instanceof PxerMultipleWorks:
+        case works.isMultiple:
             return PxerPrinter.getMultiple(...arguments);
-        case works instanceof PxerWorks:
-            return PxerPrinter.getWorks(...arguments);
         default:
-            throw new Error('PxerPrinter.countAddress: unknown works');
+            return PxerPrinter.getWorks(...arguments);
     };
 };

@@ -1,11 +1,13 @@
 .pxer-app{
-    @import "node_modules/bootstrap/scss/functions";
-    @import "node_modules/bootstrap/scss/variables";
+    @import "node_modules/bootstrap/scss/bootstrap-grid";
     @import "node_modules/bootstrap/scss/mixins";
     @import "node_modules/bootstrap/scss/reboot";
     @import "node_modules/bootstrap/scss/tables";
     @import "node_modules/bootstrap/scss/forms";
     @import "node_modules/bootstrap/scss/buttons";
+    @import "node_modules/bootstrap/scss/badge";
+    @import "node_modules/bootstrap/scss/utilities";
+    @import "node_modules/bootstrap/scss/card";
 
     max-width: 970px;
     width: 100%;
@@ -30,7 +32,7 @@
                 color:#258fb8;
                 font-family: sans-serif;
                 font-size:24px;
-                
+
                 small {
                     font-size: 0.3em;
                 }
@@ -142,6 +144,19 @@
         }
         .pp-filter{
             width: 55%;
+
+            .ppf-tag-card {
+                .card-body {
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: space-between;
+                    padding: 5px;
+                }
+            }
+            .ppf-tag {
+                margin: 5px 2px;
+                cursor: pointer;
+            }
         }
     }
     box-sizing: border-box;

@@ -43,10 +43,10 @@ PxerFilter.defaultConfig =function(){
         "rated"     :0,//赞的数量
         "rated_pro" :0,//点赞率
         "view"      :0,//浏览数
-        "has_tag_every" :[],
-        "has_tag_some"  :[],
-        "no_tag_any"    :[],
-        "no_tag_every"  :[],
+        "has_tag_every" :[], // 作品中不能含有以下任意一个标签
+        "has_tag_some"  :[], // 作品中不能同时含有以下所有标签
+        "no_tag_any"    :[], // 作品中必须含有以下任意一个标签
+        "no_tag_every"  :[], // 作品中必须同时含有以下所有标签
     };
 };
 

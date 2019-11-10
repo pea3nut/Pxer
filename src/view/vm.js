@@ -17,6 +17,10 @@ pxer.util.afterLoad(function(){
                     this.runTimeTimer =null;
                 }
             },
+            tagFilterInfo: {
+                deep: true,
+                handler: 'onTagFilterInfoChange'
+            },
         },
         data(){return {
             pxer: null,
@@ -50,6 +54,10 @@ pxer.util.afterLoad(function(){
 
             currentUrl: document.URL,
             showLoadingButton: false,
+            /**
+             * @property {'NECESSARY' | 'EXCLUDE' | 'WHATEVER'} [tagName] - default by WHATEVER
+             * */
+            tagFilterInfo: {},
         }},
         computed:{
             isRunning(){
@@ -140,6 +148,34 @@ pxer.util.afterLoad(function(){
             pageType() { return pxer.util.getPageType(this.currentUrl); },
             canCrawlDirectly() { return this.pageType === 'works_medium'; },
             canCrawl() { return PxerApp.canCrawl(this.currentUrl); },
+
+            /**
+             * @return {TagInfo}
+             *
+             * @typedef TagInfo
+             * @property {Array.<string>} tags - all tags without repeat
+             * @property {Object.<string, number>} count - The times of tag included in works
+             * */
+            tagInfo() {
+                const allTags = this.pxer.resultSet.reduce((result, works) => result.concat(works.tagList), []);
+                const countMap = {};
+                const noRepeatTags = [];
+
+                allTags.forEach(tag => {
+                    if (!noRepeatTags.includes(tag)) {
+                        noRepeatTags.push(tag);
+                    }
+                    countMap[tag] = countMap[tag] || 0;
+                    countMap[tag]++;
+                });
+
+                noRepeatTags.sort((tag1, tag2) => countMap[tag2] - countMap[tag1]);
+
+                return {
+                    tags: noRepeatTags,
+                    count: countMap,
+                }
+            },
         },
         methods:{
             createPxerApp() {
@@ -287,6 +323,44 @@ pxer.util.afterLoad(function(){
                     historyReplaceState.apply(history, args);
                     setTimeout(() => vm.currentUrl = document.URL, 0);
                 };
+            },
+
+            // about filter by tag
+            countTagTheme(tagName) {
+                switch (this.tagFilterInfo[tagName]) {
+                    default:
+                    case 'WHATEVER': return 'btn-secondary';
+                    case 'EXCLUDE': return 'btn-danger';
+                    case 'NECESSARY': return 'btn-success';
+                }
+            },
+            onTagFilterInfoChange(value){
+                this.pxer.pfConfig.no_tag_any = [];
+                this.pxer.pfConfig.has_tag_some = [];
+                for(let [tagName, filterOption] of Object.entries(value)) {
+                    switch (filterOption) {
+                        case 'EXCLUDE':
+                            this.pxer.pfConfig.no_tag_any.push(tagName);
+                            break;
+                        case 'NECESSARY':
+                            this.pxer.pfConfig.has_tag_some.push(tagName);
+                            break;
+                    }
+                }
+            },
+            onTagClick(tagName) {
+                switch (this.tagFilterInfo[tagName]) {
+                    default:
+                    case 'WHATEVER':
+                        this.$set(this.tagFilterInfo, tagName, 'EXCLUDE');
+                        break;
+                    case 'EXCLUDE':
+                        this.$set(this.tagFilterInfo, tagName, 'NECESSARY');
+                        break;
+                    case 'NECESSARY':
+                        this.$set(this.tagFilterInfo, tagName, 'WHATEVER');
+                        break;
+                }
             },
         },
         mounted(){
