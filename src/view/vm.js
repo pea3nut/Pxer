@@ -53,6 +53,7 @@ pxer.util.afterLoad(function(){
             errmsg:'',
 
             currentUrl: document.URL,
+            showAllTagFilter: false,
             showLoadingButton: false,
             /**
              * @property {'NECESSARY' | 'EXCLUDE' | 'WHATEVER'} [tagName] - default by WHATEVER
@@ -175,6 +176,12 @@ pxer.util.afterLoad(function(){
                     tags: noRepeatTags,
                     count: countMap,
                 }
+            },
+            needFoldTagFilter() {
+                return this.tagInfo.tags.length > 60;
+            },
+            tagFilterFolded() {
+                return this.needFoldTagFilter && !this.showAllTagFilter;
             },
         },
         methods:{

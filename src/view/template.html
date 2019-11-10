@@ -184,7 +184,7 @@
                             <span class="badge badge-success">必须包含</span>
                         </div>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" :style="tagFilterFolded ? 'height: 500px' : ''">
                         <button
                                 v-for="tagName in tagInfo.tags"
                                 class="btn btn-sm ppf-tag"
@@ -195,6 +195,11 @@
                             {{ tagName }}
                             <span class="badge badge-light">{{ tagInfo.count[tagName] }}</span>
                         </button>
+                        <div
+                            v-if="tagFilterFolded"
+                            class="ppf-show-all-tag"
+                            @click="showAllTagFilter = true"
+                        >Show All</div>
                     </div>
                 </div>
             </div>

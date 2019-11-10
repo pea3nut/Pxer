@@ -151,11 +151,27 @@
                     flex-wrap: wrap;
                     justify-content: space-between;
                     padding: 5px;
+                    position: relative;
+                    overflow: hidden;
                 }
-            }
-            .ppf-tag {
-                margin: 5px 2px;
-                cursor: pointer;
+                .ppf-show-all-tag {
+                    position: absolute;
+                    bottom: 0;
+                    width: 100%;
+                    display: block;
+                    padding: 20px 0 5px;
+                    text-align: center;
+                    cursor: pointer;
+                    color: #258fb8;
+                    background:  linear-gradient(rgba(255, 255, 255, 0), white 50%);
+                }
+                .ppf-tag {
+                    margin: 5px 2px;
+                    cursor: pointer;
+                    &:last-child {
+                        margin-right: auto;
+                    }
+                }
             }
         }
     }
