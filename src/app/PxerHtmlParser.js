@@ -428,6 +428,6 @@ pxer.URLGetter = {
     search({ url = document.URL, page = 0 } = {}){
         const queryString = url.split('?')[1];
         const query = new URLSearchParams(queryString);
-        return `https://www.pixiv.net/ajax/search/artworks/${query.get('word')}?${queryString}&p=${page + 1}`;
+        return `https://www.pixiv.net/ajax/search/artworks/${encodeURIComponent(query.get('word'))}?${queryString}&p=${page + 1}`;
     },
 };
