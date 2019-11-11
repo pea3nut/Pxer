@@ -39,7 +39,11 @@ pxer.util.get = function self(data,f){
     }
 };
 pxer.util.addFile = async function (url) {
+    const sector = url.includes('?') ? '&' : '?';
+    const pxerVersion = /*@auto-fill*/'7.0.0'/*@auto-fill*/;
+
     if (!/^(https?:)?\/\//.test(url)) url = pxer.url + url;
+    url = url + sector + `pxer-version=${pxerVersion}`;
 
     const createScript = () => new Promise(function (resolve, reject) {
         const elt = document.createElement('script');
@@ -71,14 +75,15 @@ pxer.util.addFile = async function (url) {
         resolve();
     });
 
-    switch (true) {
-        case url.endsWith('.js'):
+    const fileFormat = url.match(/\.([^.]+?)(\?.+?)?$/)[1];
+    switch (fileFormat) {
+        case 'js':
             return createScript();
-        case url.endsWith('.css'):
+        case 'css':
             return createCss();
-        case url.endsWith('.ico'):
+        case 'ico':
             return createIcon();
-        case url.endsWith('.json'):
+        case 'json':
             return fetch(url).then(res => res.json());
         default:
             return fetch(url).then(res => res.text());
@@ -109,4 +114,4 @@ pxer.util.addFile = async function (url) {
         case 'sfp':
             break;
     }
-})();
+})().catch(console.error);
