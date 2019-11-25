@@ -121,7 +121,10 @@ pxer.util.getPageType =function(doc = document){
     var type =null;
     var isnew =!(Boolean(document.querySelector(".count-badge"))||Boolean(document.querySelector(".profile")));
     if(URLData.domain !=='www.pixiv.net')return 'unknown';
-    if(URLData.path==='/bookmark.php'){
+
+    if (URLData.path.startsWith('/tags/')) {
+        type = 'search_tag'
+    } else if(URLData.path==='/bookmark.php'){
         if(URLData.query &&URLData.query.type){
             switch(URLData.query.type){
                 case 'user':
@@ -178,6 +181,7 @@ pxer.util.getPageType =function(doc = document){
 pxer.util.getOnePageWorkCount =function(type) {
     switch (type) {
         case "search_spa":return 48
+        case "search_tag":return 60
         case "search":return 40
         case "rank":return 50
         case "discovery":return 3000

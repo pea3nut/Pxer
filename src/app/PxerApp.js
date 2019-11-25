@@ -83,7 +83,7 @@ class PxerApp extends PxerEvent{
         pxer.app = this;
     };
 
-    static canCrawl(doc = document) { return ['search', 'search_spa', 'works_medium', 'rank', 'bookmark_new', 'discovery', 'bookmark_works', 'member_works_new'].includes(pxer.util.getPageType(doc)); }
+    static canCrawl(doc = document) { return ['search', 'search_spa', 'search_tag', 'works_medium', 'rank', 'bookmark_new', 'discovery', 'bookmark_works', 'member_works_new'].includes(pxer.util.getPageType(doc)); }
 
     /**
      * 初始化时的耗时任务
@@ -142,7 +142,7 @@ class PxerApp extends PxerEvent{
                     url: `https://www.pixiv.net/ajax/user/${id}/illusts/bookmarks?tag=&offset=${offset}&limit=48&rest=show`
                 }))
             }
-        } else if (this.pageType === "search_spa"){
+        } else if (['search_spa', 'search_tag'].includes(this.pageType)){
             for (let page = 0; page < pageNum; page++) {
                 this.taskList.push(new PxerPageRequest({
                     url: pxer.URLGetter.search({ page }),
@@ -381,7 +381,7 @@ PxerApp.getWorksNum =function(dom=document){
                 }
             };
             xhr.send();
-        } else if (pageType === 'search_spa') {
+        } else if (['search_spa', 'search_tag'].includes(pageType)) {
             pxer.util.fetchPixivApi(pxer.URLGetter.search()).then(data => {
                 resolve(data.illustManga.total);
             });

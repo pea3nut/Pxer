@@ -157,6 +157,7 @@ PxerHtmlParser.parsePage = function (task) {
             };
             break;
         case "search_spa":
+        case "search_tag":
             var response = JSON.parse(task.html).body;
             for (let illust of response.illustManga.data) {
                 var tsk = new PxerWorksRequest({
@@ -170,7 +171,9 @@ PxerHtmlParser.parsePage = function (task) {
             }
             break;
         default:
-            throw new Error(`Unknown PageWorks type ${task.type}`);
+            const msg = `Unknown PageWorks type ${task.type}`;
+            pxer.log(msg);
+            throw new Error(msg);
     };
 
     if (taskList.length<1) {
@@ -428,6 +431,15 @@ pxer.URLGetter = {
     search({ url = document.URL, page = 0 } = {}){
         const queryString = url.split('?')[1];
         const query = new URLSearchParams(queryString);
-        return `https://www.pixiv.net/ajax/search/artworks/${encodeURIComponent(query.get('word'))}?${queryString}&p=${page + 1}`;
+        const tagsMatch = url.match(pxer.regexp.parseKeyword);
+
+        let word = null;
+        if (tagsMatch) {
+            word = tagsMatch[1];
+        } else {
+            word = encodeURIComponent(query.get('word'));
+        }
+
+        return `https://www.pixiv.net/ajax/search/artworks/${word}?${queryString}&p=${page + 1}`;
     },
 };
