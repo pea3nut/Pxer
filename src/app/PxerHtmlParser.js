@@ -429,6 +429,7 @@ pxer.URLGetter = {
         return 'https://www.pixiv.net/ajax/illust/' + id;
     },
     search({ url = document.URL, page = 0 } = {}){
+        const defaultQueryString = 's_mode=s_tag_full';
         const queryString = url.split('?')[1];
         const query = new URLSearchParams(queryString);
         const tagsMatch = url.match(pxer.regexp.parseKeyword);
@@ -440,6 +441,6 @@ pxer.URLGetter = {
             word = encodeURIComponent(query.get('word'));
         }
 
-        return `https://www.pixiv.net/ajax/search/artworks/${word}?${queryString}&p=${page + 1}`;
+        return `https://www.pixiv.net/ajax/search/artworks/${word}?${defaultQueryString}&${queryString}&p=${page + 1}`;
     },
 };
