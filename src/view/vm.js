@@ -148,8 +148,14 @@ pxer.util.afterLoad(function(){
                 ;
             },
 
-            canCrawlDirectly() { return this.pageType === 'works_medium'; },
-            canCrawl() { return PxerApp.canCrawl(); },
+            canCrawlDirectly() {
+                this.currentUrl;
+                return this.pageType === 'works_medium';
+            },
+            canCrawl() {
+                this.currentUrl;
+                return PxerApp.canCrawl();
+            },
 
             /**
              * @return {TagInfo}
