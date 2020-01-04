@@ -4,8 +4,8 @@ pxer.util = pxer.util || {};
 
 // 全局函数
 pxer.util.blinkTitle =function(addMsg ,spaceMsg){
-    var addMsg =addMsg ||'[完成] ';
-    var spaceMsg =spaceMsg ||'[　　] ';
+    var addMsg =addMsg ||'[ ＯＫ ] ';
+    var spaceMsg =spaceMsg ||'[ 　　 ] ';
     var timer =setInterval(()=>{
         if(document.title.indexOf(addMsg) !==-1){
             document.title =document.title.replace(addMsg ,spaceMsg);
