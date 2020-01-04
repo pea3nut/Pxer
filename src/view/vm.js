@@ -71,6 +71,7 @@ pxer.util.afterLoad(function(){
                 return this.pxer.taskOption.limit ||this.pxer.worksNum;
             },
             taskCount(){
+                if (!this.pxer) return null;
                 var pageWorkCount = getOnePageWorkCount(this.pxer.pageType);
                 return Math.ceil(this.worksNum/pageWorkCount)+ +this.worksNum;
             },

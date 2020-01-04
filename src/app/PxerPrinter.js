@@ -93,11 +93,7 @@ PxerPrinter.prototype['fillTaskInfo'] =function(worksList){
     }
 
 
-    this.taskInfo =`
-共计${worksNum}个作品，${address}个下载地址。<br />
-单张图片作品占 ${(single/worksNum*100).toFixed(1)}%<br />
-多张图片作品占 ${(multiple/worksNum*100).toFixed(1)}%<br />
-`.trim();
+    this.taskInfo =eval(pxer.t('phrase.taskInfo'));
 };
 /**
  * 将结果输出
@@ -109,7 +105,7 @@ PxerPrinter.prototype['print'] =function(){
     if((this.config['ugoira_frames'] ==="yes")&&(Object.keys(this.ugoiraFrames).length !==0)){
         let win =window.open(document.URL ,'_blank');
         if(!win){
-            alert('Pxer:\n浏览器拦截了弹出窗口，请检查浏览器提示，设置允许此站点的弹出式窗口。');
+            alert(pxer.t('phrase.blockOpen'));
             return;
         };
 
@@ -130,7 +126,7 @@ PxerPrinter.prototype['print'] =function(){
     {/**输出下载地址*/
         let win = window.open(document.URL ,'_blank');
         if(!win){
-            alert('Pxer:\n浏览器拦截了弹出窗口，请检查浏览器提示，设置允许此站点的弹出式窗口。');
+            alert(pxer.t('phrase.blockOpen'));
             return;
         };
         let str = [

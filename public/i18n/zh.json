@@ -1,12 +1,53 @@
 {
     "phrase": {
+        "taskInfo": "`共计${worksNum}个作品，${address}个下载地址。<br />单张图片作品占 ${(single/worksNum*100).toFixed(1)}%<br />多张图片作品占 ${(multiple/worksNum*100).toFixed(1)}%<br />`",
+        "blockOpen": "Pxer:\n浏览器拦截了弹出窗口，请检查浏览器提示，设置允许此站点的弹出式窗口。",
+        "likeProportion": "若输入，则必须为一个小于1的数字",
         "pointPage": "这个页面是抓取到的下载地址，你可以将它们复制到第三方下载工具中下载<br />不知道用什么工具？<a href=\"https://github.com/FoXZilla/Pxer/issues/8\" target=\"_blank\">访问这里</a>来看看大家都在用什么工具下载<br />"
     },
     "button": {
+        "selectAll": "全选",
+        "retryTheSelected": "重试选中",
+        "preview": "预览",
+        "print": "输出",
+        "showAll": "展开全部",
         "crawl": "抓取",
         "load": "载入",
         "stop": "停止",
+        "option": "设置",
+        "apply": "保存",
         "successBut": "部分成功"
+    },
+    "option": {
+        "ugoiraMax": "最大压缩包",
+        "ugoira600p": "600p压缩包",
+        "ugoiraConfig": "参数",
+        "max": "最大",
+        "cover600p": "仅封面（600p）",
+        "no": "不输出"
+    },
+    "label": {
+        "pictureId": "图片ID",
+        "reason": "失败原因",
+        "way": "解决方案",
+        "onlyGetTop": "仅抓取前x副：",
+        "onlyGetBeforeId": "仅抓取id为x之前的：",
+        "likeCount": "点赞数",
+        "viewCount": "浏览数",
+        "singleIllust": "单张插画",
+        "multipleIllust": "多张插画",
+        "singleManga": "单张漫画",
+        "multipleManga": "多张漫画",
+        "ugoira": "动图",
+        "likeProportion": "点赞率",
+        "whatever": "无所谓",
+        "exclude": "不能包含",
+        "mustInclude": "必须包含"
+    },
+    "title": {
+        "printOptions": "输出选项",
+        "filterByTag": "按标签过滤",
+        "filterOptions": "过滤选项"
     },
     "pageType": {
         "member_works": "作品列表页",

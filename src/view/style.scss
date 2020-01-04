@@ -42,6 +42,13 @@
             }
         }
         .pn-buttons{
+            display: flex;
+            align-items: center;
+            .btn {
+                margin-left: 10px;
+            }
+            .pnb-progress {
+            }
             .pnb-warn-number{
                 $size:20px;
                 background-color: $orange;
@@ -68,42 +75,6 @@
                 padding:3px 12px;
                 vertical-align: middle;
                 font-size: 16px;
-            }
-        }
-    }
-    .pxer-info{
-        padding:5px 12px;
-        .pi-item{
-            border:1px solid #ccc;
-            position: relative;
-            flex-grow:1;
-            flex-shrink:0;
-            margin:0.8em 5px;
-            .pii-title{
-                background-color: #fff;
-                display: inline-block;
-                position: absolute;
-                top:-0.75em;
-                left:0.45em;
-                font-size: 16px;
-            }
-            &>table{
-                td{
-                    vertical-align: middle !important;
-                    height:45px;
-                    padding-top:0;
-                    padding-bottom:0;
-                }
-                tr:nth-child(1) td{
-                    box-sizing: content-box;
-                    *{
-                        box-sizing: border-box;
-                    }
-                    padding-top:3px;
-                }
-            }
-            input[type='text']{
-                width:5em;
             }
         }
     }
