@@ -3,7 +3,7 @@
         "taskInfo": "`共计${worksNum}个作品，${address}个下载地址。<br />单张图片作品占 ${(single/worksNum*100).toFixed(1)}%<br />多张图片作品占 ${(multiple/worksNum*100).toFixed(1)}%<br />`",
         "blockOpen": "Pxer:\n浏览器拦截了弹出窗口，请检查浏览器提示，设置允许此站点的弹出式窗口。",
         "likeProportion": "若输入，则必须为一个小于1的数字",
-        "pointPage": "这个页面是抓取到的下载地址，你可以将它们复制到第三方下载工具中下载<br />不知道用什么工具？<a href=\"https://github.com/FoXZilla/Pxer/issues/8\" target=\"_blank\">访问这里</a>来看看大家都在用什么工具下载<br />"
+        "pointPage": "这个页面是抓取到的下载地址，<strong>不要</strong>直接在浏览器打开，你可以将它们复制到第三方下载工具中下载<br />不知道用什么工具？<a href=\"https://github.com/FoXZilla/Pxer/issues/8\" target=\"_blank\">访问这里</a>来看看大家都在用什么工具下载<br />"
     },
     "button": {
         "selectAll": "全选",

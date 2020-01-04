@@ -1,6 +1,65 @@
 {
     "phrase": {
-        "pointPage": "There is a page to show url of pictures. You can copy them to the downloader tools for download picture.<br />Have no idea? Look at <a href=\"https://github.com/FoXZilla/Pxer/issues/8\" target=\"_blank\">there</a> for what does the senior .<br />"
+        "taskInfo": "`There are ${worksNum} works and ${address} picture address.<br />The single works is ${(single/worksNum*100).toFixed(1)}%<br /> and the multiple works ${(multiple/worksNum*100).toFixed(1)}%<br />`",
+        "blockOpen": "Pxer:\nThe browser blocked Pup-up window. Please check the hint of browser and allow it.",
+        "likeProportion": "Input a number less than 1",
+        "pointPage": "There is a page to show url of pictures. <strong>Don't</strong> openning in the browser. You can copy them to the downloader tools for download picture.<br />Have no idea? Look at <a href=\"https://github.com/FoXZilla/Pxer/issues/166\" target=\"_blank\">there</a> for what does the senior .<br />"
+    },
+    "button": {
+        "selectAll": "Select All",
+        "retryTheSelected": "Retry Selected",
+        "preview": "Preview",
+        "print": "Print",
+        "showAll": "Show All",
+        "crawl": "Get",
+        "load": "Load",
+        "stop": "Stop",
+        "option": "Option",
+        "apply": "Apply",
+        "successBut": "Trouble"
+    },
+    "option": {
+        "ugoiraMax": "Max ZIP",
+        "ugoira600p": "600p ZIP",
+        "ugoiraConfig": "config",
+        "max": "MAX",
+        "cover600p": "Cover Only(600p)",
+        "no": "No"
+    },
+    "label": {
+        "pictureId": "ID",
+        "reason": "Reason",
+        "way": "Way",
+        "onlyGetTop": "Only get top:",
+        "onlyGetBeforeId": "Only get the picture before id:",
+        "likeCount": "Like Count",
+        "viewCount": "View Count",
+        "singleIllust": "Single Illust",
+        "multipleIllust": "Multiple Illust",
+        "singleManga": "Single Manga",
+        "multipleManga": "Multiple Manga",
+        "ugoira": "Ugoira",
+        "likeProportion": "Like Proportion",
+        "whatever": "Whatever",
+        "exclude": "Exclude",
+        "mustInclude": "Must Include"
+    },
+    "title": {
+        "printOptions": "Print Options",
+        "filterByTag": "Filter by tag",
+        "filterOptions": "Filter Options"
+    },
+    "pageType": {
+        "member_works": "List of Works",
+        "member_works_new": "SPA List of Works",
+        "search": "Search",
+        "search_spa": "SPA Tag Search",
+        "search_tag": "Tag Search",
+        "bookmark_works": "List of bookmark",
+        "rank": "Rank",
+        "bookmark_new": "New Works",
+        "discovery": "Discovery",
+        "unknown": "Unknown"
     },
     "hello": "yahello"
 }
