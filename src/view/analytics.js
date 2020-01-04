@@ -14,6 +14,7 @@
     eventSender.setContent({
         mode: PXER_MODE,
         url: PXER_URL,
+        lang: pxer.lang,
     });
     pxer.sendEvent = eventSender.send.bind(eventSender);
 })();
