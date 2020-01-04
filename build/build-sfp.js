@@ -2,6 +2,7 @@ const Path = require('path');
 const Fs = require('fs');
 const Ejs =require('ejs');
 const BuildFiles = require('./package-files');
+const packageInfo = require('../package.json');
 
 const template = Fs.readFileSync(Path.join(__dirname, './sfp.ejs')).toString();
 const distPath = Path.join(__dirname, '../dist/sfp.user.js');
@@ -16,6 +17,7 @@ const distPath = Path.join(__dirname, '../dist/sfp.user.js');
     Fs.writeFileSync(distPath, Ejs.render(template, {
         sourceCode,
         requireHeaders,
+        version: packageInfo.version,
     }));
 
     console.log(`Release ${distPath}`);
