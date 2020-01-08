@@ -354,8 +354,9 @@ PxerApp.getWorksNum =function(dom=document){
         } else if (pageType === "discovery"){
             resolve(3000);
         } else if (pageType === "bookmark_works"){
+            const queryInfo = new URLSearchParams(location.search);
             let id =  getIDfromURL("id", dom.URL)  || getIDfromURL("id", dom.querySelector("a.user-name").getAttribute("href")) // old bookmark page
-            let queryurl = `https://www.pixiv.net/ajax/user/${id}/illusts/bookmarks?tag=&offset=0&limit=48&rest=show`;
+            let queryurl = `https://www.pixiv.net/ajax/user/${id}/illusts/bookmarks?tag=&offset=0&limit=48&rest=${queryInfo.get('rest') || 'show'}`;
             let xhr = new XMLHttpRequest();
             xhr.open("GET", queryurl);
             xhr.onload = (e) => {
