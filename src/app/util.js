@@ -122,7 +122,11 @@ pxer.util.getPageType =function(doc = document){
     var isnew =!(Boolean(document.querySelector(".count-badge"))||Boolean(document.querySelector(".profile")));
     if(URLData.domain !=='www.pixiv.net')return 'unknown';
 
-    if (URLData.path.startsWith('/tags/')) {
+    if (pxer.regexp.isBookmarksUrl.test(URLData.path)) {
+        type = 'bookmark_works'
+    } else if (URLData.path.startsWith('/users/')) {
+        type = 'member_works_new'
+    } else if (URLData.path.startsWith('/tags/')) {
         type = 'search_tag'
     } else if(URLData.path==='/bookmark.php'){
         if(URLData.query &&URLData.query.type){
@@ -191,10 +195,18 @@ pxer.util.getOnePageWorkCount =function(type) {
     };
 }
 pxer.util.getIDfromURL =function(key='id', url=document.URL) {
-    url = new URL(url, document.URL);
-    var query = url.search;
+    const urlInfo = new URL(url, document.URL);
+    var query = urlInfo.search;
     var params = new URLSearchParams(query);
-    return params.get(key);
+
+    const result = params.get(key);
+
+    if (result) return result;
+
+    // read id from url
+    const matchResult = url.match(/\d{4,}/);
+
+    return matchResult ? matchResult[0] : null;
 };
 pxer.util.fetchPixivApi = async function(url) {
     return (
