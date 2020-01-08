@@ -1,6 +1,6 @@
 {
   "name": "pxer",
-  "version": "7.4.1",
+  "version": "7.4.2",
   "private": true,
   "scripts": {
     "dev": "ws --https --port 8125 --cors.origin *",
