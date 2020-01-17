@@ -49,6 +49,10 @@
             "saveAs": "i18nMap.zh"
         },
         {
+            "src": "public/i18n/ja.json",
+            "saveAs": "i18nMap.ja"
+        },
+        {
             "src": "src/app/PxerFilter.js"
         },
         {

@@ -1,0 +1,65 @@
+{
+    "phrase": {
+        "taskInfo": "`小計${worksNum}個作品，${address}個ダウンロードアドレス。<br />シングル画像作品割合 ${(single/worksNum*100).toFixed(1)}%<br />複数画像作品割合 ${(multiple/worksNum*100).toFixed(1)}%<br />`",
+        "blockOpen": "Pxer:\nブラウザでポップアップがブロックされています。ブラウザのプロンプトを確認して、このサイトのポップアップブロックを許可する操作を行ってください。",
+        "likeProportion": "1 未満の数値を入力してください。",
+        "pointPage": "このページはクロールされたダウンロードアドレスです。ブラウザで直接<strong>開かないで下さい</strong>。サードパーティのダウンロードツールにコピーして実行します。<br />適用ツールが分からない場合<a href=\"https://github.com/FoXZilla/Pxer/issues/8\" target=\"_blank\">こちら</a>皆さんはどんなツールが使用していますか<br />"
+    },
+    "button": {
+        "selectAll": "全て選択",
+        "retryTheSelected": "選択を再試行",
+        "preview": "プレビュー",
+        "print": "プリント",
+        "showAll": "全て表示",
+        "crawl": "クロール",
+        "load": "ロード",
+        "stop": "ストップ",
+        "option": "設定",
+        "apply": "適用",
+        "successBut": "トラブル"
+    },
+    "option": {
+        "ugoiraMax": "Max ZIP",
+        "ugoira600p": "600p ZIP",
+        "ugoiraConfig": "config",
+        "max": "Max",
+        "cover600p": "カバーのみ（600p）",
+        "no": "プリント不要"
+    },
+    "label": {
+        "pictureId": "画像ID",
+        "reason": "失敗原因",
+        "way": "解決方法",
+        "onlyGetTop": "Top X 枚のみ：",
+        "onlyGetBeforeId": "ID＜Xの画像のみ：",
+        "likeCount": "いいね！数",
+        "viewCount": "ビュー数",
+        "singleIllust": "シングルイラスト",
+        "multipleIllust": "複数のイラスト",
+        "singleManga": "シングル漫画",
+        "multipleManga": "複数の漫画",
+        "ugoira": "うごイラ",
+        "likeProportion": "いいね！割合",
+        "whatever": "何でもOK",
+        "exclude": "含まない",
+        "mustInclude": "含む必要"
+    },
+    "title": {
+        "printOptions": "プリントオプション",
+        "filterByTag": "タグでフィルター",
+        "filterOptions": "フィルターオプション"
+    },
+    "pageType": {
+        "member_works": "作品リスト",
+        "member_works_new": "SPA 作品リスト",
+        "search": "検索",
+        "search_spa": "SPA タグ検索",
+        "search_tag": "タグ検索",
+        "bookmark_works": "お気に入りリスト",
+        "rank": "ランク",
+        "bookmark_new": "お気に入り新作品",
+        "discovery": "発見",
+        "unknown": "アンノウン"
+    },
+    "hello": "ようこそ"
+}
