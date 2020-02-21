@@ -22,7 +22,7 @@ pxer.util.blinkTitle =function(addMsg ,spaceMsg){
     });
 };
 pxer.util.parseURL =function(url=document.URL){
-    var arr  =url.match(/^(?:(https?)\:)?\/\/([\w\_\d\.\:]+?)((?:\/[^\/?]*)*)\/?(?:\?(.+))?$/);
+    var arr  =url.match(/^(?:(https?):)?\/\/([\w_\d.:\-]+?)((?:\/[^\/?]*)*)\/?(?:\?(.+))?$/);
     var data ={
         protocol:arr[1],
         domain:arr[2],
