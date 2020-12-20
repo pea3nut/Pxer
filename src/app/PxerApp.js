@@ -135,11 +135,12 @@ class PxerApp extends PxerEvent{
                 type: type?`userprofile_${type}`:"userprofile_all",
             }))
         } else if (this.pageType==="bookmark_works"){
+            const queryInfo = new URLSearchParams(location.search);
             for (let offset =0;offset<48*pageNum;offset+=48) {
                 let id = getIDfromURL() || getIDfromURL("id", document.querySelector("a.user-name").getAttribute("href")) // old bookmark page
                 this.taskList.push(new PxerPageRequest({
                     type:this.pageType,
-                    url: `https://www.pixiv.net/ajax/user/${id}/illusts/bookmarks?tag=&offset=${offset}&limit=48&rest=show`
+                    url: `https://www.pixiv.net/ajax/user/${id}/illusts/bookmarks?tag=&offset=${offset}&limit=48&rest=${queryInfo.get('rest') || 'show'}`
                 }))
             }
         } else if (['search_spa', 'search_tag'].includes(this.pageType)){
