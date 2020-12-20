@@ -3,7 +3,7 @@
   "version": "7.5.2",
   "private": true,
   "scripts": {
-    "dev": "npm run build && ws --https --port 8125 --cors.origin '*'",
+    "dev": "npm run build && ws --https --port 8125 --cors.origin=*",
     "build": "node-sass src/ --output src/ && node build/build-launcher && node build/build-native && node build/build-sfp",
     "test-build": "ws --directory dist/ --https --port 8125 --cors.origin *"
   },
