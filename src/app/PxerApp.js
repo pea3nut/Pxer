@@ -150,6 +150,13 @@ class PxerApp extends PxerEvent{
                     type: this.pageType,
                 }));
             }
+        } else if (this.pageType === 'bookmark_new'){
+            for (let page = 0; page < pageNum; page++) {
+                this.taskList.push(new PxerPageRequest({
+                    url: pxer.URLGetter.bookmarkNew({ page }),
+                    type: this.pageType,
+                }));
+            }
         } else {
             var separator =document.URL.includes("?")?"&":"?";
             var extraparam = this.pageType==='rank'? "&format=json" : "";
@@ -350,8 +357,7 @@ PxerApp.getWorksNum =function(dom=document){
             // 关注的新作品页数最多100页
             // 因为一般用户关注的用户数作品都足够填满100页，所以从100开始尝试页数
             // 如果没有100页进行一次二分查找
-            let currpage = parseInt(dom.querySelector("ul.page-list>li.current").innerHTML);
-            this.getFollowingBookmarkWorksNum(currpage, 100, 100).then((res) => resolve(res));
+            this.getFollowingBookmarkWorksNum(0, 100).then((res) => resolve(res));
         } else if (pageType === "discovery"){
             resolve(3000);
         } else if (pageType === "bookmark_works"){
@@ -397,30 +403,45 @@ PxerApp.getWorksNum =function(dom=document){
 
 /**
  * 获取关注的新作品页的总作品数
- * @param {number} min - 最小页数
- * @param {number} max - 最大页数
- * @param {number} cur - 当前页数
+ * @param {number} startPage - 最小页数
+ * @param {number} maxPage - 最大页数
  * @return {number} - 作品数
  */
-PxerApp.getFollowingBookmarkWorksNum =function(min, max, cur){
-    return new Promise((resolve, reject) => {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", "https://www.pixiv.net/bookmark_new_illust.php?p=" + cur);
-        xhr.onload = (e) => {
-            var html = xhr.response;
-            var el = document.createElement("div");
-            el.innerHTML = html;
-            if (min === max) {
-                var lastworkcount = JSON.parse(el.querySelector("div#js-mount-point-latest-following").getAttribute("data-items")).length;
-                resolve((min - 1) * 20 + lastworkcount);
-            } else {
-                if (!!el.querySelector("div._no-item")) {
-                    this.getFollowingBookmarkWorksNum(min, cur - 1, parseInt((min + cur) / 2)).then((res) => resolve(res));
-                } else {
-                    this.getFollowingBookmarkWorksNum(cur, max, parseInt((cur + max + 1) / 2)).then((res) => resolve(res));
-                }
+PxerApp.getFollowingBookmarkWorksNum = async function(startPage, maxPage){
+    const requestForCount = async (page = 0) => {
+        const data = await fetch(pxer.URLGetter.bookmarkNew({ page }));
+        return (await data.json()).body.page.ids.length;
+    };
+
+    // count how many item per page
+    const pageSize = await requestForCount();
+
+    // dichotomy search for the last page
+    const [lastPage, lastPageSize] = await (async () => {
+        const maxPageSize = await requestForCount(maxPage);
+        if (maxPageSize > 0) return [maxPage, maxPageSize];
+
+        let currentMinPage = startPage;
+        let currentMaxPage = maxPage;
+        let currentPage = ~~(maxPage / 2);
+        while (true) {
+            const currentPageSize = await requestForCount(currentPage);
+            if (currentPageSize > 0 && currentPageSize < pageSize) {
+                return [currentPage, currentPageSize];
+            }
+            if (currentPage === startPage || currentPage === maxPage) {
+                return [currentPage, pageSize];
+            }
+            if (currentPageSize === 0) {
+                currentMaxPage = currentPage;
+                currentPage -= Math.ceil((currentPage - currentMinPage - 1) / 2);
+            } else if (currentPageSize === pageSize) {
+                currentMinPage = currentPage;
+                currentPage += Math.ceil((currentMaxPage - currentPage) / 2);
             }
         }
-        xhr.send();
-    })
+    })();
+
+
+    return (lastPage - startPage) * pageSize + lastPageSize;
 }

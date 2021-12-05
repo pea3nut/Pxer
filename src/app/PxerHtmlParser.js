@@ -141,15 +141,14 @@ PxerHtmlParser.parsePage = function (task) {
             };
             break;
         case "bookmark_new":
-            var dom = PxerHtmlParser.HTMLParser(task.html);
-            var data = parseList(dom.body.querySelector("div#js-mount-point-latest-following"));
-            for (var task of data) {
+            var data = JSON.parse(task.html);
+            for (var task of data.body.thumbnails.illust) {
 
                 var task = new PxerWorksRequest({
                     html      : {},
                     type      : this.parseIllustType(task.illustType),
                     isMultiple: task.pageCount > 1,
-                    id        : task.illustId.toString(),
+                    id        : task.id,
                 });
                 task.url = PxerHtmlParser.getUrlList(task);
 
@@ -442,5 +441,8 @@ pxer.URLGetter = {
         }
 
         return `https://www.pixiv.net/ajax/search/artworks/${word}?${defaultQueryString}&${queryString}&p=${page + 1}`;
+    },
+    bookmarkNew({ page = 0 }) {
+        return "https://www.pixiv.net/ajax/follow_latest/illust?mode=all&lang=zh&p=" + (page + 1)
     },
 };
