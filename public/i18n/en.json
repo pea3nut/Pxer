@@ -31,7 +31,7 @@
         "reason": "Reason",
         "way": "Way",
         "onlyGetTop": "Only get top:",
-        "onlyGetBeforeId": "Only get the picture before id:",
+        "onlyGetBeforeId": "Only get the picture before id (newer than that):",
         "likeCount": "Like Count",
         "viewCount": "View Count",
         "singleIllust": "Single Illust",

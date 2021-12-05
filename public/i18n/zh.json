@@ -31,7 +31,7 @@
         "reason": "失败原因",
         "way": "解决方案",
         "onlyGetTop": "仅抓取前x副：",
-        "onlyGetBeforeId": "仅抓取id为x之前的：",
+        "onlyGetBeforeId": "仅抓取id为x之前的（比x更加新的）：",
         "likeCount": "点赞数",
         "viewCount": "浏览数",
         "singleIllust": "单张插画",
