@@ -219,7 +219,9 @@ class PxerApp extends PxerEvent{
         };
 
         // 任务按ID降序排列(#133)
-        tasks.sort((a,b)=>Number(b.id)-Number(a.id));
+        if (['member_info'].includes(this.pageType)) {
+            tasks.sort((a,b)=>Number(b.id)-Number(a.id));
+        }
 
         this.dispatch('executeWroksTask');
 
