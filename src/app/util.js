@@ -100,6 +100,7 @@ pxer.util.execPromise =function(taskList,call){
  * - works_manga    查看某个多张作品的多张页
  * - works_big      查看某个作品的某张图片的大图
  * - member_works   自己/其他人作品列表页
+ * - member_works_new 自己/其他人作品列表页
  * - search         检索页
  * - index          首页
  * - discovery      探索
