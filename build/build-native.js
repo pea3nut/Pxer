@@ -16,6 +16,7 @@ const srcPath = Path.join(__dirname, '../src/');
     Fs.writeFileSync(Path.join(distPath, 'pxer.user.js'), Ejs.render(template, { requireHeaders }));
     Fs.copyFileSync(Path.join(srcPath, 'launcher.js'), Path.join(distPath, 'launcher.js'));
     Fs.copyFileSync(Path.join(srcPath, 'launcher.js'), Path.join(distPath, 'jsonp.js'));
+    Fs.copyFileSync(Path.join('node_modules/vue/dist/vue.js'), Path.join(distPath, 'vue.js'));
 
     console.log(`Release native`);
 })();

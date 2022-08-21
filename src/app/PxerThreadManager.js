@@ -4,7 +4,7 @@ class PxerThreadManager extends PxerEvent{
      * @param {number} retry   - 重试次数
      * @param {number} thread  - 线程数
      * */
-    constructor({timeout=5000,retry=3,thread=8}={}){
+    constructor({timeout=5000,retry=3,thread=2}={}){
         super(['load' ,'error' ,'fail' ,'warn']);
 
         this.config ={timeout,retry,thread};

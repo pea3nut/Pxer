@@ -40,7 +40,7 @@ pxer.util.get = function self(data,f){
 };
 pxer.util.addFile = async function (url) {
     const sector = url.includes('?') ? '&' : '?';
-    const pxerVersion = /*@auto-fill*/'7.0.0'/*@auto-fill*/;
+    const pxerVersion = /*@auto-fill*/'2021.12.5'/*@auto-fill*/;
 
     if (!/^(https?:)?\/\//.test(url)) url = pxer.url + url;
     url = url + sector + `pxer-version=${pxerVersion}`;
