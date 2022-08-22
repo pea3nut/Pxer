@@ -12,6 +12,13 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v3
 
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "[10.x, 12.x, 14.x, 15.x]"
+      - run: npm ci
+      - run: npm run build --if-present
+      
       - name: Log in to Docker Hub
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
