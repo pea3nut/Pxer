@@ -7,15 +7,22 @@ on:
 jobs:
   push_to_registry:
     name: Push Docker image to Docker Hub
+
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 16.x]
+
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
 
-      - name: Use Node.js
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: "[10.x, 12.x, 14.x, 15.x]"
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
       - run: npm ci
       - run: npm run build --if-present
       
