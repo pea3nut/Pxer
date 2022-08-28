@@ -118,8 +118,9 @@ PxerThread.prototype['sendRequest'] = function (url) {
 
 };
 /**运行线程*/
-PxerThread.prototype['run'] = function _self() {
-    const URL = this.runtime.urlList.shift();
+PxerThread.prototype['run'] = function _self(oldUrl) {
+    const startTime = +new Date;
+    const URL = oldUrl || this.runtime.urlList.shift();
     if (!URL) {
         this.state = 'free';
         this.task.completed = true;
@@ -150,6 +151,12 @@ PxerThread.prototype['run'] = function _self() {
         }
     });
     XHR.addEventListener("load", () => {
+        if (XHR.status === 429) {
+            setTimeout(() => {
+                _self.call(this, URL);//递归
+            }, 5000);
+            return false;
+        }
         if (XHR.status.toString()[0] !== '2' && XHR.status !== 304) {
             this.state = 'fail';
             this.dispatch('fail', new PxerFailInfo({
@@ -180,7 +187,10 @@ PxerThread.prototype['run'] = function _self() {
             this.task.html = XHR.responseText;
         }
 
-        _self.call(this);//递归
+        setTimeout(() => {
+            _self.call(this);//递归
+        }, 2000 - (+new Date - startTime));
+
         return true;
     });
     XHR.addEventListener("error", () => {
