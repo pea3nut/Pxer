@@ -1,6 +1,6 @@
 {
   "name": "pxer",
-  "version": "2021.12.5",
+  "version": "2022.8.28",
   "private": true,
   "scripts": {
     "dev": "npm run build && ws --https --port 8125 --cors.origin=https://www.pixiv.net",
