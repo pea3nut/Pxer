@@ -8,7 +8,7 @@
 // @include       https://127.0.0.1*
 // @include       http://127.0.0.1*
 // ==/UserScript==
-javascript: void(function() {
+void (function () {
     unsafeWindow['PXER_URL'] = 'https://127.0.0.1:8125/';
     unsafeWindow['PXER_MODE'] = 'local';
 

@@ -8,8 +8,12 @@
     const eventSender = new EventSender('https://point.pea3nut.org/events', {
         uid,
         app_name: 'pxer-app',
-        get event_page() { return pxer.util.getPageType(); },
-        get referer() { return location.href; },
+        get event_page() {
+            return pxer.util.getPageType();
+        },
+        get referer() {
+            return location.href;
+        },
     });
     eventSender.setContent({
         mode: PXER_MODE,

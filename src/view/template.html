@@ -4,88 +4,103 @@
         <div class="pn-header">
             <a href="http://pxer.pea3nut.org/" target="_blank">Pxer <small>{{ pxerVersion }}</small></a>
         </div>
-        <div class="pn-message" v-text="errmsg" v-if="errmsg">
+        <div v-if="errmsg" class="pn-message" v-text="errmsg">
             oops~ get some error
         </div>
         <div v-if="showAll || canCrawl" class="pn-buttons">
             <div
-                class="pnb-progress"
-                v-show="showAll || isRunning || ['ready','re-ready'].includes(state)"
+                    v-show="showAll || isRunning || ['ready','re-ready'].includes(state)"
+                    class="pnb-progress"
             >
                 <span>{{ finishCount >= 0 ? finishCount : '-' }} / {{ taskCount }}</span>
             </div>
             <button
-                v-show="showAll || ['ready'].includes(state)"
-                @click="showTaskOption = !showTaskOption"
-                class="btn btn-outline-info"
-            >{{ t('button.option') }}</button>
+                    v-show="showAll || ['ready'].includes(state)"
+                    class="btn btn-outline-info"
+                    @click="showTaskOption = !showTaskOption"
+            >{{ t('button.option') }}
+            </button>
 
             <div
-                id="wave"
-                v-if="state==='init' || showLoadingButton"
+                    v-if="state==='init' || showLoadingButton"
+                    id="wave"
             >
                 <span class="dot"></span>
                 <span class="dot"></span>
                 <span class="dot"></span>
             </div>
             <button
-                class="btn btn-outline-primary"
-                @click="crawlDirectly"
-                v-else-if="canCrawlDirectly"
-            >{{ t('button.crawl') }}</button>
+                    v-else-if="canCrawlDirectly"
+                    class="btn btn-outline-primary"
+                    @click="crawlDirectly"
+            >{{ t('button.crawl') }}
+            </button>
             <template v-else>
-                <button class="btn btn-outline-success"
+                <button v-if="state==='standby'&&showLoadBtn"
+                        class="btn btn-outline-success"
                         @click="load"
-                        v-if="state==='standby'&&showLoadBtn"
-                >{{ t('button.load') }}</button>
-                <button class="btn btn-outline-primary"
+                >{{ t('button.load') }}
+                </button>
+                <button v-if="state==='ready' || (state==='re-ready'&&pxer.taskList.length)"
+                        class="btn btn-outline-primary"
                         @click="run"
-                        v-if="state==='ready' || (state==='re-ready'&&pxer.taskList.length)"
-                >{{ t('button.crawl') }}</button>
-                <button class="btn btn-outline-danger"
+                >{{ t('button.crawl') }}
+                </button>
+                <button v-if="isRunning"
+                        class="btn btn-outline-danger"
                         @click="stop"
-                        v-if="isRunning"
-                >{{ t('button.stop') }}</button>
+                >{{ t('button.stop') }}
+                </button>
                 <template v-if="showAll || showFailTaskList.length">
                     <button class="btn btn-outline-warning"
                             @click="showPxerFailWindow=!showPxerFailWindow"
-                    >{{ t('button.successBut') }}</button><span class="pnb-warn-number"
-                                        v-text="showFailTaskList.length>99?99:showFailTaskList.length"></span>
+                    >{{ t('button.successBut') }}
+                    </button>
+                    <span class="pnb-warn-number"
+                          v-text="showFailTaskList.length>99?99:showFailTaskList.length"></span>
                 </template>
             </template>
         </div>
     </div>
 
-    <div class="pxer-fail" v-if="showAll ||(showPxerFailWindow &&showFailTaskList.length)">
+    <div v-if="showAll ||(showPxerFailWindow &&showFailTaskList.length)" class="pxer-fail">
         <table class="table">
-            <thead class="pft-head"><tr>
+            <thead class="pft-head">
+            <tr>
                 <td>{{ t('label.pictureId') }}</td>
                 <td width="100">{{ t('label.reason') }}</td>
                 <td>{{ t('label.way') }}</td>
-                <td width="170" class="text-right">
+                <td class="text-right" width="170">
                     <button class="btn btn-outline-secondary"
-                            @click="checkedFailWorksList =pxer.failList">{{ t('button.selectAll') }}</button>
-                    <button class="btn btn-outline-success" @click="tryCheckedPfi">{{ t('button.retryTheSelected') }}</button>
+                            @click="checkedFailWorksList =pxer.failList">{{ t('button.selectAll') }}
+                    </button>
+                    <button class="btn btn-outline-success" @click="tryCheckedPfi">{{
+                            t('button.retryTheSelected')
+                        }}
+                    </button>
                 </td>
-            </tr></thead>
-            <tbody><tr v-for="pfi of showFailTaskList">
-                    <td><a :href="pfi.url">{{pfi.task.id}}</a></td>
-                    <td v-text="formatFailType(pfi.type)"></td>
-                    <td v-html="formatFailSolution(pfi.type)"></td>
-                    <td class="text-right"><input type="checkbox" :value="pfi" v-model="checkedFailWorksList"></td>
-            </tr></tbody>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="pfi of showFailTaskList">
+                <td><a :href="pfi.url">{{ pfi.task.id }}</a></td>
+                <td v-text="formatFailType(pfi.type)"></td>
+                <td v-html="formatFailSolution(pfi.type)"></td>
+                <td class="text-right"><input v-model="checkedFailWorksList" :value="pfi" type="checkbox"></td>
+            </tr>
+            </tbody>
         </table>
     </div>
 
 
-    <div class="pxer-task-option form-inline" v-if="showAll ||(showTaskOption&&state==='ready')">
+    <div v-if="showAll ||(showTaskOption&&state==='ready')" class="pxer-task-option form-inline">
         <div class="form-group">
             <label class="pcf-title">{{ t('label.onlyGetTop') }}</label>
-            <input type="number" class="form-control" v-model="taskOption.limit" />
+            <input v-model="taskOption.limit" class="form-control" type="number"/>
         </div>
         <div class="form-group">
             <label class="pcf-title">{{ t('label.onlyGetBeforeId') }}</label>
-            <input type="number" class="form-control" v-model="taskOption.stopId" />
+            <input v-model="taskOption.stopId" class="form-control" type="number"/>
         </div>
         <div class="form-group ptp-buttons">
             <button class="btn btn-outline-success" @click="useTaskOption">{{ t('button.apply') }}</button>
@@ -93,10 +108,7 @@
     </div>
 
 
-
-
-
-    <div class="pxer-print" v-if="showAll ||['finish'].indexOf(state)!==-1">
+    <div v-if="showAll ||['finish'].indexOf(state)!==-1" class="pxer-print">
         <div class="pp-filter pxer-class-fieldset">
             <div class="ppf-title pcf-title">{{ t('title.filterOptions') }}</div>
             <div class="ppf-form">
@@ -104,37 +116,37 @@
                     <div class="form-row">
                         <div class="form-group col">
                             <label>{{ t('label.likeCount') }} ≥</label>
-                            <input type="number" class="form-control" v-model.number="pxer.pfConfig.rated" />
+                            <input v-model.number="pxer.pfConfig.rated" class="form-control" type="number"/>
                         </div>
                         <div class="form-group col">
                             <label>{{ t('label.viewCount') }} ≥</label>
-                            <input type="number" class="form-control" v-model.number="pxer.pfConfig.view" />
+                            <input v-model.number="pxer.pfConfig.view" class="form-control" type="number"/>
                         </div>
                         <div class="form-group col">
                             <label>{{ t('label.likeProportion') }} ≥</label>
                             <input
-                                type="number"
-                                class="form-control"
-                                v-model.number="pxer.pfConfig.rated_pro"
-                                :placeholder="t('phrase.likeProportion')"
+                                    v-model.number="pxer.pfConfig.rated_pro"
+                                    :placeholder="t('phrase.likeProportion')"
+                                    class="form-control"
+                                    type="number"
                             />
                         </div>
                     </div>
                 </div>
                 <div class="card ppf-tag-card">
                     <div class="card-header">
-                        {{ t('title.filterByTag')}}
+                        {{ t('title.filterByTag') }}
                         <div class="float-right">
                             <span class="badge badge-secondary">{{ t('label.whatever') }}</span>
                             <span class="badge badge-danger ">{{ t('label.exclude') }}</span>
                             <span class="badge badge-success">{{ t('label.mustInclude') }}</span>
                         </div>
                     </div>
-                    <div class="card-body" :style="tagFilterFolded ? 'height: 500px' : ''">
+                    <div :style="tagFilterFolded ? 'height: 500px' : ''" class="card-body">
                         <button
                                 v-for="tagName in tagInfo.tags"
-                                class="btn btn-sm ppf-tag"
                                 :class="countTagTheme(tagName)"
+                                class="btn btn-sm ppf-tag"
                                 @click="onTagClick(tagName)"
                                 @dblclick.stop
                         >
@@ -142,10 +154,11 @@
                             <span class="badge badge-light">{{ tagInfo.count[tagName] }}</span>
                         </button>
                         <div
-                            v-if="tagFilterFolded"
-                            class="ppf-show-all-tag"
-                            @click="showAllTagFilter = true"
-                        >{{ t('button.showAll')}}</div>
+                                v-if="tagFilterFolded"
+                                class="ppf-show-all-tag"
+                                @click="showAllTagFilter = true"
+                        >{{ t('button.showAll') }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -155,7 +168,7 @@
             <div class="ppp-form">
                 <div class="form-group">
                     <label>{{ t('label.singleIllust') }}</label>
-                    <select class="form-control" v-model="pxer.ppConfig.illust_single">
+                    <select v-model="pxer.ppConfig.illust_single" class="form-control">
                         <option value="max">{{ t('option.max') }}</option>
                         <option value="600p">600p</option>
                         <option value="no">{{ t('option.no') }}</option>
@@ -163,7 +176,7 @@
                 </div>
                 <div class="form-group">
                     <label>{{ t('label.multipleIllust') }}</label>
-                    <select class="form-control" v-model="pxer.ppConfig.illust_multiple">
+                    <select v-model="pxer.ppConfig.illust_multiple" class="form-control">
                         <option value="max">{{ t('option.max') }}</option>
                         <option value="1200p">1200p</option>
                         <option value="cover_600p">{{ t('option.cover600p') }}</option>
@@ -172,7 +185,7 @@
                 </div>
                 <div class="form-group">
                     <label>{{ t('label.singleManga') }}</label>
-                    <select class="form-control" v-model="pxer.ppConfig.manga_single">
+                    <select v-model="pxer.ppConfig.manga_single" class="form-control">
                         <option value="max">{{ t('option.max') }}</option>
                         <option value="600p">600p</option>
                         <option value="no">{{ t('option.no') }}</option>
@@ -180,7 +193,7 @@
                 </div>
                 <div class="form-group">
                     <label>{{ t('label.multipleManga') }}</label>
-                    <select class="form-control" v-model="pxer.ppConfig.manga_multiple">
+                    <select v-model="pxer.ppConfig.manga_multiple" class="form-control">
                         <option value="max">{{ t('option.max') }}</option>
                         <option value="1200p">1200p</option>
                         <option value="cover_600p">{{ t('option.cover600p') }}</option>
@@ -189,7 +202,7 @@
                 </div>
                 <div class="form-group">
                     <label>{{ t('label.ugoira') }}</label>
-                    <select class="form-control" v-model="printConfigUgoira">
+                    <select v-model="printConfigUgoira" class="form-control">
                         <option value="max-no">{{ t('option.ugoiraMax') }}</option>
                         <option value="600p-no">{{ t('option.ugoira600p') }}</option>
                         <option value="max-yes">{{ t('option.ugoiraMax') }} + {{ t('option.ugoiraConfig') }}</option>
@@ -198,7 +211,7 @@
                     </select>
                 </div>
                 <div class="pppf-buttons">
-                    <p class="pppfb-msg" v-html="taskInfo" v-if="taskInfo"></p>
+                    <p v-if="taskInfo" class="pppfb-msg" v-html="taskInfo"></p>
                     <button class="btn btn-outline-info" @click="count">{{ t('button.preview') }}</button>
                     <button class="btn btn-outline-success" @click="printWorks">{{ t('button.print') }}</button>
                 </div>

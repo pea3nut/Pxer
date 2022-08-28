@@ -1,9 +1,9 @@
 window['pxer'] = window['pxer'] || {};
 pxer.util = pxer.util || {};
-pxer.util.afterLoad =function(fn){
-    if(document.readyState !== 'loading'){
+pxer.util.afterLoad = function (fn) {
+    if (document.readyState !== 'loading') {
         setTimeout(fn);
-    }else{
+    } else {
         document.addEventListener('DOMContentLoaded', fn);
     }
 };
@@ -27,14 +27,14 @@ pxer.util.set = function (obj, key, val) {
     }
 };
 // @ref https://www.jianshu.com/p/162dad820f48
-pxer.util.get = function self(data,f){
-    if(f.substr) f = f.split(/\.|\\|\//);
+pxer.util.get = function self(data, f) {
+    if (f.substr) f = f.split(/\.|\\|\//);
 
-    if(f.length && data){
-        return self(data[f.shift()],f)
-    }else if(!f.length && data){
+    if (f.length && data) {
+        return self(data[f.shift()], f)
+    } else if (!f.length && data) {
         return data
-    }else {
+    } else {
         return "";
     }
 };
@@ -51,6 +51,7 @@ pxer.util.addFile = async function (url) {
         elt.addEventListener('load', resolve);
         elt.addEventListener('load', () => pxer.log('Loaded ' + url));
         elt.src = url;
+        elt.crossOrigin = 'anonymous';
         document.documentElement.appendChild(elt);
         return elt;
     });
@@ -65,7 +66,7 @@ pxer.util.addFile = async function (url) {
         pxer.util.afterLoad(() => {
             Array.from(document.querySelectorAll("link[rel*='icon']")).forEach(elt => elt.href = url);
         });
-        (document.head || document.documentElement).appendChild(function(){
+        (document.head || document.documentElement).appendChild(function () {
             const elt = document.createElement('link');
             elt.rel = 'shortcut icon';
             elt.type = 'image/x-icon';
@@ -90,7 +91,7 @@ pxer.util.addFile = async function (url) {
     }
 };
 
-(async function(){
+(async function () {
     window['PXER_URL'] = window['PXER_URL'] || 'https://pxer-app.pea3nut.org/';
     window['PXER_MODE'] = window['PXER_MODE'] || 'native';
     window['PXER_LANG'] = window['PXER_LANG'] || (document.documentElement.lang || window.navigator.language).split('-')[0];

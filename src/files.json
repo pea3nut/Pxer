@@ -1,94 +1,94 @@
 [
-    [
-        {
-            "src": "package.json",
-            "saveAs": "package"
-        },
-        {
-            "src": "src/view/template.html",
-            "saveAs": "uiTemplate"
-        },
-        {
-            "src": "src/view/style.css"
-        },
-        {
-            "src": "public/favicon.ico"
-        },
-        {
-            "src": "https://pxer-app.pea3nut.org/vue.js"
-        },
-        {
-            "src": "https://point.pea3nut.org/sdk/1.0/browser.js"
-        },
-        {
-            "src": "src/app/util.js"
-        }
-    ],
-    [
-        {
-            "src": "src/app/regexp.js"
-        },
-        {
-            "src": "src/app/PxerData.js"
-        },
-        {
-            "src": "src/app/PxerEvent.js"
-        },
-        {
-            "src": "src/view/i18n.js"
-        }
-    ],
-    [
-        {
-            "src": "public/i18n/en.json",
-            "saveAs": "i18nMap.en"
-        },
-        {
-            "src": "public/i18n/zh.json",
-            "saveAs": "i18nMap.zh"
-        },
-        {
-            "src": "public/i18n/ja.json",
-            "saveAs": "i18nMap.ja"
-        },
-        {
-            "src": "src/app/PxerFilter.js"
-        },
-        {
-            "src": "src/app/PxerHtmlParser.js"
-        },
-        {
-            "src": "src/app/PxerPrinter.js"
-        }
-    ],
-    [
-        {
-            "src": "src/app/PxerThread.js"
-        }
-    ],
-    [
-        {
-            "src": "src/app/PxerThreadManager.js"
-        }
-    ],
-    [
-        {
-            "src": "src/app/PxerApp.js"
-        }
-    ],
-    [
-        {
-            "src": "src/view/analytics.js"
-        }
-    ],
-    [
-        {
-            "src": "src/view/AutoSuggestControl.js"
-        }
-    ],
-    [
-        {
-            "src": "src/view/vm.js"
-        }
-    ]
+  [
+    {
+      "src": "package.json",
+      "saveAs": "package"
+    },
+    {
+      "src": "src/view/template.html",
+      "saveAs": "uiTemplate"
+    },
+    {
+      "src": "src/view/style.css"
+    },
+    {
+      "src": "public/favicon.ico"
+    },
+    {
+      "requirePath": "https://pxer-app.pea3nut.org/vue.js"
+    },
+    {
+      "src": "https://point.pea3nut.org/sdk/1.0/browser.js"
+    },
+    {
+      "src": "src/app/util.js"
+    }
+  ],
+  [
+    {
+      "src": "src/app/regexp.js"
+    },
+    {
+      "src": "src/app/PxerData.js"
+    },
+    {
+      "src": "src/app/PxerEvent.js"
+    },
+    {
+      "src": "src/view/i18n.js"
+    }
+  ],
+  [
+    {
+      "src": "public/i18n/en.json",
+      "saveAs": "i18nMap.en"
+    },
+    {
+      "src": "public/i18n/zh.json",
+      "saveAs": "i18nMap.zh"
+    },
+    {
+      "src": "public/i18n/ja.json",
+      "saveAs": "i18nMap.ja"
+    },
+    {
+      "src": "src/app/PxerFilter.js"
+    },
+    {
+      "src": "src/app/PxerHtmlParser.js"
+    },
+    {
+      "src": "src/app/PxerPrinter.js"
+    }
+  ],
+  [
+    {
+      "src": "src/app/PxerThread.js"
+    }
+  ],
+  [
+    {
+      "src": "src/app/PxerThreadManager.js"
+    }
+  ],
+  [
+    {
+      "src": "src/app/PxerApp.js"
+    }
+  ],
+  [
+    {
+      "src": "src/view/analytics.js"
+    }
+  ],
+  [
+    {
+      "src": "src/view/AutoSuggestControl.js"
+    }
+  ],
+  [
+    {
+      "src": "src/view/vm.js"
+    }
+  ]
 ]

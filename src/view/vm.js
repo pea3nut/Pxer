@@ -1,21 +1,21 @@
-pxer.util.afterLoad(function(){
+pxer.util.afterLoad(function () {
     const el = document.createElement('div');
     const component = {
         template: pxer.uiTemplate,
-        watch:{
-            currentUrl(){
+        watch: {
+            currentUrl() {
                 this.state = 'standby';
                 this.taskInfo = '';
                 this.errmsg = '';
                 this.pageType = pxer.util.getPageType();
                 pxer.sendEvent('pv');
             },
-            isRunning(value){
-                if(value&&this.runTimeTimer===null){
-                    this.runTimeTimer = setInterval(()=>this.runTimeTimestamp++ ,1000);
-                }else{
+            isRunning(value) {
+                if (value && this.runTimeTimer === null) {
+                    this.runTimeTimer = setInterval(() => this.runTimeTimestamp++, 1000);
+                } else {
                     clearInterval(this.runTimeTimer);
-                    this.runTimeTimer =null;
+                    this.runTimeTimer = null;
                 }
             },
             tagFilterInfo: {
@@ -23,130 +23,134 @@ pxer.util.afterLoad(function(){
                 handler: 'onTagFilterInfoChange'
             },
         },
-        data(){return {
-            pxer: null,
-            showAll:false,
-            state:'standby',//[standby|init|ready|page|works|finish|re-ready|stop|error]
-            stateMap:{
-                standby:'待命',
-                init  :'初始化',
-                ready :'就绪',
-                page  :'抓取页码中',
-                works :'抓取作品中',
-                finish:'完成',
-                're-ready':'再抓取就绪',
-                stop  :'用户手动停止',
-                error :'出错',
-            },
-            pxerVersion: pxer.package.version,
-            showPxerFailWindow:false,
-            runTimeTimestamp:0,
-            runTimeTimer:null,
-            checkedFailWorksList:[],
-            taskInfo:'',
-            tryFailWroksList:[],
-            showTaskOption:false,
-            taskOption:{
-                limit:'',
-                stopId:'',
-            },
-            showLoadBtn:true,
-            errmsg:'',
+        data() {
+            return {
+                pxer: null,
+                showAll: false,
+                state: 'standby',//[standby|init|ready|page|works|finish|re-ready|stop|error]
+                stateMap: {
+                    standby: '待命',
+                    init: '初始化',
+                    ready: '就绪',
+                    page: '抓取页码中',
+                    works: '抓取作品中',
+                    finish: '完成',
+                    're-ready': '再抓取就绪',
+                    stop: '用户手动停止',
+                    error: '出错',
+                },
+                pxerVersion: pxer.package.version,
+                showPxerFailWindow: false,
+                runTimeTimestamp: 0,
+                runTimeTimer: null,
+                checkedFailWorksList: [],
+                taskInfo: '',
+                tryFailWroksList: [],
+                showTaskOption: false,
+                taskOption: {
+                    limit: '',
+                    stopId: '',
+                },
+                showLoadBtn: true,
+                errmsg: '',
 
-            pageType: pxer.util.getPageType(),
-            currentUrl: document.URL,
-            showAllTagFilter: false,
-            showLoadingButton: false,
-            /**
-             * @property {'NECESSARY' | 'EXCLUDE' | 'WHATEVER'} [tagName] - default by WHATEVER
-             * */
-            tagFilterInfo: {},
-        }},
-        computed:{
-            isRunning(){
-                var runState =['page','works'];
-                return runState.indexOf(this.state)!==-1;
+                pageType: pxer.util.getPageType(),
+                currentUrl: document.URL,
+                showAllTagFilter: false,
+                showLoadingButton: false,
+                /**
+                 * @property {'NECESSARY' | 'EXCLUDE' | 'WHATEVER'} [tagName] - default by WHATEVER
+                 * */
+                tagFilterInfo: {},
+            }
+        },
+        computed: {
+            isRunning() {
+                var runState = ['page', 'works'];
+                return runState.indexOf(this.state) !== -1;
             },
-            worksNum(){
-                return this.pxer.taskOption.limit ||this.pxer.worksNum;
+            worksNum() {
+                return this.pxer.taskOption.limit || this.pxer.worksNum;
             },
-            taskCount(){
+            taskCount() {
                 if (!this.pxer) return null;
                 var pageWorkCount = getOnePageWorkCount(this.pxer.pageType);
-                return Math.ceil(this.worksNum/pageWorkCount)+ +this.worksNum;
+                return Math.ceil(this.worksNum / pageWorkCount) + +this.worksNum;
             },
-            finishCount(){
-                if(this.state==='page'){
-                    return this.pxer.taskList.filter(pr=>pr.completed).length;
-                }else if(this.state==='works'){
+            finishCount() {
+                if (this.state === 'page') {
+                    return this.pxer.taskList.filter(pr => pr.completed).length;
+                } else if (this.state === 'works') {
                     return (
-                        this.pxer.taskList.filter(pr=>pr.completed).length
-                        +~~(this.worksNum/20)
-                        +this.pxer.failList.length
+                        this.pxer.taskList.filter(pr => pr.completed).length
+                        + ~~(this.worksNum / 20)
+                        + this.pxer.failList.length
                     );
-                }else{
+                } else {
                     return -1;
-                };
+                }
+
             },
-            forecastTime(){
-                if(this.isRunning&&this.finishCount){
+            forecastTime() {
+                if (this.isRunning && this.finishCount) {
                     return Math.ceil(
-                        (this.runTimeTimestamp/this.finishCount)*this.taskCount
-                        -this.runTimeTimestamp
+                        (this.runTimeTimestamp / this.finishCount) * this.taskCount
+                        - this.runTimeTimestamp
                     );
-                }else{
+                } else {
                     return -1;
-                };
+                }
+
             },
-            printConfigUgoira:{
-                get(){
-                    return this.pxer.ppConfig.ugoira_zip+'-'+this.pxer.ppConfig.ugoira_frames;
+            printConfigUgoira: {
+                get() {
+                    return this.pxer.ppConfig.ugoira_zip + '-' + this.pxer.ppConfig.ugoira_frames;
                 },
-                set(value){
-                    var arr =value.split('-');
-                    this.pxer.ppConfig.ugoira_zip=arr[0];
-                    this.pxer.ppConfig.ugoira_frames=arr[1];
+                set(value) {
+                    var arr = value.split('-');
+                    this.pxer.ppConfig.ugoira_zip = arr[0];
+                    this.pxer.ppConfig.ugoira_frames = arr[1];
                 }
             },
-            no_tag_any:{
-                get(){
+            no_tag_any: {
+                get() {
                     return this.pxer.pfConfig.no_tag_any.join(' ');
                 },
-                set(value){
-                    this.pxer.pfConfig.no_tag_any =value.split(' ');
+                set(value) {
+                    this.pxer.pfConfig.no_tag_any = value.split(' ');
                 },
             },
-            no_tag_every:{
-                get(){
+            no_tag_every: {
+                get() {
                     return this.pxer.pfConfig.no_tag_every.join(' ');
                 },
-                set(value){
-                    this.pxer.pfConfig.no_tag_every =value.split(' ');
+                set(value) {
+                    this.pxer.pfConfig.no_tag_every = value.split(' ');
                 },
             },
-            has_tag_some:{
-                get(){
+            has_tag_some: {
+                get() {
                     return this.pxer.pfConfig.has_tag_some.join(' ');
                 },
-                set(value){
-                    this.pxer.pfConfig.has_tag_some =value.split(' ');
+                set(value) {
+                    this.pxer.pfConfig.has_tag_some = value.split(' ');
                 },
             },
-            has_tag_every:{
-                get(){
+            has_tag_every: {
+                get() {
                     return this.pxer.pfConfig.has_tag_every.join(' ');
                 },
-                set(value){
-                    this.pxer.pfConfig.has_tag_every =value.split(' ');
+                set(value) {
+                    this.pxer.pfConfig.has_tag_every = value.split(' ');
                 },
             },
-            showFailTaskList(){
+            showFailTaskList() {
                 if (!this.pxer) return [];
                 return this.pxer.failList
-                    .filter((pfi)=>{
-                        return this.tryFailWroksList.indexOf(pfi)===-1;
+                    .filter((pfi) => {
+                        return this.tryFailWroksList.indexOf(pfi) === -1;
                     })
-                ;
+                    ;
             },
 
             canCrawlDirectly() {
@@ -192,17 +196,17 @@ pxer.util.afterLoad(function(){
                 return this.needFoldTagFilter && !this.showAllTagFilter;
             },
         },
-        methods:{
+        methods: {
             createPxerApp() {
                 this.pxer = new PxerApp();
-                this.pxer.on('error',(error)=>{
+                this.pxer.on('error', (error) => {
                     this.errmsg = error;
                     pxer.sendEvent('error', {
                         error,
                         PXER_ERROR: typeof PXER_ERROR !== 'undefined' ? PXER_ERROR : null,
                     });
                 });
-                this.pxer.on('finishWorksTask',(result) =>{
+                this.pxer.on('finishWorksTask', (result) => {
                     pxer.sendEvent('finish', {
                         result_count: result.length,
                         ptm_config: this.pxer.ptmConfig,
@@ -214,118 +218,118 @@ pxer.util.afterLoad(function(){
             crawlDirectly() {
                 this.createPxerApp();
                 this.showLoadingButton = true;
-                this.pxer.one('finishWorksTask',()=>{
+                this.pxer.one('finishWorksTask', () => {
                     this.showLoadingButton = false;
-                    this.state='standby';
+                    this.state = 'standby';
                 });
                 this.pxer.getThis();
                 pxer.sendEvent('get-this', {
-                    page_type:this.pxer.pageType,
+                    page_type: this.pxer.pageType,
                 });
             },
 
-            load(){
+            load() {
                 this.createPxerApp();
-                this.state='init';
-                this.pxer.init().then(()=>this.state='ready');
-                this.pxer.on('finishWorksTask',()=>{
+                this.state = 'init';
+                this.pxer.init().then(() => this.state = 'ready');
+                this.pxer.on('finishWorksTask', () => {
                     window.blinkTitle();
                 });
                 pxer.sendEvent('load', {
-                    page_type:this.pxer.pageType,
+                    page_type: this.pxer.pageType,
                 });
             },
-            run(){
+            run() {
                 pxer.sendEvent("start", {
-                    ptm_config:this.pxer.ptmConfig,
-                    task_option:this.pxer.taskOption,
-                    vm_state:this.state,
+                    ptm_config: this.pxer.ptmConfig,
+                    task_option: this.pxer.taskOption,
+                    vm_state: this.state,
                 });
-                if(this.state==='ready'){
-                    this.state='page';
+                if (this.state === 'ready') {
+                    this.state = 'page';
                     this.pxer.initPageTask();
-                    this.pxer.one('finishPageTask',()=>{
-                        this.state='works';
+                    this.pxer.one('finishPageTask', () => {
+                        this.state = 'works';
                         this.pxer.switchPage2Works();
                         this.pxer.executeWroksTask();
                     });
-                    this.pxer.one('finishWorksTask',()=>{
-                        this.state='finish';
+                    this.pxer.one('finishWorksTask', () => {
+                        this.state = 'finish';
                     });
                     this.pxer.executePageTask();
-                }else if(this.state==='re-ready'){
-                    this.state='works';
-                    this.pxer.one('finishWorksTask',()=>{
-                        this.state='finish';
+                } else if (this.state === 're-ready') {
+                    this.state = 'works';
+                    this.pxer.one('finishWorksTask', () => {
+                        this.state = 'finish';
                     });
                     this.pxer.executeFailWroks(this.tryFailWroksList);
-                    this.tryFailWroksList=[];
+                    this.tryFailWroksList = [];
                 }
             },
-            stop(){
-                this.state='stop';
+            stop() {
+                this.state = 'stop';
                 this.pxer.stop();
                 pxer.sendEvent("halt", {
-                    task_count:this.taskCount,
-                    finish_count:this.finishCount,
+                    task_count: this.taskCount,
+                    finish_count: this.finishCount,
                 });
             },
-            count(){
-                this.taskInfo =this.pxer.getWorksInfo()
+            count() {
+                this.taskInfo = this.pxer.getWorksInfo()
             },
-            printWorks(){
+            printWorks() {
                 this.pxer.printWorks();
                 var sanitizedpfConfig = {};
                 for (let key in this.pxer.pfConfig) {
-                    sanitizedpfConfig[key] = this.pxer.pfConfig[key].length?this.pxer.pfConfig[key].length:this.pxer.pfConfig[key];
+                    sanitizedpfConfig[key] = this.pxer.pfConfig[key].length ? this.pxer.pfConfig[key].length : this.pxer.pfConfig[key];
                 }
                 pxer.sendEvent("print", {
-                    pp_config:this.pxer.ppConfig,
-                    pf_config:sanitizedpfConfig,
-                    task_option:this.pxer.taskOption,
+                    pp_config: this.pxer.ppConfig,
+                    pf_config: sanitizedpfConfig,
+                    task_option: this.pxer.taskOption,
                 });
             },
-            useTaskOption(){
-                this.showTaskOption=false;
+            useTaskOption() {
+                this.showTaskOption = false;
                 pxer.sendEvent("setTaskOption", {
                     task_option: this.taskOption,
                 });
-                Object.assign(this.pxer.taskOption ,this.taskOption);
+                Object.assign(this.pxer.taskOption, this.taskOption);
             },
-            formatFailType(type){
-                return{
-                    'empty':'获取内容失败',
-                    'timeout':'获取超时',
-                    'r-18':'限制级作品（R-18）',
-                    'r-18g':'怪诞作品（R-18G）',
-                    'mypixiv':'仅好P友可见的作品',
-                    'parse':'解析错误',
-                }[type]||type;
+            formatFailType(type) {
+                return {
+                    'empty': '获取内容失败',
+                    'timeout': '获取超时',
+                    'r-18': '限制级作品（R-18）',
+                    'r-18g': '怪诞作品（R-18G）',
+                    'mypixiv': '仅好P友可见的作品',
+                    'parse': '解析错误',
+                }[type] || type;
             },
-            formatFailSolution(type){
-                return{
-                    'empty':'点击左侧链接确认内容正确，再试一次~',
-                    'timeout':'增加最大等待时间再试一次~',
-                    'r-18':'开启账号R-18选项',
-                    'r-18g':'开启账号R-18G选项',
-                    'mypixiv':'添加画师好友再尝试',
-                    'parse':'再试一次，若问题依旧，请<a href="https://github.com/pea3nut/Pxer/issues/5" target="_blank">反馈</a>给花生',
-                }[type]||'要不。。。再试一次？';
+            formatFailSolution(type) {
+                return {
+                    'empty': '点击左侧链接确认内容正确，再试一次~',
+                    'timeout': '增加最大等待时间再试一次~',
+                    'r-18': '开启账号R-18选项',
+                    'r-18g': '开启账号R-18G选项',
+                    'mypixiv': '添加画师好友再尝试',
+                    'parse': '再试一次，若问题依旧，请<a href="https://github.com/pea3nut/Pxer/issues/5" target="_blank">反馈</a>给花生',
+                }[type] || '要不。。。再试一次？';
             },
-            tryCheckedPfi(){
+            tryCheckedPfi() {
                 this.tryFailWroksList.push(...this.checkedFailWorksList);
                 pxer.sendEvent("reready", {
-                    checked_works:this.checkedFailWorksList,
+                    checked_works: this.checkedFailWorksList,
                 });
-                this.checkedFailWorksList=[];
-                this.state='re-ready';
+                this.checkedFailWorksList = [];
+                this.state = 're-ready';
             },
-            formatTime(s){
-                return `${~~(s/60)}:${(s%60>=10)?s%60:'0'+s%60}`
+            formatTime(s) {
+                return `${~~(s / 60)}:${(s % 60 >= 10) ? s % 60 : '0' + s % 60}`
             },
 
             t: pxer.t,
-            listenUrlChange(){
+            listenUrlChange() {
                 const vm = this;
                 const historyPushState = history.pushState;
                 const historyReplaceState = history.replaceState;
@@ -344,15 +348,18 @@ pxer.util.afterLoad(function(){
             countTagTheme(tagName) {
                 switch (this.tagFilterInfo[tagName]) {
                     default:
-                    case 'WHATEVER': return 'btn-secondary';
-                    case 'EXCLUDE': return 'btn-danger';
-                    case 'NECESSARY': return 'btn-success';
+                    case 'WHATEVER':
+                        return 'btn-secondary';
+                    case 'EXCLUDE':
+                        return 'btn-danger';
+                    case 'NECESSARY':
+                        return 'btn-success';
                 }
             },
-            onTagFilterInfoChange(value){
+            onTagFilterInfoChange(value) {
                 this.pxer.pfConfig.no_tag_any = [];
                 this.pxer.pfConfig.has_tag_some = [];
-                for(let [tagName, filterOption] of Object.entries(value)) {
+                for (let [tagName, filterOption] of Object.entries(value)) {
                     switch (filterOption) {
                         case 'EXCLUDE':
                             this.pxer.pfConfig.no_tag_any.push(tagName);
@@ -378,7 +385,7 @@ pxer.util.afterLoad(function(){
                 }
             },
         },
-        mounted(){
+        mounted() {
             this.listenUrlChange();
             pxer.loaded = true;
             pxer.sendEvent('pv');

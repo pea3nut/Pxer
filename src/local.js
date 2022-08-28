@@ -4,12 +4,17 @@
     for (const list of lists) {
         await Promise.all(
             list.map(
-                info => pxer.util.addFile(info.src).then(res => {
-                    pxer.log(`Loaded ${info.src}`);
-                    if (info.saveAs) {
-                        pxer.util.set(pxer, info.saveAs, res);
+                info => {
+                    if (!info.src) {
+                        return;
                     }
-                }),
+                    return pxer.util.addFile(info.src).then(res => {
+                        pxer.log(`Loaded ${info.src}`);
+                        if (info.saveAs) {
+                            pxer.util.set(pxer, info.saveAs, res);
+                        }
+                    })
+                },
             ),
         );
     }

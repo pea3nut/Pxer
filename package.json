@@ -3,7 +3,7 @@
   "version": "2021.12.5",
   "private": true,
   "scripts": {
-    "dev": "npm run build && ws --https --port 8125 --cors.origin=*",
+    "dev": "npm run build && ws --https --port 8125 --cors.origin=https://www.pixiv.net",
     "build": "node-sass src/ --output src/ && node build/build-launcher && node build/build-native && node build/build-sfp",
     "test-build": "ws --directory dist/ --https --port 8125 --cors.origin *"
   },

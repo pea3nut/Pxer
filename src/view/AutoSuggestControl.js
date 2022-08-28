@@ -65,7 +65,7 @@ AutoSuggestControl.prototype.autosuggest = function (aSuggestions /*:Array*/) {
     //make sure there's at least one suggestion
 
     if (aSuggestions.length > 0) {
-            this.typeAhead(aSuggestions[0]);
+        this.typeAhead(aSuggestions[0]);
     }
 };
 
@@ -111,10 +111,10 @@ AutoSuggestControl.prototype.init = function () {
         }
         var newDate = new Date();
         if (newDate.getTime() > lastDate.getTime() + 200) {
-                oThis.handleKeyUp(oEvent);
-                lastDate = newDate;
+            oThis.handleKeyUp(oEvent);
+            lastDate = newDate;
         }
-        };
+    };
 
 };
 
@@ -132,7 +132,7 @@ AutoSuggestControl.prototype.selectRange = function (iStart /*:int*/, iLength /*
         oRange.moveEnd("character", iLength);
         oRange.select();
 
-    //use setSelectionRange() for Mozilla
+        //use setSelectionRange() for Mozilla
     } else if (this.textbox.setSelectionRange) {
         this.textbox.setSelectionRange(iStart, iLength);
     }
@@ -150,7 +150,7 @@ AutoSuggestControl.prototype.selectRange = function (iStart /*:int*/, iLength /*
 AutoSuggestControl.prototype.typeAhead = function (sSuggestion /*:String*/) {
 
     //check for support of typeahead functionality
-    if (this.textbox.createTextRange || this.textbox.setSelectionRange){
+    if (this.textbox.createTextRange || this.textbox.setSelectionRange) {
         var lastSpace = this.textbox.value.lastIndexOf(" ");
         var lastQuote = this.textbox.value.lastIndexOf("'");
         var lastHypen = this.textbox.value.lastIndexOf("-");
@@ -160,12 +160,11 @@ AutoSuggestControl.prototype.typeAhead = function (sSuggestion /*:String*/) {
         var contentStripped = this.textbox.value.substring(0, lastIndex);
         var lastWord = this.textbox.value.substring(lastIndex, this.textbox.value.length);
         this.textbox.value = contentStripped + sSuggestion; //.replace(lastWord,"");
-        var start = this.textbox.value.length - sSuggestion.replace(lastWord,"").length;
+        var start = this.textbox.value.length - sSuggestion.replace(lastWord, "").length;
         var end = this.textbox.value.length;
         this.selectRange(start, end);
-        }
+    }
 };
-
 
 
 /**
@@ -176,16 +175,15 @@ AutoSuggestControl.prototype.requestSuggestions = function () {
     var aSuggestions = [];
     var sTextbox = this.textbox.value;
     var sTextboxSplit = sTextbox.split(/\s+/);
-    var sTextboxLast = sTextboxSplit[sTextboxSplit.length-1];
+    var sTextboxLast = sTextboxSplit[sTextboxSplit.length - 1];
     var sTextboxValue = sTextboxLast;
-    if (sTextboxValue.length > 0){
+    if (sTextboxValue.length > 0) {
         //search for matching words
-        for (var i=0; i < this.words.length; i++) {
+        for (var i = 0; i < this.words.length; i++) {
             if (this.words[i].indexOf(sTextboxValue.toLowerCase()) == 0) {
-                if (this.words[i].indexOf(sTextboxValue) == 0){
+                if (this.words[i].indexOf(sTextboxValue) == 0) {
                     aSuggestions.push(this.words[i]);
-                }
-                else if (this.words[i].indexOf(sTextboxValue.charAt(0).toLowerCase() + sTextboxValue.slice(1)) == 0) {
+                } else if (this.words[i].indexOf(sTextboxValue.charAt(0).toLowerCase() + sTextboxValue.slice(1)) == 0) {
                     aSuggestions.push(this.words[i].charAt(0).toUpperCase() + this.words[i].slice(1));
                 }
             }
