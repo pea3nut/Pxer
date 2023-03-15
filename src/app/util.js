@@ -222,7 +222,7 @@ pxer.util.getIDfromURL = function (key = 'id', url = document.URL) {
     if (result) return result;
 
     // read id from url
-    const matchResult = url.match(/\d{4,}/);
+    const matchResult = url.match(/\d+/);
 
     return matchResult ? matchResult[0] : null;
 };
